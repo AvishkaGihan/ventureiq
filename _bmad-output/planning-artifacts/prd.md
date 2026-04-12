@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -276,3 +276,44 @@ He checks the Prometheus dashboard: cost-per-report averaged $0.12 in Gemini API
 - **Budget ceiling per report** — hard limit on total tokens consumed per report (across all 5 agents + Coordinator) to prevent runaway costs; if ceiling is hit, remaining agents produce condensed output
 - **Cache-first strategy** — Redis caches search results and common market data queries; repeat or similar queries bypass LLM calls where cached data remains fresh
 - **Target unit economics** — cost-per-report must remain viable at $29/mo Pro tier pricing across expected usage patterns
+
+## Innovation & Novel Patterns
+
+### Detected Innovation Areas
+
+**1. Multi-Agent Cross-Referencing Architecture**
+No existing AI validation tool uses multiple specialized agents that read each other's outputs and adjust their analyses in real time. The hybrid parallel→cross-referencing→synthesis execution model is a genuine architectural innovation — it produces emergent intelligence that a single LLM cannot replicate regardless of prompt engineering sophistication.
+
+**2. The Confidence Stack (Decision UX Innovation)**
+Three independent UX patterns — real-time reasoning visibility (War Room), source-level verifiability (Trust Layer), and multi-perspective reasoning (cross-agent intelligence) — are combined into a single "confidence stack" that no competitor offers. Each pattern exists in isolation elsewhere; the combination is novel and directly addresses the #1 barrier to AI adoption: trust.
+
+**3. Decision Timeline / Replay Mode**
+No AI product currently offers the ability to scrub through a visual timeline of how multi-agent reasoning unfolded. This is a novel UX concept that transforms AI analysis from a black-box output into an inspectable, reproducible process — bringing transparency standards from scientific methodology into consumer AI.
+
+**4. Cinematic War Room Experience**
+The concept of turning AI processing into a *live spectator experience* — where users watch agents think, search, analyze, and react to each other in real time — is a UX innovation that reframes "loading time" as "engagement time." This inverts the typical AI product pattern where processing is hidden behind spinners.
+
+### Market Context & Competitive Landscape
+
+The AI validation market (2026) has settled into three tiers:
+- **Auto-validators** (IdeaProof, ValidatorAI) — fast, single-LLM, no transparency
+- **Demand-based tools** (Preuve AI, Trend Seeker) — slow, evidence-focused, no synthesis
+- **Hybrid planning platforms** (IdeaBuddy, Cambium AI) — template-driven, static documents
+
+VentureIQ creates a **fourth tier: real-time multi-agent decision intelligence** — occupying an entirely uncontested category. The closest conceptual analog is a multi-analyst research desk (McKinsey, BCG) compressed into a 90-second automated experience.
+
+### Validation Approach
+
+- **Cross-agent intelligence validation** — demonstrate that cross-referencing produces measurably different (and better) recommendations than running agents independently. Test: compare report quality with and without the cross-referencing pass
+- **Trust Layer impact** — measure whether source citations and confidence scores increase user decision confidence vs. identical reports without them. Test: user feedback surveys on report trustworthiness
+- **War Room engagement** — validate that real-time streaming increases completion rates vs. a "submit and wait" pattern. Test: A/B comparison of War Room vs. loading-screen UX
+- **Decision Timeline utility** — validate that replay capability adds value beyond the initial report. Test: usage analytics on timeline feature engagement
+
+### Risk Mitigation
+
+| Innovation | Risk | Mitigation |
+|:--|:--|:--|
+| Cross-agent referencing | Agents amplify each other's errors | Coordinator validates cross-references against source data; confidence scores flag low-evidence claims |
+| War Room streaming | Users find real-time streaming overwhelming | Progressive disclosure — summary view by default, expandable detail; user can skip to results |
+| Decision Timeline | Low adoption if users only care about final score | Position as "show your work" for sharing with stakeholders; embed timeline highlights in PDF export |
+| Trust Layer | Source links break or become stale | Cache source content at generation time; flag links verified vs. unverified; timestamp all citations |
