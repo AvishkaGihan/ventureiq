@@ -1,0 +1,23 @@
+installation:
+  version: 6.3.0
+  installDate: 2026-04-12T13:11:00.452Z
+  lastUpdated: 2026-04-12T13:11:00.452Z
+modules:
+  - name: core
+    version: 6.3.0
+    installDate: 2026-04-12T13:10:59.833Z
+    lastUpdated: 2026-04-12T13:11:00.450Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmm
+    version: 6.3.0
+    installDate: 2026-04-12T13:11:00.240Z
+    lastUpdated: 2026-04-12T13:11:00.452Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+ides:
+  - gemini
+  - github-copilot
+  - antigravity
