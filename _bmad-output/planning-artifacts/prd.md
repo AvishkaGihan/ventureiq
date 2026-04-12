@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -237,3 +237,42 @@ He checks the Prometheus dashboard: cost-per-report averaged $0.12 in Gemini API
 | Cost/token tracking | Alex |
 | Agent error monitoring | Alex |
 | Client-agnostic API | Dev (future) |
+
+## Domain-Specific Requirements
+
+### AI/LLM Constraints
+
+- **Hallucination mitigation** — every quantitative claim must carry a source citation and confidence score (the Trust Layer). If an agent cannot find a verifiable source for a claim, it must flag the output as "unverified estimate" with a reduced confidence score rather than presenting it as fact
+- **Prompt injection defense** — all user inputs (idea text, context fields, Ask the Board queries) are sanitized before reaching any agent prompt. Inter-agent data flowing through LangGraph shared state is treated as untrusted and validated against expected schemas
+- **Token budget enforcement** — each agent operates within a hard token ceiling. If an agent exceeds its budget, output is gracefully truncated with a structured summary rather than raw mid-sentence cutoff. The Coordinator handles partial agent outputs without pipeline failure
+- **Early stopping** — if the idea fails base plausibility checks (e.g., nonsensical input, single-word submissions without context), the system surfaces a helpful prompt to refine input rather than consuming LLM resources on low-quality queries
+
+### LLM Provider Strategy
+
+- **Primary provider:** Google Gemini 2.5 Flash via Google AI Studio — used for all agents and synthesis in standard operation
+- **Fallback provider:** Open models via OpenRouter (e.g., Llama 3, Mistral) — activated automatically when Gemini is unavailable, rate-limited, or experiencing elevated latency
+- **Routing logic:** Backend detects provider health via response latency and error rates; automatic failover is transparent to the user with no UX interruption
+- **Model routing optimization:** Lightweight tasks (e.g., input classification, plausibility checks) route to cheaper/faster models; complex synthesis (Coordinator, cross-referencing) routes to higher-capability models
+- **Architecture requirement:** LLM calls are abstracted behind a provider-agnostic interface, enabling provider swaps without agent code changes
+
+### Search Provider Reliability
+
+- **Primary:** DuckDuckGo Search — zero-cost, no API key required
+- **Known risk:** DuckDuckGo rate limiting under concurrent load (flagged in product brief)
+- **Mitigation:** Implement retry with exponential backoff, request queuing, and Redis-based response caching for common market data queries
+- **Future consideration:** Evaluate SerpAPI or Tavily as premium fallback providers if DuckDuckGo reliability proves insufficient at scale
+
+### Data Privacy & Security
+
+- **User idea confidentiality** — business ideas are treated as sensitive intellectual property. User-submitted ideas and generated reports are never used for model training, analytics, or shared with third parties
+- **Encryption at rest** — all user data (ideas, reports, session history) is encrypted at rest in PostgreSQL. Redis ephemeral state is cleared after session expiration
+- **PII-safe processing** — no personally identifiable information is stored in ChromaDB vector storage or included in LLM prompts beyond what the user explicitly provides in their idea submission
+- **API key isolation** — all LLM and search provider API keys are stored server-side only; the Flutter client never has direct access to any third-party API credentials
+- **Rate limiting** — IP-based and user-based rate limiting prevents abuse and protects against cost runaway from malicious usage
+
+### Cost Engineering Constraints
+
+- **Cost-per-report tracking** — every report execution logs total token consumption and API cost across all agents, stored for unit economics validation
+- **Budget ceiling per report** — hard limit on total tokens consumed per report (across all 5 agents + Coordinator) to prevent runaway costs; if ceiling is hit, remaining agents produce condensed output
+- **Cache-first strategy** — Redis caches search results and common market data queries; repeat or similar queries bypass LLM calls where cached data remains fresh
+- **Target unit economics** — cost-per-report must remain viable at $29/mo Pro tier pricing across expected usage patterns
