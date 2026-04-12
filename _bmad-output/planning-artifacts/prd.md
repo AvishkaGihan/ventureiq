@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -317,3 +317,100 @@ VentureIQ creates a **fourth tier: real-time multi-agent decision intelligence**
 | War Room streaming | Users find real-time streaming overwhelming | Progressive disclosure — summary view by default, expandable detail; user can skip to results |
 | Decision Timeline | Low adoption if users only care about final score | Position as "show your work" for sharing with stakeholders; embed timeline highlights in PDF export |
 | Trust Layer | Source links break or become stale | Cache source content at generation time; flag links verified vs. unverified; timestamp all citations |
+
+## Mobile App + API Backend Specific Requirements
+
+### Project-Type Overview
+
+VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastAPI Python backend**. The mobile client handles presentation, real-time streaming display, and offline report caching. The backend handles all AI orchestration, data persistence, and external service integration. The architecture enforces strict client-agnostic API design to support future web clients and third-party API consumers without backend changes.
+
+### Platform Requirements
+
+- **Framework:** Flutter (single codebase for iOS & Android)
+- **Minimum OS versions:** iOS 15+, Android 10+ (API 29+)
+- **Offline capability:** Cached reports viewable offline; all AI processing requires active internet connection. Local SQLite or Hive for report cache storage on device
+- **App size target:** <50MB initial download (lazy-load assets where possible)
+- **Deep linking:** Support for shareable report web links that open in-app when installed, or render in browser when not
+
+### Device Permissions
+
+| Permission | Purpose | Required/Optional |
+|:--|:--|:--|
+| Internet | Core functionality — all AI processing | Required |
+| Microphone | Voice input for idea submission | Optional (requested on use) |
+| Push Notifications | Report completion, re-engagement | Optional (prompted after first report) |
+| Local Storage | Offline report cache | Required |
+
+### Push Notification Strategy
+
+- **Report completion** — notify when async report generation completes (especially relevant if user backgrounds the app during 60-90s processing)
+- **Re-engagement** — periodic nudges for users who haven't validated an idea recently (configurable, respectful frequency)
+- **Cross-agent highlight** — optional notification when a saved report's market data has significantly changed (future feature)
+- **Implementation:** Firebase Cloud Messaging (FCM) for both iOS and Android via Flutter
+
+### Store Compliance
+
+- **App Store (iOS):** Ensure compliance with App Store Review Guidelines — particularly around AI-generated content disclosure and subscription billing via in-app purchases for Pro tier
+- **Google Play:** Comply with Play Store policies on AI content, data safety declarations, and subscription management
+- **Privacy policy & Terms of Service:** Required before store submission; must disclose AI processing, data handling, and third-party API usage
+
+### Authentication Model
+
+- **Primary:** Google Sign-In via Firebase Authentication — single-tap sign-in on both platforms
+- **Anonymous access:** Freemium users can use the app without signing in (anonymous Firebase auth); rate-limited to 3 reports/month via device fingerprinting
+- **Account upgrade flow:** Anonymous users prompted to sign in when hitting free tier limits or wanting to save reports persistently
+- **Session management:** JWT-based tokens issued by FastAPI backend; refresh token rotation for security
+- **Future expansion:** Apple Sign-In, email/password (deferred from V1 to reduce auth complexity)
+
+### API Architecture
+
+- **Base URL pattern:** `/api/v1/` — versioned from day one
+- **Protocol:** REST for CRUD operations + WebSocket for real-time streaming
+- **Data format:** JSON request/response bodies; structured output schemas for all agent outputs
+
+### Core Endpoint Specification
+
+| Endpoint | Method | Purpose |
+|:--|:--|:--|
+| `/api/v1/auth/google` | POST | Google Sign-In token exchange |
+| `/api/v1/auth/anonymous` | POST | Anonymous session creation |
+| `/api/v1/ideas` | POST | Submit new idea for validation |
+| `/api/v1/ideas/{id}` | GET | Retrieve idea and metadata |
+| `/api/v1/reports/{id}` | GET | Retrieve completed report |
+| `/api/v1/reports/{id}/export` | GET | Generate PDF export |
+| `/api/v1/reports/{id}/share` | POST | Create shareable web link |
+| `/api/v1/reports/compare` | POST | Comparative analysis (2+ reports) |
+| `/api/v1/scenarios/{report_id}` | POST | Run scenario simulation |
+| `/api/v1/board/{report_id}` | POST | Ask the Board conversation |
+| `/api/v1/board/{report_id}/history` | GET | Conversation history |
+| `ws://api/v1/stream/{idea_id}` | WS | Real-time War Room streaming |
+
+### Data Schemas
+
+- **Idea submission:** `{ idea: string, context: { target_audience?, industry?, monetization?, region? } }`
+- **Agent output (per agent):** `{ agent: string, status: enum, content: string, sources: [{ url, title, confidence }], metadata: { tokens_used, latency_ms } }`
+- **Report:** `{ id, idea_id, viability_score: { overall, breakdown: { market, competition, financials, risk, execution } }, agents: [AgentOutput], cross_references: [...], created_at }`
+- **Streaming event:** `{ event_type: enum(started|searching|analyzing|cross_referencing|complete|error), agent: string, content_delta: string, timestamp }`
+
+### Rate Limiting
+
+| Tier | Limit | Enforcement |
+|:--|:--|:--|
+| Anonymous | 3 reports/month | Device fingerprint + IP |
+| Free (signed in) | 3 reports/month | User ID |
+| Pro ($29/mo) | Unlimited | User ID, fair-use policy |
+| API (future) | Usage-based | API key, configurable |
+
+### Error Handling
+
+- **Structured error responses:** All API errors return `{ error_code: string, message: string, details?: object }`
+- **Agent failure graceful degradation:** If individual agents fail, remaining agents complete; Coordinator synthesizes available data with reduced confidence score
+- **WebSocket reconnection:** Client auto-reconnects on connection drop; server replays missed events from Redis-cached stream
+
+### Implementation Considerations
+
+- **State management (Flutter):** Use Riverpod or Bloc for reactive state management — particularly critical for War Room real-time updates across multiple agent streams
+- **WebSocket management:** Implement connection pooling and heartbeat on the client; handle backgrounding gracefully (pause streaming, resume on foreground)
+- **Image/chart rendering:** Radar chart (Viability Score) and market position charts rendered client-side using `fl_chart` or equivalent Flutter charting library
+- **PDF generation:** Server-side via ReportLab; client requests PDF and receives download URL
+- **Local caching strategy:** Cache completed reports in local storage (Hive/SQLite) for offline viewing; cache invalidation on report update
