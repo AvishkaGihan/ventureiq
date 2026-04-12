@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-01b-continue", "step-08-scoping"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -414,3 +414,101 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 - **Image/chart rendering:** Radar chart (Viability Score) and market position charts rendered client-side using `fl_chart` or equivalent Flutter charting library
 - **PDF generation:** Server-side via ReportLab; client requests PDF and receives download URL
 - **Local caching strategy:** Cache completed reports in local storage (Hive/SQLite) for offline viewing; cache invalidation on report update
+
+## Project Scoping & Phased Development
+
+### MVP Strategy & Philosophy
+
+**MVP Approach:** Complete System V1 — No Feature Deferral
+
+VentureIQ rejects the traditional "thin slice" MVP model. The product's value proposition is inherently systemic — the War Room's impact depends on the Trust Layer; the Trust Layer depends on all 5 agents producing cited, scored output; Comparative Analysis depends on the full report data model; the Decision Timeline depends on timestamped event persistence designed into the agent pipeline from day one. Stripping features doesn't create a simpler product — it creates an incoherent one.
+
+The MVP *is* the complete V1 system: all 12 screens, all 5 agents + Coordinator, the full hybrid parallel→cross-referencing→synthesis pipeline, and every interactive feature (Scenario Simulator, Comparative Analysis, Ask the Board, Decision Timeline, Export & Share).
+
+**Why this is the right call:**
+- **Portfolio coherence** — the project's value as a portfolio showcase depends on demonstrating end-to-end system thinking, not isolated features. A partial system signals "I started something"; a complete system signals "I shipped something production-grade"
+- **Architectural integrity** — features are deeply interdependent. The Decision Timeline requires the same event persistence infrastructure as War Room streaming. The Scenario Simulator reuses the agent pipeline with modified parameters. Building "phase 1" without designing for "phase 2" creates technical debt that's more expensive than building it right once
+- **Competitive differentiation** — VentureIQ's moat is the *combination* of capabilities (multi-agent + streaming + Trust Layer + interactivity). Removing any pillar reduces the product to something existing competitors already offer
+
+**Resource Requirements:** Solo developer (full-stack: Flutter + Python/FastAPI + LangGraph + infrastructure). Structured sprint execution with disciplined scope management within the unified V1.
+
+### Execution Priority Within V1
+
+While all features ship as a single unified system, implementation follows a deliberate **dependency-driven execution order** that ensures the system is buildable, testable, and demoable at every stage:
+
+**Tier 1 — Core Runtime (Build First)**
+The foundational pipeline that everything else depends on:
+- FastAPI backend + LangGraph orchestration engine
+- 5-agent parallel execution with token streaming (WebSocket/SSE)
+- Cross-referencing pass with shared state
+- Coordinator synthesis → Viability Score with weighted breakdown
+- War Room UI (Flutter) with real-time agent streaming display
+- Trust Layer infrastructure (confidence scores + source citations on all agent outputs)
+- Idea Input screen (text + voice)
+- Executive Summary screen with radar chart
+- Evidence Panel (Trust Layer display)
+
+**Tier 2 — Extended Intelligence (Build on Core)**
+Features that extend the core pipeline with additional interaction models:
+- Scenario Simulator (parameterized re-execution with variable sliders)
+- Market & Competitor Map (positioning visualization from Rival/Scout data)
+- Risk Radar & GTM (risk rankings + launch plan from Devil's Advocate/Strategist data)
+- Ask the Board (conversational AI grounded in report, with ChromaDB cross-session memory)
+- Comparative Analysis (side-by-side evaluation using structured report data model)
+
+**Tier 3 — Experience Completion (Build to Ship)**
+Features that complete the production-grade experience:
+- Decision Timeline / Replay Mode (scrubbing through timestamped agent events)
+- Export & Share (PDF generation via ReportLab + shareable web links)
+- Splash / Onboarding screens
+- Push notifications (report completion, re-engagement)
+- Offline report caching (Hive/SQLite local storage)
+
+**Tier 4 — Production Hardening (Continuous)**
+Infrastructure that spans all tiers and is built incrementally:
+- Authentication (Firebase Google Sign-In + anonymous access)
+- Rate limiting (IP-based + user-based, tier-aware)
+- Observability stack (LangSmith traces, Prometheus metrics, cost-per-report logging)
+- Token budgeting enforcement and graceful degradation
+- Redis caching strategy (search results, market data, partial agent outputs)
+- Error handling and WebSocket reconnection resilience
+
+**Critical design principle:** Even though Tier 2 and Tier 3 features are built after Tier 1, their **data models, API contracts, and event schemas are designed in Tier 1**. The Decision Timeline's timestamped event model is built into the streaming infrastructure from day one. The Scenario Simulator's parameterized execution is designed into the agent pipeline interface from the start. No feature is an afterthought — the architecture accommodates everything before the first line of code.
+
+### Growth Features (Post-V1)
+
+Features explicitly excluded from V1 that represent future expansion:
+- Web client for browser-based access and shareable link rendering
+- B2B API tier with usage-based pricing for third-party integrations
+- Advanced model routing with multi-provider LLM support (beyond Gemini + OpenRouter fallback)
+- Accelerator/incubator batch evaluation workflows
+- Enhanced Scenario Simulator with saved scenario comparison history
+- Multi-language support for international markets
+- Platform ecosystem with third-party agents and custom agent configurations
+
+### Risk Mitigation Strategy
+
+**Technical Risks:**
+
+| Risk | Impact | Mitigation |
+|:--|:--|:--|
+| Multi-agent pipeline complexity | High — 5 agents + Coordinator with cross-referencing is architecturally demanding for a solo developer | Disciplined LangGraph graph design; each agent is a self-contained node with well-defined input/output contracts; extensive integration testing at the pipeline level |
+| Real-time streaming reliability | High — WebSocket connections across mobile networks are inherently unstable | Client-side reconnection with server-side event replay from Redis cache; heartbeat monitoring; graceful degradation to polling if WebSocket fails |
+| DuckDuckGo rate limiting | Medium — free search API with no SLA | Aggressive Redis caching of search results; exponential backoff with retry queuing; architecture supports swapping to premium provider (SerpAPI/Tavily) without agent code changes |
+| Token budget overruns | Medium — LLM costs can escalate unpredictably | Hard token ceilings per agent; model routing (lightweight tasks → cheaper models); cost-per-report logging with alerting; graceful truncation with structured summaries |
+| Cross-agent error amplification | Medium — agents reading each other's outputs could propagate errors | Coordinator validates cross-references against source data; confidence scores flag low-evidence claims; each agent maintains independent source grounding |
+
+**Market Risks:**
+
+| Risk | Impact | Mitigation |
+|:--|:--|:--|
+| AI trust skepticism | Medium — users may distrust AI-generated analysis regardless of transparency | Trust Layer is the direct mitigation — every claim cited with confidence scores; Decision Timeline shows reasoning process; the product's entire UX is designed to build trust |
+| Portfolio vs. commercial tension | Low — optimizing for portfolio impact may diverge from commercial viability | Architecture is intentionally production-grade; commercial patterns (auth, rate limiting, billing tiers) are built in even though monetization isn't the V1 priority |
+
+**Resource Risks:**
+
+| Risk | Impact | Mitigation |
+|:--|:--|:--|
+| Solo developer bottleneck | High — single point of failure for all development, testing, and deployment | Structured sprint execution with clear priorities; dependency-driven build order ensures demoable system at every stage; no feature is architecturally dependent on another feature being "done" (only on shared infrastructure being in place) |
+| Scope creep within V1 | Medium — "all features ship" philosophy could lead to endless polish cycles | Fixed feature set defined in PRD; "done" criteria defined per feature; structured sprints with explicit completion gates |
+| LLM API cost during development | Low — development and testing consume tokens | Use lower-cost models during development; mock agent responses for UI development; cache development queries aggressively |
