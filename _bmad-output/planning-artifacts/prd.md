@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-01b-continue", "step-08-scoping"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-01b-continue", "step-08-scoping", "step-09-functional"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -512,3 +512,103 @@ Features explicitly excluded from V1 that represent future expansion:
 | Solo developer bottleneck | High — single point of failure for all development, testing, and deployment | Structured sprint execution with clear priorities; dependency-driven build order ensures demoable system at every stage; no feature is architecturally dependent on another feature being "done" (only on shared infrastructure being in place) |
 | Scope creep within V1 | Medium — "all features ship" philosophy could lead to endless polish cycles | Fixed feature set defined in PRD; "done" criteria defined per feature; structured sprints with explicit completion gates |
 | LLM API cost during development | Low — development and testing consume tokens | Use lower-cost models during development; mock agent responses for UI development; cache development queries aggressively |
+
+## Functional Requirements
+
+### Idea Submission & Input
+
+- **FR1:** Users can submit a business idea as free-form text
+- **FR2:** Users can submit a business idea via voice input
+- **FR3:** Users can provide optional context fields alongside their idea (target audience, industry, monetization model, region)
+- **FR4:** The system can assess idea plausibility and prompt the user to refine low-quality or nonsensical submissions before consuming AI resources
+
+### Real-Time Analysis & War Room
+
+- **FR5:** The system can execute five specialized AI agents (Scout, Rival, CFO, Devil's Advocate, Strategist) in parallel to analyze a submitted idea
+- **FR6:** Users can observe each agent's reasoning streamed in real time as it is generated
+- **FR7:** Users can see each agent's current lifecycle state (started, searching, analyzing, cross-referencing, complete)
+- **FR8:** The system can execute a cross-referencing pass where agents adjust their outputs based on other agents' findings
+- **FR9:** Users can observe cross-agent referencing as it occurs (e.g., Strategist reacting to Devil's Advocate findings)
+- **FR10:** The system can synthesize all agent outputs into a unified Viability Score with weighted breakdown across five dimensions (Market, Competition, Financials, Risk, Execution)
+
+### Report & Viability Assessment
+
+- **FR11:** Users can view an Executive Summary with a Viability Score and visual radar chart breakdown
+- **FR12:** Users can view each individual agent's full analysis within a completed report
+- **FR13:** Users can access an Evidence Panel displaying source citations and confidence scores for all quantitative claims
+- **FR14:** Users can tap any cited claim to view or navigate to the original source
+- **FR15:** The system can flag claims as "unverified estimate" when verifiable sources are unavailable
+
+### Market & Competitive Intelligence
+
+- **FR16:** Users can view a Market & Competitor Map with positioning visualization and identified market gaps
+- **FR17:** Users can view competitive landscape analysis including competitor strengths, weaknesses, and whitespace opportunities
+
+### Risk & Go-to-Market
+
+- **FR18:** Users can view a Risk Radar with ranked risks including likelihood, impact, and mitigation strategies
+- **FR19:** Users can view a Go-to-Market plan with launch strategy, target persona, and key metrics
+
+### Scenario Simulation
+
+- **FR20:** Users can adjust key business variables (pricing, target audience, region, etc.) via interactive sliders
+- **FR21:** The system can re-execute or recalculate agent projections based on modified scenario variables
+- **FR22:** Users can observe how the Viability Score shifts across different parameter combinations
+
+### Comparative Analysis
+
+- **FR23:** Users can place two or more previously generated reports side-by-side for structured comparison
+- **FR24:** Users can view a diff-style visualization highlighting key differences between compared ideas
+- **FR25:** The system can surface a clear comparative recommendation based on structured scoring differences
+
+### Conversational AI (Ask the Board)
+
+- **FR26:** Users can ask follow-up questions about a completed report in a conversational interface
+- **FR27:** The system can respond to user questions grounded in the full report context and agent findings
+- **FR28:** The system can maintain cross-session conversation history so returning users resume with prior context
+- **FR29:** Users can view the full conversation history for each report
+
+### Decision Timeline & Replay
+
+- **FR30:** Users can view a visual timeline of how multi-agent analysis unfolded for a given report
+- **FR31:** Users can scrub through the timeline to inspect specific moments in the agent reasoning process
+- **FR32:** Users can identify key inflection points where one agent's findings influenced another
+
+### Export & Sharing
+
+- **FR33:** Users can export a completed report as a polished, investor-grade PDF
+- **FR34:** Users can generate a shareable web link to a report
+- **FR35:** Recipients of a shared link can view the report without requiring a VentureIQ account
+
+### User Account & Access
+
+- **FR36:** Users can sign in via Google Sign-In
+- **FR37:** Users can use the app without signing in (anonymous access) with limited functionality
+- **FR38:** Anonymous users can upgrade to a signed-in account and retain their data
+- **FR39:** The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro)
+- **FR40:** Users can view their report history and revisit previously generated reports
+
+### Offline & Persistence
+
+- **FR41:** Users can view previously generated reports while offline
+- **FR42:** Reports are persisted and accessible across sessions and devices for signed-in users
+
+### Notifications
+
+- **FR43:** Users can receive push notifications when a report finishes generating (especially after backgrounding the app)
+- **FR44:** Users can opt in/out of re-engagement notifications
+
+### Observability & Operations (Operator)
+
+- **FR45:** Operators can view execution traces per agent including latency and token consumption
+- **FR46:** Operators can monitor cost-per-report and cost-per-agent metrics in real time
+- **FR47:** Operators can track agent error rates and identify degradation patterns
+- **FR48:** Operators can monitor search provider health and cache hit rates
+- **FR49:** Operators can view aggregated system health summaries across time periods
+
+### System Safety & Integrity
+
+- **FR50:** The system can sanitize all user inputs against prompt injection before passing to agents
+- **FR51:** The system can enforce per-agent token budget ceilings with graceful degradation on exceeding limits
+- **FR52:** The system can complete reports with reduced confidence when individual agents fail (graceful degradation)
+- **FR53:** The system can automatically reconnect streaming sessions after connection drops and replay missed events
