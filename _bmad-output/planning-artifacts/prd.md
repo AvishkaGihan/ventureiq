@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-01b-continue", "step-08-scoping", "step-09-functional"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-01b-continue", "step-08-scoping", "step-09-functional", "step-10-nonfunctional", "step-11-polish", "step-12-complete"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -96,36 +96,30 @@ As a portfolio project, every architectural decision serves double duty: product
 
 ## Product Scope
 
-### MVP — Minimum Viable Product
+### V1 Feature Set
 
-All 12 screens are V1 scope, delivered iteratively across structured sprints. Nothing is deferred or excluded — the MVP *is* the complete V1 feature set:
+All 12 screens ship as a unified V1 — no features are deferred or excluded. The complete feature set is delivered iteratively across structured sprints following the dependency-driven execution order defined in Project Scoping & Phased Development:
 
-| Screen | Sprint Priority | Core Capability |
+| Screen | Execution Tier | Core Capability |
 |:--|:--|:--|
-| Splash / Onboarding | Phase 1 | First impression, product positioning |
-| Idea Input (text + voice) | Phase 1 | Primary user entry point |
-| **War Room** ⭐ | Phase 1 | Cinematic agent streaming + cross-referencing |
-| Executive Summary | Phase 1 | Viability Score with weighted radar chart |
-| Evidence Panel | Phase 1 | Trust Layer — sources, confidence scores |
-| Market & Competitor Map | Phase 2 | Positioning visualization |
-| Risk Radar & GTM | Phase 2 | Risk rankings + launch plan |
-| Scenario Simulator | Phase 2 | Interactive what-if variable sliders |
-| Comparative Analysis | Phase 3 | Side-by-side A/B idea evaluation |
-| Ask the Board | Phase 3 | Conversational AI with cross-session memory |
-| Decision Timeline | Phase 3 | Replay Mode — agent reasoning scrubbing |
-| Export & Share | Phase 3 | PDF download + shareable web link |
+| Idea Input (text + voice) | Tier 1 | Primary user entry point |
+| **War Room** ⭐ | Tier 1 | Cinematic agent streaming + cross-referencing |
+| Executive Summary | Tier 1 | Viability Score with weighted radar chart |
+| Evidence Panel | Tier 1 | Trust Layer — sources, confidence scores |
+| Market & Competitor Map | Tier 2 | Positioning visualization |
+| Risk Radar & GTM | Tier 2 | Risk rankings + launch plan |
+| Scenario Simulator | Tier 2 | Interactive what-if variable sliders |
+| Comparative Analysis | Tier 2 | Side-by-side A/B idea evaluation |
+| Ask the Board | Tier 2 | Conversational AI with cross-session memory |
+| Decision Timeline | Tier 3 | Replay Mode — agent reasoning scrubbing |
+| Export & Share | Tier 3 | PDF download + shareable web link |
+| Splash / Onboarding | Tier 3 | First impression, product positioning |
 
-**Infrastructure (spans all phases):** FastAPI backend, LangGraph orchestration, Redis caching/state, PostgreSQL persistence, ChromaDB memory, observability stack, Docker deployment.
-
-### Growth Features (Post-V1)
-
-- Web client for browser-based access and shareable link rendering
-- B2B API tier with usage-based pricing for third-party integrations
-- Advanced model routing with multi-provider LLM support
-- Accelerator/incubator batch evaluation workflows
-- Enhanced Scenario Simulator with saved scenario comparison
+**Infrastructure (spans all tiers):** FastAPI backend, LangGraph orchestration, Redis caching/state, PostgreSQL persistence, ChromaDB memory, observability stack, Docker deployment.
 
 ### Vision (Future)
+
+Post-V1 growth features and long-term vision are detailed in the Project Scoping & Phased Development section.
 
 - **Trusted decision intelligence layer** — extends beyond startup validation into product strategy, investment analysis, and competitive intelligence
 - **Organizational tool** — teams use VentureIQ as a standard decision framework for ambiguous, high-stakes business decisions
@@ -309,7 +303,9 @@ VentureIQ creates a **fourth tier: real-time multi-agent decision intelligence**
 - **War Room engagement** — validate that real-time streaming increases completion rates vs. a "submit and wait" pattern. Test: A/B comparison of War Room vs. loading-screen UX
 - **Decision Timeline utility** — validate that replay capability adds value beyond the initial report. Test: usage analytics on timeline feature engagement
 
-### Risk Mitigation
+### Innovation Risk Mitigation
+
+Risks specific to VentureIQ's novel features. For project execution and resource risks, see Project Scoping & Phased Development → Risk Mitigation Strategy.
 
 | Innovation | Risk | Mitigation |
 |:--|:--|:--|
@@ -612,3 +608,69 @@ Features explicitly excluded from V1 that represent future expansion:
 - **FR51:** The system can enforce per-agent token budget ceilings with graceful degradation on exceeding limits
 - **FR52:** The system can complete reports with reduced confidence when individual agents fail (graceful degradation)
 - **FR53:** The system can automatically reconnect streaming sessions after connection drops and replay missed events
+
+## Non-Functional Requirements
+
+### Performance
+
+- **NFR1:** Time-to-first-token for War Room streaming must be under 2 seconds from idea submission
+- **NFR2:** Agent token streaming must display with under 1 second latency between generation and client display
+- **NFR3:** Full 5-agent report generation (parallel execution → cross-referencing → synthesis) must complete within 60–90 seconds under standard load
+- **NFR4:** App launch to interactive state must occur within 3 seconds on mid-range devices (circa 2023 hardware)
+- **NFR5:** Offline report retrieval from local cache must load within 500 milliseconds
+- **NFR6:** Scenario Simulator variable adjustments must reflect updated projections within 10 seconds
+- **NFR7:** Ask the Board conversational responses must begin streaming within 3 seconds of query submission
+- **NFR8:** PDF export generation must complete within 15 seconds of user request
+
+### Security
+
+- **NFR9:** All data in transit must be encrypted via TLS 1.2+
+- **NFR10:** All user data at rest (ideas, reports, session history) must be encrypted in PostgreSQL
+- **NFR11:** All LLM and search provider API keys must be stored server-side only; the mobile client must never have access to third-party API credentials
+- **NFR12:** All user inputs must be sanitized against prompt injection before reaching any agent prompt
+- **NFR13:** Inter-agent data flowing through shared state must be validated against expected schemas before consumption
+- **NFR14:** User-submitted ideas and generated reports must never be used for model training, analytics beyond operational metrics, or shared with third parties
+- **NFR15:** No personally identifiable information beyond what the user explicitly provides may be stored in vector storage (ChromaDB) or included in LLM prompts
+- **NFR16:** JWT tokens must implement refresh token rotation; session tokens must expire after a configurable inactivity period
+- **NFR17:** Redis ephemeral state must be cleared after session expiration
+
+### Scalability
+
+- **NFR18:** The system must be architected to support 100+ concurrent users without degradation beyond 10% of baseline latency targets
+- **NFR19:** The backend must support horizontal scaling via stateless application servers with shared Redis/PostgreSQL state
+- **NFR20:** WebSocket connections must be managed with connection pooling that gracefully handles connection limits
+- **NFR21:** LLM API call concurrency must be managed to stay within provider rate limits while maximizing throughput
+- **NFR22:** Redis caching must reduce redundant LLM API calls by caching search results and common market data queries with configurable TTL
+
+### Reliability
+
+- **NFR23:** The system must achieve >95% agent completion rate (all 5 agents + Coordinator finishing without errors)
+- **NFR24:** Individual agent failures must not crash the pipeline; the Coordinator must synthesize available data with a reduced confidence score
+- **NFR25:** WebSocket disconnections must trigger automatic client reconnection with server-side replay of missed events from Redis-cached stream
+- **NFR26:** LLM provider unavailability must trigger automatic failover to the fallback provider (OpenRouter) transparently to the user
+- **NFR27:** Search provider rate limiting must be handled with exponential backoff, request queuing, and cached fallback data
+- **NFR28:** Token budget overruns must result in graceful output truncation with structured summaries, not raw mid-sentence cutoffs
+- **NFR29:** The system must handle app backgrounding during report generation and resume streaming on foreground without data loss
+
+### Observability
+
+- **NFR30:** Every report execution must generate a complete trace capturing per-agent latency, token consumption, and API cost
+- **NFR31:** Execution traces must be accessible via LangSmith or equivalent tracing infrastructure
+- **NFR32:** Prometheus metrics must capture request latency, error rates, cache hit ratios, and cost-per-report at minimum
+- **NFR33:** Agent error rates must be trackable per-agent with historical trend visibility
+- **NFR34:** Cost-per-report must be calculable from logged token consumption and provider pricing
+
+### Accessibility
+
+- **NFR35:** The app must support platform-native screen reader accessibility (VoiceOver on iOS, TalkBack on Android) for core user flows (idea submission, report viewing)
+- **NFR36:** All interactive elements must meet minimum touch target sizes (48x48dp) per platform guidelines
+- **NFR37:** Text contrast ratios must meet WCAG 2.1 AA standards (4.5:1 for normal text, 3:1 for large text)
+- **NFR38:** The app must support dynamic text sizing based on system accessibility settings
+
+### Integration
+
+- **NFR39:** All LLM interactions must be abstracted behind a provider-agnostic interface enabling provider swaps without agent code changes
+- **NFR40:** Search provider integration must be abstracted to support swapping DuckDuckGo for premium alternatives (SerpAPI, Tavily) without agent code changes
+- **NFR41:** Firebase Authentication must support both Google Sign-In and anonymous authentication flows
+- **NFR42:** Firebase Cloud Messaging must deliver push notifications reliably on both iOS and Android
+- **NFR43:** The API must maintain backward compatibility within major versions (v1); breaking changes require version increment
