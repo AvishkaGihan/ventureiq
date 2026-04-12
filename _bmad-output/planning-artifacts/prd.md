@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -131,3 +131,109 @@ All 12 screens are V1 scope, delivered iteratively across structured sprints. No
 - **Organizational tool** — teams use VentureIQ as a standard decision framework for ambiguous, high-stakes business decisions
 - **Platform ecosystem** — third-party agents and custom agent configurations
 - **Global expansion** — multi-language support for international markets
+
+## User Journeys
+
+### Journey 1: Maya — The First-Time Founder (Primary Success Path)
+
+**Who she is:** Maya, 28, a product designer at a mid-size tech company. She's been sketching an idea for six months — an AI-powered fitness app for busy professionals — but can't justify quitting her job without knowing if the market is real. She's spent weekends Googling market reports, reading Crunchbase profiles, and building spreadsheets that feel like guesswork.
+
+**Opening Scene:** It's Sunday night. Maya has a pitch meeting with a potential co-founder on Wednesday. She needs something more convincing than her Google Docs research dump. She downloads VentureIQ after seeing it mentioned in an indie hackers thread.
+
+**Rising Action:** Maya opens the app and types: *"An AI-powered fitness app for busy professionals who don't have time for traditional workout routines."* She adds context: target audience is 25-45 urban professionals, monetization via subscription. She taps "Validate."
+
+The War Room lights up. Five agent cards appear — Scout, Rival, CFO, Devil's Advocate, Strategist — each showing a pulsing "thinking" state. Within a second, Scout starts streaming: *"The global digital fitness market reached $27.4B in 2025 with a projected CAGR of 18.2%..."* — with a clickable source link inline. Maya watches, riveted, as all five agents work simultaneously.
+
+Then the cross-referencing moment: Devil's Advocate flags a 60% historical churn rate in B2C fitness apps. Seconds later, Strategist's stream pivots mid-analysis: *"Given the churn risk identified in B2C fitness (see Devil's Advocate analysis), recommending pivot to B2B corporate wellness positioning..."* Maya sees one agent reacting to another's findings in real time. This isn't generic AI — it's a panel of experts challenging each other.
+
+**Climax:** The Coordinator synthesizes everything into a 78/100 Viability Score. The radar chart shows strong Market (85) and Financials (79), but weaker Competition (68) and Risk (72). Maya taps the Evidence Panel — every claim has a confidence score and source link. She taps "60% churn rate" and sees the original research paper. She doesn't have to trust the AI — she can verify it herself.
+
+**Resolution:** Maya exports an investor-grade PDF and shares the web link with her potential co-founder. At Wednesday's meeting, she presents with a level of preparation that would have taken a consulting firm two weeks and $10,000 to produce. The co-founder is in. Maya's new reality: she went from "I think this might work" to "here's exactly why this works, here's the risk, and here's the strategy to mitigate it" — in 90 seconds.
+
+**Requirements revealed:** Idea input with context fields, real-time War Room streaming, cross-agent referencing visibility, Viability Score with radar chart, Evidence Panel with source links, PDF export, shareable web links.
+
+---
+
+### Journey 2: Daniel — The Freelance Consultant (Client-Facing Research)
+
+**Who he is:** Daniel, 35, runs a one-person strategy consultancy. His clients — mainly SMB founders — pay him to assess new market opportunities. His current workflow: 15-20 hours of manual research per client report, priced at $3,000. He's good, but he can only take 2-3 clients per month before burning out.
+
+**Opening Scene:** Daniel has three client requests sitting in his inbox and a week to deliver all of them. One client wants to launch a pet telehealth platform; another is evaluating a B2B SaaS for restaurant inventory management; the third is considering a sustainable fashion marketplace. Daniel can't physically do three deep dives in parallel.
+
+**Rising Action:** Daniel opens VentureIQ and runs all three ideas sequentially, spending about 2 minutes on each (typing the idea + adding context fields). For the pet telehealth idea, he watches the War Room — not because he needs entertainment, but because he's evaluating whether the analysis is rigorous enough to show a client. He pays close attention to the CFO's multi-scenario revenue projections (conservative/base/optimistic) and the Rival's competitive landscape mapping.
+
+He opens Comparative Analysis and places the restaurant SaaS and the sustainable fashion marketplace side-by-side. The structured diff view immediately highlights that the restaurant SaaS scores significantly higher on market timing and lower on competitive density — a clear recommendation emerges from the data, not from his gut.
+
+**Climax:** Daniel opens Ask the Board for the pet telehealth report. He asks: *"What's the regulatory landscape for pet telehealth across different US states?"* The AI responds with a grounded analysis citing specific veterinary telemedicine regulations, pulling context from the full report. He follows up: *"How does this affect the CFO's revenue projections?"* — and the system connects the regulatory constraints to the financial model. Daniel is having the kind of conversation he'd normally only have with a domain expert.
+
+**Resolution:** Daniel delivers three polished reports in 2 days instead of 3 weeks. His per-report cost dropped from 15 hours of labor to 30 minutes of refinement. He raises his prices, takes on more clients, and starts offering "rapid validation sprints" as a new service tier using VentureIQ as his backend intelligence engine.
+
+**Requirements revealed:** Multi-report workflow, Comparative Analysis with side-by-side diff, Ask the Board with cross-session memory and report grounding, CFO multi-scenario projections, client-shareable PDF exports.
+
+---
+
+### Journey 3: Priya — The Product Manager (Pivot Evaluation)
+
+**Who she is:** Priya, 31, is a senior PM at a Series B startup. Her product's growth has stalled, and leadership wants a pivot recommendation by end of quarter. She's been evaluating three potential directions but can't get consensus because every stakeholder has a different opinion and nobody has data.
+
+**Opening Scene:** Priya is in a Monday standup where the CEO asks, "Where are we on the pivot analysis?" She's been building slides manually from scattered research. She needs a structured, evidence-backed comparison — not another opinion deck.
+
+**Rising Action:** Priya runs three validation scenarios through VentureIQ — the current product direction, a vertical SaaS pivot, and a platform play. For each, she uses the Scenario Simulator to adjust key variables: pricing at $19/mo vs $49/mo, targeting SMB vs mid-market, US-only vs global launch. She watches how the Viability Score shifts across 12 different parameter combinations.
+
+She pulls up the Decision Timeline for the strongest-scoring scenario to understand *why* the agents scored it highly. She scrubs through the replay: she can see the exact moment Scout's market data influenced CFO's projections, and where Strategist's GTM plan diverged based on Rival's competitive analysis. She screenshots key moments for her stakeholder deck.
+
+**Climax:** Using Comparative Analysis, Priya places all three directions side-by-side with the Scenario Simulator results layered in. The data tells a clear story: the vertical SaaS pivot scores 82/100 vs. 61/100 for the platform play — primarily driven by lower competitive density and faster path to revenue. Risk Radar shows the platform play has 3 critical unmitigated risks vs. 1 for the vertical pivot.
+
+**Resolution:** Priya presents to the leadership team with a deck that looks like it took a strategy consulting firm a month. The CEO approves the vertical SaaS pivot within 15 minutes. Priya's new reality: she replaced weeks of subjective debate with a structured, evidence-backed analysis that made the decision obvious.
+
+**Requirements revealed:** Scenario Simulator with variable sliders, Decision Timeline with replay scrubbing, Comparative Analysis across multiple scenarios, Risk Radar with ranked risk visualization, multi-session persistence.
+
+---
+
+### Journey 4: Alex — The Platform Operator (Admin/Observability)
+
+**Who he is:** Alex is Avishka (the developer) wearing the ops hat — monitoring VentureIQ in production to ensure reliability, catch issues before users notice, and keep costs predictable. This journey demonstrates production-grade engineering thinking.
+
+**Opening Scene:** Alex opens the observability dashboard on Monday morning. Over the weekend, VentureIQ processed 47 reports. He needs to verify everything ran cleanly, check costs, and identify any degradation patterns.
+
+**Rising Action:** Alex checks the LangSmith traces for weekend executions. He sees that average report generation time was 72 seconds (within the 60-90s target), but two reports took 140+ seconds. He drills into the slow traces and finds that DuckDuckGo rate limiting caused Scout and Rival to hit retry loops. He notes this for the reliability backlog.
+
+He checks the Prometheus dashboard: cost-per-report averaged $0.12 in Gemini API calls, well within the $29/mo unit economics at the expected usage volume. Token consumption per agent is within budget limits — no runaway loops detected. Redis cache hit rate is 34%, meaning repeat queries and common market data lookups are already saving API calls.
+
+**Climax:** Alex notices that the Devil's Advocate agent has a 7% higher error rate than other agents — it's occasionally producing output that fails structured validation. He opens the LangSmith trace for a failed execution: the agent's response exceeded the token budget and was truncated mid-JSON. He adjusts the token budget ceiling for Devil's Advocate and adds a graceful degradation handler.
+
+**Resolution:** Alex creates a Monday health report: 47 reports processed, 95.7% success rate, $5.64 total API cost, 2 slow reports due to search provider throttling, 1 agent tuning adjustment deployed. This is the kind of operational discipline that separates a portfolio demo from a production system.
+
+**Requirements revealed:** LangSmith/Prometheus integration, execution tracing per agent, cost-per-report and cost-per-agent tracking, token budget monitoring, error rate dashboards, search provider health monitoring, Redis cache analytics.
+
+---
+
+### Journey 5: Dev (Future) — The API Consumer (High-Level)
+
+**Who they are:** A developer at an accelerator who wants to embed VentureIQ's 5-agent pipeline into their internal startup evaluation platform.
+
+**High-level flow:** Authenticates via API key → submits idea payload via REST endpoint → receives streaming results via WebSocket/SSE → retrieves structured JSON report → uses structured output for custom dashboards and batch evaluation of startup cohorts.
+
+**Key integration points:** RESTful API for submission and report retrieval, WebSocket/SSE for real-time streaming, structured JSON output schema, API key authentication with usage-based rate limiting, webhook callbacks for async report completion.
+
+**Requirements revealed (future-ready):** Client-agnostic API design, structured JSON output contracts, API authentication and rate limiting infrastructure, usage tracking for billing, batch submission endpoint for cohort evaluation.
+
+### Journey Requirements Summary
+
+| Capability Area | Journeys That Require It |
+|:--|:--|
+| Real-time War Room streaming | Maya, Daniel, Priya |
+| Cross-agent referencing (visible) | Maya, Priya |
+| Viability Score + radar chart | Maya, Daniel, Priya |
+| Evidence Panel (Trust Layer) | Maya, Daniel |
+| Scenario Simulator | Priya |
+| Comparative Analysis | Daniel, Priya |
+| Ask the Board (conversational AI) | Daniel |
+| Decision Timeline (replay) | Priya |
+| PDF export + shareable web links | Maya, Daniel |
+| Voice input | Maya |
+| Multi-session persistence | Daniel, Priya |
+| Observability dashboards | Alex |
+| Cost/token tracking | Alex |
+| Agent error monitoring | Alex |
+| Client-agnostic API | Dev (future) |
