@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-01b-continue", "step-08-scoping", "step-09-functional", "step-10-nonfunctional", "step-11-polish", "step-12-complete"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-08-scoping", "step-09-functional", "step-10-nonfunctional", "step-11-polish", "step-12-complete"]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -44,13 +44,13 @@ As a portfolio project, every architectural decision serves double duty: product
 
 ## Project Classification
 
-| Dimension | Value |
-|:--|:--|
-| **Project Type** | Mobile App (Flutter iOS/Android) + API Backend (FastAPI) — hybrid, web-ready |
-| **Domain** | AI-powered Decision Intelligence |
-| **Complexity** | High — multi-agent LLM orchestration, real-time WebSocket streaming, cross-agent state synchronization, observability, cost engineering |
-| **Project Context** | Greenfield — new product from scratch |
-| **Strategic Framing** | Portfolio-first with production-grade SaaS architecture; commercially extensible |
+| Dimension             | Value                                                                                                                                   |
+| :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| **Project Type**      | Mobile App (Flutter iOS/Android) + API Backend (FastAPI) — hybrid, web-ready                                                            |
+| **Domain**            | AI-powered Decision Intelligence                                                                                                        |
+| **Complexity**        | High — multi-agent LLM orchestration, real-time WebSocket streaming, cross-agent state synchronization, observability, cost engineering |
+| **Project Context**   | Greenfield — new product from scratch                                                                                                   |
+| **Strategic Framing** | Portfolio-first with production-grade SaaS architecture; commercially extensible                                                        |
 
 ## Success Criteria
 
@@ -84,15 +84,15 @@ As a portfolio project, every architectural decision serves double duty: product
 
 ### Measurable Outcomes
 
-| Metric | Target | Type |
-|:--|:--|:--|
-| Idea-to-first-token | <1 second | Architectural target |
-| Idea-to-full-report | 60–90 seconds | Architectural target |
-| Agent completion rate | >95% success without errors | Engineering requirement |
-| Source citation coverage | Every quantitative claim cited | Product requirement |
-| Concurrent user capacity | 100+ | Architectural target |
-| Cost per report | Viable at $29/mo plan scale | Business validation |
-| Portfolio conversations generated | Multiple serious client/recruiter inquiries | Business success |
+| Metric                            | Target                                      | Type                    |
+| :-------------------------------- | :------------------------------------------ | :---------------------- |
+| Idea-to-first-token               | <1 second                                   | Architectural target    |
+| Idea-to-full-report               | 60–90 seconds                               | Architectural target    |
+| Agent completion rate             | >95% success without errors                 | Engineering requirement |
+| Source citation coverage          | Every quantitative claim cited              | Product requirement     |
+| Concurrent user capacity          | 100+                                        | Architectural target    |
+| Cost per report                   | Viable at $29/mo plan scale                 | Business validation     |
+| Portfolio conversations generated | Multiple serious client/recruiter inquiries | Business success        |
 
 ## Product Scope
 
@@ -100,20 +100,20 @@ As a portfolio project, every architectural decision serves double duty: product
 
 All 12 screens ship as a unified V1 — no features are deferred or excluded. The complete feature set is delivered iteratively across structured sprints following the dependency-driven execution order defined in Project Scoping & Phased Development:
 
-| Screen | Execution Tier | Core Capability |
-|:--|:--|:--|
-| Idea Input (text + voice) | Tier 1 | Primary user entry point |
-| **War Room** ⭐ | Tier 1 | Cinematic agent streaming + cross-referencing |
-| Executive Summary | Tier 1 | Viability Score with weighted radar chart |
-| Evidence Panel | Tier 1 | Trust Layer — sources, confidence scores |
-| Market & Competitor Map | Tier 2 | Positioning visualization |
-| Risk Radar & GTM | Tier 2 | Risk rankings + launch plan |
-| Scenario Simulator | Tier 2 | Interactive what-if variable sliders |
-| Comparative Analysis | Tier 2 | Side-by-side A/B idea evaluation |
-| Ask the Board | Tier 2 | Conversational AI with cross-session memory |
-| Decision Timeline | Tier 3 | Replay Mode — agent reasoning scrubbing |
-| Export & Share | Tier 3 | PDF download + shareable web link |
-| Splash / Onboarding | Tier 3 | First impression, product positioning |
+| Screen                    | Execution Tier | Core Capability                               |
+| :------------------------ | :------------- | :-------------------------------------------- |
+| Idea Input (text + voice) | Tier 1         | Primary user entry point                      |
+| **War Room** ⭐            | Tier 1         | Cinematic agent streaming + cross-referencing |
+| Executive Summary         | Tier 1         | Viability Score with weighted radar chart     |
+| Evidence Panel            | Tier 1         | Trust Layer — sources, confidence scores      |
+| Market & Competitor Map   | Tier 2         | Positioning visualization                     |
+| Risk Radar & GTM          | Tier 2         | Risk rankings + launch plan                   |
+| Scenario Simulator        | Tier 2         | Interactive what-if variable sliders          |
+| Comparative Analysis      | Tier 2         | Side-by-side A/B idea evaluation              |
+| Ask the Board             | Tier 2         | Conversational AI with cross-session memory   |
+| Decision Timeline         | Tier 3         | Replay Mode — agent reasoning scrubbing       |
+| Export & Share            | Tier 3         | PDF download + shareable web link             |
+| Splash / Onboarding       | Tier 3         | First impression, product positioning         |
 
 **Infrastructure (spans all tiers):** FastAPI backend, LangGraph orchestration, Redis caching/state, PostgreSQL persistence, ChromaDB memory, observability stack, Docker deployment.
 
@@ -214,23 +214,23 @@ He checks the Prometheus dashboard: cost-per-report averaged $0.12 in Gemini API
 
 ### Journey Requirements Summary
 
-| Capability Area | Journeys That Require It |
-|:--|:--|
-| Real-time War Room streaming | Maya, Daniel, Priya |
-| Cross-agent referencing (visible) | Maya, Priya |
-| Viability Score + radar chart | Maya, Daniel, Priya |
-| Evidence Panel (Trust Layer) | Maya, Daniel |
-| Scenario Simulator | Priya |
-| Comparative Analysis | Daniel, Priya |
-| Ask the Board (conversational AI) | Daniel |
-| Decision Timeline (replay) | Priya |
-| PDF export + shareable web links | Maya, Daniel |
-| Voice input | Maya |
-| Multi-session persistence | Daniel, Priya |
-| Observability dashboards | Alex |
-| Cost/token tracking | Alex |
-| Agent error monitoring | Alex |
-| Client-agnostic API | Dev (future) |
+| Capability Area                   | Journeys That Require It |
+| :-------------------------------- | :----------------------- |
+| Real-time War Room streaming      | Maya, Daniel, Priya      |
+| Cross-agent referencing (visible) | Maya, Priya              |
+| Viability Score + radar chart     | Maya, Daniel, Priya      |
+| Evidence Panel (Trust Layer)      | Maya, Daniel             |
+| Scenario Simulator                | Priya                    |
+| Comparative Analysis              | Daniel, Priya            |
+| Ask the Board (conversational AI) | Daniel                   |
+| Decision Timeline (replay)        | Priya                    |
+| PDF export + shareable web links  | Maya, Daniel             |
+| Voice input                       | Maya                     |
+| Multi-session persistence         | Daniel, Priya            |
+| Observability dashboards          | Alex                     |
+| Cost/token tracking               | Alex                     |
+| Agent error monitoring            | Alex                     |
+| Client-agnostic API               | Dev (future)             |
 
 ## Domain-Specific Requirements
 
@@ -307,12 +307,12 @@ VentureIQ creates a **fourth tier: real-time multi-agent decision intelligence**
 
 Risks specific to VentureIQ's novel features. For project execution and resource risks, see Project Scoping & Phased Development → Risk Mitigation Strategy.
 
-| Innovation | Risk | Mitigation |
-|:--|:--|:--|
-| Cross-agent referencing | Agents amplify each other's errors | Coordinator validates cross-references against source data; confidence scores flag low-evidence claims |
-| War Room streaming | Users find real-time streaming overwhelming | Progressive disclosure — summary view by default, expandable detail; user can skip to results |
-| Decision Timeline | Low adoption if users only care about final score | Position as "show your work" for sharing with stakeholders; embed timeline highlights in PDF export |
-| Trust Layer | Source links break or become stale | Cache source content at generation time; flag links verified vs. unverified; timestamp all citations |
+| Innovation              | Risk                                              | Mitigation                                                                                             |
+| :---------------------- | :------------------------------------------------ | :----------------------------------------------------------------------------------------------------- |
+| Cross-agent referencing | Agents amplify each other's errors                | Coordinator validates cross-references against source data; confidence scores flag low-evidence claims |
+| War Room streaming      | Users find real-time streaming overwhelming       | Progressive disclosure — summary view by default, expandable detail; user can skip to results          |
+| Decision Timeline       | Low adoption if users only care about final score | Position as "show your work" for sharing with stakeholders; embed timeline highlights in PDF export    |
+| Trust Layer             | Source links break or become stale                | Cache source content at generation time; flag links verified vs. unverified; timestamp all citations   |
 
 ## Mobile App + API Backend Specific Requirements
 
@@ -330,12 +330,12 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 
 ### Device Permissions
 
-| Permission | Purpose | Required/Optional |
-|:--|:--|:--|
-| Internet | Core functionality — all AI processing | Required |
-| Microphone | Voice input for idea submission | Optional (requested on use) |
-| Push Notifications | Report completion, re-engagement | Optional (prompted after first report) |
-| Local Storage | Offline report cache | Required |
+| Permission         | Purpose                                | Required/Optional                      |
+| :----------------- | :------------------------------------- | :------------------------------------- |
+| Internet           | Core functionality — all AI processing | Required                               |
+| Microphone         | Voice input for idea submission        | Optional (requested on use)            |
+| Push Notifications | Report completion, re-engagement       | Optional (prompted after first report) |
+| Local Storage      | Offline report cache                   | Required                               |
 
 ### Push Notification Strategy
 
@@ -366,20 +366,20 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 
 ### Core Endpoint Specification
 
-| Endpoint | Method | Purpose |
-|:--|:--|:--|
-| `/api/v1/auth/google` | POST | Google Sign-In token exchange |
-| `/api/v1/auth/anonymous` | POST | Anonymous session creation |
-| `/api/v1/ideas` | POST | Submit new idea for validation |
-| `/api/v1/ideas/{id}` | GET | Retrieve idea and metadata |
-| `/api/v1/reports/{id}` | GET | Retrieve completed report |
-| `/api/v1/reports/{id}/export` | GET | Generate PDF export |
-| `/api/v1/reports/{id}/share` | POST | Create shareable web link |
-| `/api/v1/reports/compare` | POST | Comparative analysis (2+ reports) |
-| `/api/v1/scenarios/{report_id}` | POST | Run scenario simulation |
-| `/api/v1/board/{report_id}` | POST | Ask the Board conversation |
-| `/api/v1/board/{report_id}/history` | GET | Conversation history |
-| `ws://api/v1/stream/{idea_id}` | WS | Real-time War Room streaming |
+| Endpoint                            | Method | Purpose                           |
+| :---------------------------------- | :----- | :-------------------------------- |
+| `/api/v1/auth/google`               | POST   | Google Sign-In token exchange     |
+| `/api/v1/auth/anonymous`            | POST   | Anonymous session creation        |
+| `/api/v1/ideas`                     | POST   | Submit new idea for validation    |
+| `/api/v1/ideas/{id}`                | GET    | Retrieve idea and metadata        |
+| `/api/v1/reports/{id}`              | GET    | Retrieve completed report         |
+| `/api/v1/reports/{id}/export`       | GET    | Generate PDF export               |
+| `/api/v1/reports/{id}/share`        | POST   | Create shareable web link         |
+| `/api/v1/reports/compare`           | POST   | Comparative analysis (2+ reports) |
+| `/api/v1/scenarios/{report_id}`     | POST   | Run scenario simulation           |
+| `/api/v1/board/{report_id}`         | POST   | Ask the Board conversation        |
+| `/api/v1/board/{report_id}/history` | GET    | Conversation history              |
+| `ws://api/v1/stream/{idea_id}`      | WS     | Real-time War Room streaming      |
 
 ### Data Schemas
 
@@ -390,12 +390,12 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 
 ### Rate Limiting
 
-| Tier | Limit | Enforcement |
-|:--|:--|:--|
-| Anonymous | 3 reports/month | Device fingerprint + IP |
-| Free (signed in) | 3 reports/month | User ID |
-| Pro ($29/mo) | Unlimited | User ID, fair-use policy |
-| API (future) | Usage-based | API key, configurable |
+| Tier             | Limit           | Enforcement              |
+| :--------------- | :-------------- | :----------------------- |
+| Anonymous        | 3 reports/month | Device fingerprint + IP  |
+| Free (signed in) | 3 reports/month | User ID                  |
+| Pro ($29/mo)     | Unlimited       | User ID, fair-use policy |
+| API (future)     | Usage-based     | API key, configurable    |
 
 ### Error Handling
 
@@ -486,28 +486,28 @@ Features explicitly excluded from V1 that represent future expansion:
 
 **Technical Risks:**
 
-| Risk | Impact | Mitigation |
-|:--|:--|:--|
-| Multi-agent pipeline complexity | High — 5 agents + Coordinator with cross-referencing is architecturally demanding for a solo developer | Disciplined LangGraph graph design; each agent is a self-contained node with well-defined input/output contracts; extensive integration testing at the pipeline level |
-| Real-time streaming reliability | High — WebSocket connections across mobile networks are inherently unstable | Client-side reconnection with server-side event replay from Redis cache; heartbeat monitoring; graceful degradation to polling if WebSocket fails |
-| DuckDuckGo rate limiting | Medium — free search API with no SLA | Aggressive Redis caching of search results; exponential backoff with retry queuing; architecture supports swapping to premium provider (SerpAPI/Tavily) without agent code changes |
-| Token budget overruns | Medium — LLM costs can escalate unpredictably | Hard token ceilings per agent; model routing (lightweight tasks → cheaper models); cost-per-report logging with alerting; graceful truncation with structured summaries |
-| Cross-agent error amplification | Medium — agents reading each other's outputs could propagate errors | Coordinator validates cross-references against source data; confidence scores flag low-evidence claims; each agent maintains independent source grounding |
+| Risk                            | Impact                                                                                                 | Mitigation                                                                                                                                                                         |
+| :------------------------------ | :----------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Multi-agent pipeline complexity | High — 5 agents + Coordinator with cross-referencing is architecturally demanding for a solo developer | Disciplined LangGraph graph design; each agent is a self-contained node with well-defined input/output contracts; extensive integration testing at the pipeline level              |
+| Real-time streaming reliability | High — WebSocket connections across mobile networks are inherently unstable                            | Client-side reconnection with server-side event replay from Redis cache; heartbeat monitoring; graceful degradation to polling if WebSocket fails                                  |
+| DuckDuckGo rate limiting        | Medium — free search API with no SLA                                                                   | Aggressive Redis caching of search results; exponential backoff with retry queuing; architecture supports swapping to premium provider (SerpAPI/Tavily) without agent code changes |
+| Token budget overruns           | Medium — LLM costs can escalate unpredictably                                                          | Hard token ceilings per agent; model routing (lightweight tasks → cheaper models); cost-per-report logging with alerting; graceful truncation with structured summaries            |
+| Cross-agent error amplification | Medium — agents reading each other's outputs could propagate errors                                    | Coordinator validates cross-references against source data; confidence scores flag low-evidence claims; each agent maintains independent source grounding                          |
 
 **Market Risks:**
 
-| Risk | Impact | Mitigation |
-|:--|:--|:--|
-| AI trust skepticism | Medium — users may distrust AI-generated analysis regardless of transparency | Trust Layer is the direct mitigation — every claim cited with confidence scores; Decision Timeline shows reasoning process; the product's entire UX is designed to build trust |
-| Portfolio vs. commercial tension | Low — optimizing for portfolio impact may diverge from commercial viability | Architecture is intentionally production-grade; commercial patterns (auth, rate limiting, billing tiers) are built in even though monetization isn't the V1 priority |
+| Risk                             | Impact                                                                       | Mitigation                                                                                                                                                                     |
+| :------------------------------- | :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AI trust skepticism              | Medium — users may distrust AI-generated analysis regardless of transparency | Trust Layer is the direct mitigation — every claim cited with confidence scores; Decision Timeline shows reasoning process; the product's entire UX is designed to build trust |
+| Portfolio vs. commercial tension | Low — optimizing for portfolio impact may diverge from commercial viability  | Architecture is intentionally production-grade; commercial patterns (auth, rate limiting, billing tiers) are built in even though monetization isn't the V1 priority           |
 
 **Resource Risks:**
 
-| Risk | Impact | Mitigation |
-|:--|:--|:--|
-| Solo developer bottleneck | High — single point of failure for all development, testing, and deployment | Structured sprint execution with clear priorities; dependency-driven build order ensures demoable system at every stage; no feature is architecturally dependent on another feature being "done" (only on shared infrastructure being in place) |
-| Scope creep within V1 | Medium — "all features ship" philosophy could lead to endless polish cycles | Fixed feature set defined in PRD; "done" criteria defined per feature; structured sprints with explicit completion gates |
-| LLM API cost during development | Low — development and testing consume tokens | Use lower-cost models during development; mock agent responses for UI development; cache development queries aggressively |
+| Risk                            | Impact                                                                      | Mitigation                                                                                                                                                                                                                                      |
+| :------------------------------ | :-------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Solo developer bottleneck       | High — single point of failure for all development, testing, and deployment | Structured sprint execution with clear priorities; dependency-driven build order ensures demoable system at every stage; no feature is architecturally dependent on another feature being "done" (only on shared infrastructure being in place) |
+| Scope creep within V1           | Medium — "all features ship" philosophy could lead to endless polish cycles | Fixed feature set defined in PRD; "done" criteria defined per feature; structured sprints with explicit completion gates                                                                                                                        |
+| LLM API cost during development | Low — development and testing consume tokens                                | Use lower-cost models during development; mock agent responses for UI development; cache development queries aggressively                                                                                                                       |
 
 ## Functional Requirements
 
