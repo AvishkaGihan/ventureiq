@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3]
+stepsCompleted: [1, 2, 3, 4]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -118,3 +118,71 @@ Three interactions must be flawless:
 3. **✨ Complexity Beneath Simplicity** — five agents, cross-referencing, multi-dimensional scoring are enormously complex. The UX should feel effortless. Progressive disclosure: clean surfaces with depth underneath.
 4. **📱 Mobile-Native, Not Mobile-Adapted** — every interaction designed for thumb-reach, swipe navigation, 6" viewport. The War Room on mobile should feel better than desktop — intimate, focused, immersive.
 5. **🏆 Every Output Is Shareable** — every view should look stunning in isolation because it will be shared in isolation. If a user can't proudly share a screenshot, PDF, or link, the design has failed.
+
+## Desired Emotional Response
+
+### Primary Emotional Goals
+
+**1. Awe → "This is unlike anything I've seen"**
+The War Room should trigger the same feeling as watching a mission control room operate — sophisticated technology working in visible concert. This isn't the mild satisfaction of a good tool; it's the visceral thrill of witnessing something operating at a level you didn't think was possible in a consumer product.
+
+**2. Confidence → "I can make this decision now"**
+Maya walked in with doubt ("will my idea work?") and walks out with conviction. Daniel feels comfortable putting this in front of a $3,000 client. Priya presents to her CEO and gets a decision in 15 minutes. The Trust Layer doesn't just provide data — it provides the *emotional permission* to act on it.
+
+**3. Empowerment → "I just did something that used to take weeks"**
+The moment of export — when the user realizes they just produced $10K-quality research in 90 seconds — should feel like a superpower. Not "the AI is smart" but "I am powerful because I have this."
+
+### Emotional Journey Mapping
+
+| Stage | Emotion | How It Feels | Design Implication |
+|:--|:--|:--|:--|
+| **Discovery / First Open** | Intrigue + Anticipation | "This looks serious. This looks different." | Dark premium aesthetic, zero clutter, no playful/cartoon elements. The app looks like Bloomberg Terminal meets Apple — authoritative and polished. |
+| **Idea Input** | Ease + Momentum | "That was easy. Let's see what happens." | Minimal friction, generous input field, optional context fields feel expansive not restrictive. One tap to launch. |
+| **War Room Activation (0-5s)** | Awe + Excitement | "Whoa — the agents are alive." | Cinematic animation, agent cards ignite in sequence, pulsing status indicators, dramatic audio-visual orchestration. |
+| **Agent Streaming (5-30s)** | Fascination + Engagement | "I can't look away." | Token-by-token streaming with typing simulation, each agent with distinct visual personality, real-time search results appearing. |
+| **Cross-Referencing (30-60s)** | Amazement + Trust | "They're actually talking to each other. This is real intelligence." | Visual connections between agents, highlight animations when one agent references another, "influence lines" or badge notifications. |
+| **Score Reveal** | Anticipation → Clarity | "Okay, here's the verdict." | Dramatic score reveal animation (count-up or unveil), radar chart filling in dimension by dimension, haptic pulse. |
+| **Evidence Panel** | Trust + Verification | "I don't have to take their word for it." | Clean citation cards, one-tap source previews, confidence badges that feel authoritative (not gamified). |
+| **Deep Exploration** | Control + Mastery | "I can go as deep as I want." | Scenario sliders feel responsive, Decision Timeline scrubbing feels like power, Ask the Board feels like consulting a panel of experts. |
+| **Export/Share** | Pride + Accomplishment | "I can't believe I just produced this." | Polished PDF preview, one-tap share, the output looks premium enough to be proud of sending. |
+| **Return Visit** | Familiarity + Anticipation | "I know exactly what to do, and I'm excited to do it again." | Report history feels like an asset library, Ask the Board remembers context, new ideas feel inviting. |
+| **Error / Failure** | Understanding + Patience | "Something went wrong but I know what to do." | Clear, calm error states. Agent failure → graceful degradation with explanation, not cryptic errors. The system feels resilient, not fragile. |
+
+### Micro-Emotions
+
+The make-or-break emotional tensions in VentureIQ:
+
+| Tension | We Want → | We Must Avoid → |
+|:--|:--|:--|
+| **Confidence vs. Confusion** | User always knows what's happening and what to do next | War Room feels chaotic, too much information with no hierarchy |
+| **Trust vs. Skepticism** | Source citations and confidence scores build belief | Claims feel unverifiable, scores feel arbitrary |
+| **Excitement vs. Anxiety** | War Room streaming feels thrilling and entertaining | Real-time analysis feels stressful, like watching something that might break |
+| **Accomplishment vs. Frustration** | Export feels like completing something valuable | Report feels incomplete, generic, or not polished enough to share |
+| **Delight vs. Overwhelm** | Each new feature discovery feels like finding a hidden gem | Too many features visible at once, information overload |
+| **Belonging vs. Isolation** | "This tool was built for someone like me" | "This is for technical people / this is too simple for my needs" |
+
+**Most critical tension:** Trust vs. Skepticism. If the user doesn't trust the output, every other emotion is irrelevant. The Trust Layer is the emotional foundation the entire product rests on.
+
+### Design Implications
+
+| Target Emotion | UX Design Approach |
+|:--|:--|
+| **Awe** | Cinematic War Room choreography — staggered agent activation, glow effects, ambient particle animations, dramatic score reveal with count-up animation and haptic feedback |
+| **Confidence** | Trust Layer visibility everywhere — confidence badges, source citation cards, "verified" vs "estimated" labels. Viability Score presented with methodology transparency. |
+| **Empowerment** | Export quality. The PDF must look like it came from McKinsey, not a chatbot. Shareable links render beautifully. The user feels like they have a senior analyst on retainer. |
+| **Fascination** | Agent personalities with distinct streaming cadences, visual identities, and "thinking" states. Cross-referencing animations that show influence flowing between agents. |
+| **Trust** | Nothing hidden, nothing forced. "Show your work" philosophy. Decision Timeline lets you inspect the entire reasoning chain. Unverified claims are transparently flagged, not hidden. |
+| **Control** | Scenario Simulator sliders respond instantly. Navigation is fluid and non-linear — jump to any section, return to War Room replay, compare any reports. The user is never trapped. |
+| **Calm (in errors)** | Graceful degradation is visible and explained: "4 of 5 agents completed. Confidence adjusted." Not "Something went wrong." Agent failures become *trustworthy* because the system is honest about them. |
+
+### Emotional Design Principles
+
+1. **🎭 Design for "Tell-a-Friend" Moments** — every interaction should create something the user wants to show someone. The War Room is screenshot-worthy. The PDF is share-worthy. The Viability Score is conversation-worthy.
+
+2. **🔒 Trust Is the Emotional Foundation** — confidence scores, citations, and transparency aren't features; they're the emotional infrastructure. Build trust first, delight second. A beautiful product nobody trusts is worthless.
+
+3. **⚡ Choreograph Time, Don't Fight It** — the 90-second analysis is a dramatic arc (activation → analysis → cross-referencing → synthesis → reveal). Design it like a story with rising action, climax, and resolution. The user should feel like 90 seconds was the *perfect* amount of time.
+
+4. **🛡️ Make Failure Feel Safe** — errors, partial results, and degraded outputs should feel like the system being *honest*, not the system being *broken*. A 4-of-5 completion with adjusted confidence is more trustworthy than a 5-of-5 that hides a failure.
+
+5. **👑 The User Is the Hero, Not the AI** — the agents are the user's team, not the show. The user made a smart decision by using VentureIQ. The output is *their* research brief, produced with *their* AI team. The emotional frame: empowerment, not dependence.
