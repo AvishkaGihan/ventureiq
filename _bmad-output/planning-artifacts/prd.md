@@ -5,6 +5,8 @@ lastEdited: '2026-04-14'
 editHistory:
   - date: '2026-04-14'
     changes: 'Refined FR/NFR measurability; removed implementation leakage from requirements; added API documentation and enumerated error codes.'
+  - date: '2026-04-14'
+    changes: 'Standardized NFR verification methods so all NFRs are explicitly testable (security, scalability, reliability, observability, accessibility, integration).'
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -416,22 +418,22 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 
 ### Error Codes
 
-| error_code | HTTP status | Description | Retryable |
-| :-- | :--: | :-- | :--: |
-| `AUTH_REQUIRED` | 401 | Missing authentication for a protected endpoint | No |
-| `AUTH_INVALID_TOKEN` | 401 | Provided access token/session is invalid or expired | No |
-| `AUTH_PROVIDER_TOKEN_INVALID` | 401 | Third-party identity token exchange failed | No |
-| `RATE_LIMIT_EXCEEDED` | 429 | Tier-based usage limit exceeded | Yes |
-| `INPUT_VALIDATION_ERROR` | 400 | Request payload is invalid (schema/fields) | No |
-| `IDEA_NOT_FOUND` | 404 | Idea ID does not exist | No |
-| `REPORT_NOT_FOUND` | 404 | Report ID does not exist | No |
-| `REPORT_NOT_READY` | 409 | Report is still generating and not yet available | Yes |
-| `PROVIDER_RATE_LIMITED` | 503 | Upstream provider rate-limited the request | Yes |
-| `PROVIDER_UNAVAILABLE` | 503 | Upstream provider unavailable/timeouts | Yes |
-| `EXPORT_FAILED` | 500 | PDF export generation failed | Yes |
-| `SHARE_LINK_FAILED` | 500 | Share link creation failed | Yes |
-| `STREAM_NOT_FOUND` | 404 | Streaming session/resource does not exist | No |
-| `INTERNAL_ERROR` | 500 | Unhandled server error | Yes |
+| error_code                    | HTTP status | Description                                         | Retryable |
+| :---------------------------- | :---------: | :-------------------------------------------------- | :-------: |
+| `AUTH_REQUIRED`               |     401     | Missing authentication for a protected endpoint     |    No     |
+| `AUTH_INVALID_TOKEN`          |     401     | Provided access token/session is invalid or expired |    No     |
+| `AUTH_PROVIDER_TOKEN_INVALID` |     401     | Third-party identity token exchange failed          |    No     |
+| `RATE_LIMIT_EXCEEDED`         |     429     | Tier-based usage limit exceeded                     |    Yes    |
+| `INPUT_VALIDATION_ERROR`      |     400     | Request payload is invalid (schema/fields)          |    No     |
+| `IDEA_NOT_FOUND`              |     404     | Idea ID does not exist                              |    No     |
+| `REPORT_NOT_FOUND`            |     404     | Report ID does not exist                            |    No     |
+| `REPORT_NOT_READY`            |     409     | Report is still generating and not yet available    |    Yes    |
+| `PROVIDER_RATE_LIMITED`       |     503     | Upstream provider rate-limited the request          |    Yes    |
+| `PROVIDER_UNAVAILABLE`        |     503     | Upstream provider unavailable/timeouts              |    Yes    |
+| `EXPORT_FAILED`               |     500     | PDF export generation failed                        |    Yes    |
+| `SHARE_LINK_FAILED`           |     500     | Share link creation failed                          |    Yes    |
+| `STREAM_NOT_FOUND`            |     404     | Streaming session/resource does not exist           |    No     |
+| `INTERNAL_ERROR`              |     500     | Unhandled server error                              |    Yes    |
 
 ### Implementation Considerations
 
@@ -654,20 +656,20 @@ Features explicitly excluded from V1 that represent future expansion:
 
 ### Security
 
-- **NFR9:** All data in transit must be encrypted via TLS 1.2+
+- **NFR9:** All data in transit must be encrypted via TLS 1.2+, verified via periodic TLS configuration audits and automated SSL/TLS scans of all public endpoints
 - **NFR10:** All user data at rest (ideas, reports, session history) must be encrypted in the primary persistent datastore, verified via periodic security configuration audits
-- **NFR11:** All LLM and search provider API keys must be stored server-side only; the mobile client must never have access to third-party API credentials
-- **NFR12:** All user inputs must be sanitized against prompt injection before reaching any agent prompt
-- **NFR13:** Inter-agent data flowing through shared state must be validated against expected schemas before consumption
-- **NFR14:** User-submitted ideas and generated reports must never be used for model training, analytics beyond operational metrics, or shared with third parties
-- **NFR15:** No personally identifiable information beyond what the user explicitly provides may be stored in vector storage used for semantic memory or included in LLM prompts
-- **NFR16:** Access tokens must implement refresh token rotation; session tokens must expire after a configurable inactivity period
-- **NFR17:** Ephemeral session/state data must be cleared after session expiration
+- **NFR11:** All LLM and search provider API keys must be stored server-side only; the mobile client must never have access to third-party API credentials, verified via code review and client artifact inspection to confirm no embedded credentials
+- **NFR12:** All user inputs must be sanitized against prompt injection before reaching any agent prompt, verified via automated sanitization tests using a prompt-injection test corpus
+- **NFR13:** Inter-agent data flowing through shared state must be validated against expected schemas before consumption, verified via schema validation tests and inter-agent integration tests
+- **NFR14:** User-submitted ideas and generated reports must never be used for model training, analytics beyond operational metrics, or shared with third parties, verified via data handling policy/configuration audits and code review of logging/export paths
+- **NFR15:** No personally identifiable information beyond what the user explicitly provides may be stored in vector storage used for semantic memory or included in LLM prompts, verified via PII detection tests on stored vectors and prompt logs
+- **NFR16:** Access tokens must implement refresh token rotation; session tokens must expire after a configurable inactivity period, verified via token lifecycle unit tests and session timeout integration tests
+- **NFR17:** Ephemeral session/state data must be cleared after session expiration, verified via TTL/cleanup tests and periodic storage audits
 
 ### Scalability
 
 - **NFR18:** The system must be architected to support 100+ concurrent users without degradation beyond 10% of baseline latency targets, measured via load testing at 100 concurrent active sessions against baseline latency targets
-- **NFR19:** The backend must support horizontal scaling via stateless application servers with shared state stores and shared persistent datastores
+- **NFR19:** The backend must support horizontal scaling via stateless application servers with shared state stores and shared persistent datastores, verified via multi-instance deployment tests confirming statelessness and shared datastore consistency
 - **NFR20:** WebSocket streaming must support at least 100 concurrent active streams with <1% server-side connection errors, measured via load testing and connection error logs
 - **NFR21:** LLM API call concurrency must enforce provider rate limits with backpressure so rate-limit errors attributable to concurrency control are 0 in load tests at the configured ceiling, measured via provider response codes and internal counters
 - **NFR22:** A cache layer must reduce redundant LLM/search calls by at least 20% per report compared to a no-cache baseline in a standardized test run, with configurable TTL, measured via request counters in logs/metrics
@@ -675,32 +677,32 @@ Features explicitly excluded from V1 that represent future expansion:
 ### Reliability
 
 - **NFR23:** The system must achieve >95% agent completion rate (all 5 agents + Coordinator finishing without errors), measured via execution logs over a rolling 7-day window
-- **NFR24:** Individual agent failures must not crash the pipeline; the Coordinator must synthesize available data with a reduced confidence score
-- **NFR25:** WebSocket disconnections must trigger automatic client reconnection with server-side replay of missed events from a server-side stream buffer
-- **NFR26:** LLM provider unavailability must trigger automatic failover to a fallback provider transparently to the user
-- **NFR27:** Search provider rate limiting must be handled with exponential backoff, request queuing, and cached fallback data
-- **NFR28:** Token budget overruns must result in graceful output truncation with structured summaries, not raw mid-sentence cutoffs
-- **NFR29:** The system must handle app backgrounding during report generation and resume streaming on foreground without data loss
+- **NFR24:** Individual agent failures must not crash the pipeline; the Coordinator must synthesize available data with a reduced confidence score, verified via agent failure injection tests confirming pipeline continuation and reduced-confidence output
+- **NFR25:** WebSocket disconnections must trigger automatic client reconnection with server-side replay of missed events from a server-side stream buffer, verified via connection-drop simulation tests confirming automatic reconnection and gapless event replay
+- **NFR26:** LLM provider unavailability must trigger automatic failover to a fallback provider transparently to the user, verified via provider-outage simulation tests confirming transparent failover and report completion
+- **NFR27:** Search provider rate limiting must be handled with exponential backoff, request queuing, and cached fallback data, verified via rate-limit simulation tests confirming backoff, queuing, and cached fallback behavior
+- **NFR28:** Token budget overruns must result in graceful output truncation with structured summaries, not raw mid-sentence cutoffs, verified via token-budget exhaustion tests confirming structured-summary output
+- **NFR29:** The system must handle app backgrounding during report generation and resume streaming on foreground without data loss, verified via app background/foreground lifecycle tests confirming stream resume via buffered replay without loss
 
 ### Observability
 
-- **NFR30:** Every report execution must generate a complete trace capturing per-agent latency, token consumption, and API cost
-- **NFR31:** Execution traces must be accessible via a tracing UI or exportable to tracing infrastructure
-- **NFR32:** Metrics must capture request latency, error rates, cache hit ratios, and cost-per-report at minimum
-- **NFR33:** Agent error rates must be trackable per-agent with historical trend visibility
-- **NFR34:** Cost-per-report must be calculable from logged token consumption and provider pricing
+- **NFR30:** Every report execution must generate a complete trace capturing per-agent latency, token consumption, and API cost, verified via trace audits confirming required fields are present per execution
+- **NFR31:** Execution traces must be accessible via a tracing UI or exportable to tracing infrastructure, verified via operational checks confirming traces are viewable in a UI or exportable
+- **NFR32:** Metrics must capture request latency, error rates, cache hit ratios, and cost-per-report at minimum, verified via metrics audits confirming required fields are emitted and queryable
+- **NFR33:** Agent error rates must be trackable per-agent with historical trend visibility, verified via metrics/dashboards checks confirming per-agent error-series and historical retention
+- **NFR34:** Cost-per-report must be calculable from logged token consumption and provider pricing, verified via cost calculation tests confirming accurate token-to-cost mapping per report
 
 ### Accessibility
 
-- **NFR35:** The app must support platform-native screen reader accessibility (VoiceOver on iOS, TalkBack on Android) for core user flows (idea submission, report viewing)
+- **NFR35:** The app must support platform-native screen reader accessibility (VoiceOver on iOS, TalkBack on Android) for core user flows (idea submission, report viewing), verified via VoiceOver/TalkBack testing of core flows (labels, focus order, actions)
 - **NFR36:** All interactive elements must meet minimum touch target sizes (48x48dp) per platform guidelines, verified via automated UI checks and manual accessibility audit
 - **NFR37:** Text contrast ratios must meet WCAG 2.1 AA standards (4.5:1 for normal text, 3:1 for large text), verified via design review and accessibility audit
-- **NFR38:** The app must support dynamic text sizing based on system accessibility settings
+- **NFR38:** The app must support dynamic text sizing based on system accessibility settings, verified via accessibility testing across system text scales without layout breakage
 
 ### Integration
 
-- **NFR39:** All LLM interactions must be abstracted behind a provider-agnostic interface enabling provider swaps without agent code changes
-- **NFR40:** Search provider integration must be abstracted to support swapping providers (free vs. paid) without agent code changes
-- **NFR41:** Authentication must support both Google account sign-in and anonymous authentication flows
+- **NFR39:** All LLM interactions must be abstracted behind a provider-agnostic interface enabling provider swaps without agent code changes, verified via provider-swap integration tests demonstrating no agent code changes
+- **NFR40:** Search provider integration must be abstracted to support swapping providers (free vs. paid) without agent code changes, verified via provider-swap integration tests demonstrating no agent code changes
+- **NFR41:** Authentication must support both Google account sign-in and anonymous authentication flows, verified via authentication integration tests for both flows
 - **NFR42:** Push notifications must achieve >= 99% delivery success (excluding invalid/unregistered devices), measured via push provider delivery receipts and in-app receipt telemetry
-- **NFR43:** The API must maintain backward compatibility within major versions (v1); breaking changes require version increment
+- **NFR43:** The API must maintain backward compatibility within major versions (v1); breaking changes require version increment, verified via backward-compatibility contract tests and versioning policy enforcement
