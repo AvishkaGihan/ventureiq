@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -323,3 +323,103 @@ Every Material component (Card, BottomSheet, AppBar, TextField, Chip, Navigation
 
 **Level 3 — Custom Widgets:**
 Purpose-built widgets for experiences Material doesn't cover: War Room agent cards with streaming state, confidence badge system, radar chart with animated fill, Decision Timeline with scrubbing, source citation cards with inline tap previews.
+
+## Defining Core Experience
+
+### Defining Experience
+
+> ***"Type your idea. Watch five AI experts argue about it in real time. Walk away with a verdict you can trust."***
+
+This is a novel combination of three interactions no competitor has assembled:
+1. **The War Room** — a spectator experience of multi-agent intelligence
+2. **The Cross-Reference Moment** — when agents react to each other's findings
+3. **The Verdict** — an explainable Viability Score backed by verifiable evidence
+
+If the War Room captivates, users explore every other feature. If it doesn't, nothing else matters.
+
+### User Mental Model
+
+**How users currently solve this problem:**
+
+| Current Approach | Mental Model | Pain |
+|:--|:--|:--|
+| Google research | "I'll piece together information myself" | Hours of fragmented searching, no synthesis, no confidence in completeness |
+| ChatGPT / single-LLM | "I'll ask the AI" | One perspective, no sources, "is this hallucinated?" anxiety |
+| Paid consultants | "I'll hire an expert" | $5K-$50K, weeks of waiting, still a single perspective |
+| AI validators (DimeADozen) | "I'll get a quick score" | Static output, no transparency, feels like a Magic 8-Ball |
+
+**The mental model VentureIQ creates:**
+> "I have a **board of advisors** who analyze my idea simultaneously, challenge each other, and deliver a transparent verdict I can verify."
+
+Users don't think "I'm using an AI tool" — they think "I'm consulting my advisory board."
+
+**Confusion mitigation:**
+- **5 agents streaming at once:** Visual hierarchy — one agent spotlighted at a time, others as peripheral thumbnails, tap to switch focus.
+- **Cross-referencing:** Explicit badges: "📎 Responding to Devil's Advocate" with tappable link to the referenced finding.
+- **Viability Score context:** Verbal anchors (e.g., "Strong — Most ideas in this category score 60-75") and dimensional breakdown showing *where* the score comes from.
+
+### Success Criteria
+
+| Criterion | What It Looks Like | How We Measure |
+|:--|:--|:--|
+| **"This just works"** | User types an idea and sees agents streaming within 1 second. No confusion. | Time-to-first-token <1s, zero-guidance completion rate |
+| **"I can't look away"** | User watches the full War Room without skipping. | War Room view duration, skip-to-results rate |
+| **"They're talking to each other"** | Cross-referencing is visually obvious. User notices agent reactions. | Cross-reference badge interaction rate |
+| **"I trust this"** | User taps at least one source citation to verify. | Source tap rate, Evidence Panel engagement |
+| **"This would've taken me weeks"** | User exports or shares the report. Output quality exceeds expectations. | Export rate, share rate, return visit rate |
+
+### Novel UX Patterns
+
+| Pattern Element | Classification | Source Familiarity | VentureIQ Innovation |
+|:--|:--|:--|:--|
+| Text input → AI processing | **Established** | ChatGPT, Perplexity | Combined with context fields for structured input |
+| Token-by-token streaming | **Established** | ChatGPT ubiquitous | Multiplied to 5 parallel streams with orchestration |
+| Source citations | **Established** | Perplexity normalized | Enhanced with confidence scores + agent attribution |
+| Multi-agent parallel display | **Novel** | No consumer product | War Room — 5 agents visible simultaneously |
+| Cross-agent referencing (visible) | **Novel** | Completely unprecedented | Agents react in real time, visually connected |
+| Viability Score with radar | **Adapted** | Radar charts exist | Multi-dimensional AI-generated business intelligence |
+| Decision Timeline / Replay | **Novel** | No equivalent | Scrubbing through multi-agent reasoning history |
+
+**Teaching strategy for novel patterns:**
+- **War Room:** No education needed — streaming text is universally understood. Agent cards with status indicators (🔍 Searching → ⚡ Analyzing → 📎 Cross-referencing → ✅ Complete) make lifecycle legible.
+- **Cross-referencing:** Subtle "✨ Agents reviewing each other's findings" state transition. Cross-reference badges (📎) are familiar tappable affordances.
+- **Decision Timeline:** Introduced post-report as "See how we got here." Familiar scrubbing gesture (video player metaphor). Discover on demand.
+
+### Experience Mechanics
+
+**Phase 1: INITIATION — "Submit Your Idea"**
+
+| Step | User Action | System Response | Emotional Beat |
+|:--|:--|:--|:--|
+| Open app | Launch VentureIQ | Dark premium splash → Idea Input with generous text field | Intrigue: "This looks serious" |
+| Type idea | Enter 1-3 sentences | Subtle character count, optional "Add context" expander below | Ease: "That was simple" |
+| Add context (optional) | Tap expander, fill fields | Fields appear smoothly with helpful placeholders | Control: "I can shape the analysis" |
+| Submit | Tap "Validate" | Button transforms, screen transitions to War Room | Anticipation: "Here we go" |
+
+**Phase 2: INTERACTION — "The War Room"**
+
+| Phase | Duration | What User Sees | What User Does | Emotional Beat |
+|:--|:--|:--|:--|:--|
+| Activation | 0-2s | Five agent cards ignite in sequence. Each shows icon, name, "Initializing..." | Watches the choreography | Awe: "The agents are alive" |
+| Parallel Streaming | 2-30s | Agents stream simultaneously. One "spotlighted" (expanded), others compact. | Taps cards to switch focus. Scrolls within expanded agent. | Fascination: "I can't look away" |
+| Cross-Referencing | 30-60s | "📎 Agents reviewing findings." Visual connections between cards. Strategist shows: "Pivoting GTM based on Rival's gaps..." | Taps 📎 badges to see references. The "aha!" moment. | Amazement: "They're talking to each other" |
+| Synthesis | 60-75s | Coordinator indicator appears. Agent cards compact. Synthesis progress fills. | Watches synthesis. "Skip to results" visible but unobtrusive. | Anticipation: "Here comes the verdict" |
+| Score Reveal | 75-90s | Viability Score count-up animation (0 → 78). Radar chart fills dimension by dimension. Haptic pulse. | Absorbs score, reads verbal anchor ("Strong"), examines dimensions. | Clarity: "Now I know" |
+
+**Phase 3: FEEDBACK — "Trust & Verification"**
+
+| Interaction | User Action | System Response | Emotional Beat |
+|:--|:--|:--|:--|
+| View radar breakdown | Tap any dimension (e.g., "Competition: 68") | Dimension expands: contributing factors, key findings, agent attribution | Understanding: "I see why" |
+| Verify a claim | Tap inline citation superscript | Bottom sheet: source card with title, URL, confidence badge, snippet | Trust: "I can verify this" |
+| Read agent analysis | Scroll through agent sections | Toggle blocks — summary visible, full analysis expandable | Control: "As deep as I want" |
+| Flag concern | Tap low-confidence finding | Evidence Panel highlights claim, shows confidence and source | Safety: "Nothing is hidden" |
+
+**Phase 4: COMPLETION — "Act on It"**
+
+| Interaction | User Action | System Response | Emotional Beat |
+|:--|:--|:--|:--|
+| Export PDF | Tap "Export PDF" | Polished PDF preview → download. Investor-grade formatting. | Pride: "I produced this" |
+| Share link | Tap "Share" | Unique web link, copy to clipboard, share sheet. No account needed to view. | Empowerment: "My co-founder needs this" |
+| Ask the Board | Tap "Ask the Board" | Conversational AI opens, grounded in full report context. | Curiosity: "What about regulatory risk?" |
+| New idea | Tap "Validate Another" | Returns to Idea Input. Previous report saved in history. | Momentum: "Let me try another" |
