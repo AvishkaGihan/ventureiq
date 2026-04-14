@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2]
+stepsCompleted: [1, 2, 3]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -64,3 +64,57 @@ Developer monitoring production health — execution traces, cost-per-report, er
 4. **Dark Premium Aesthetic as Market Signal** — Cinematic, authoritative dark theme positions VentureIQ as serious technology. The aesthetic itself communicates sophistication and separates it from toy-like AI tools.
 
 5. **Agent Personalities as Engagement Hooks** — Each agent's distinct role (Scout 🔍, Rival ⚔️, CFO 💰, Devil's Advocate ⚠️, Strategist 🎯) can be designed with visual identities, animation styles, and streaming "personality" — creating memorable characters users refer to by name.
+
+## Core User Experience
+
+### Defining Experience
+
+The core interaction loop is: **Submit an idea → Watch agents analyze in real time → Receive a trusted, actionable report.** The War Room is the defining experience — the moment where VentureIQ proves it's not another chatbot. If the War Room captivates, users explore every other feature. If it doesn't, nothing else matters.
+
+The core promise collapses into one sentence: *"Type your idea. Watch five AI agents analyze it in real time. Walk away with an investor-grade brief."*
+
+Three interactions must be flawless:
+- **Submit** — zero friction from "I have an idea" to "agents are working." No signup walls, no mandatory fields.
+- **Watch** — the War Room must be riveting. 90 seconds of loading must feel like 90 seconds of entertainment.
+- **Trust** — the Viability Score and Evidence Panel must feel credible enough to stake decisions on, share with co-founders, and present to clients.
+
+### Platform Strategy
+
+**Primary:** Flutter mobile app (iOS 15+ & Android 10+), single codebase, touch-first design.
+
+**Platform capabilities leveraged:**
+- Microphone for voice input (optional, requested on use)
+- Push notifications for report completion during backgrounding
+- Haptic feedback for key moments (score reveal, agent completion, cross-reference triggers)
+- Deep linking for shareable report URLs (open in-app or browser fallback)
+
+**Offline:** Cached reports viewable offline via Hive/SQLite; all AI processing requires internet.
+
+**Key constraint:** The War Room — 5 concurrent agent streams — must be designed for a 6" mobile screen. This is the product's hardest UX problem.
+
+**Future extension:** Client-agnostic API backend supports web client addition without backend changes.
+
+### Effortless Interactions
+
+1. **Zero-Friction Idea Submission** — one sentence, one tap. Context fields are optional enhancements, not gates. Anonymous users get 3 free reports without account creation.
+2. **Self-Explanatory War Room** — no onboarding tooltips needed. Agent cards, status indicators, and streaming text are visually self-evident.
+3. **One-Tap Trust Verification** — every cited claim is tappable inline. One tap reveals source preview with confidence score. No hunting, no navigation.
+4. **Fluid Report Navigation** — War Room completion flows seamlessly into Executive Summary → Evidence Panel → agent details. Feels like scrolling a beautifully designed document, not navigating a menu hierarchy.
+5. **Instant Export** — one tap for PDF, one tap for shareable link. No configuration dialogs. Defaults are investor-grade.
+
+### Critical Success Moments
+
+1. **"The Agents Are Alive" (0-5s)** — War Room activates, agent cards pulse, first token streams within 1 second. User realizes this is a command center, not a chatbot. If the first 5 seconds don't create a "whoa" reaction, the portfolio mission fails.
+2. **"They're Talking to Each Other" (~30-60s)** — cross-referencing pass begins. User sees Strategist react to Devil's Advocate findings in real time. This is the "aha!" moment proving multi-agent intelligence. If cross-referencing isn't visually obvious and emotionally impactful, VentureIQ is just "5 ChatGPT windows."
+3. **"I Can Verify This Myself" (Report)** — user taps a bold claim, sees original source with confidence score. Trust is earned, not claimed. This converts AI-skeptic users into advocates.
+4. **"This Would've Taken Me Weeks" (Export)** — polished PDF export creates the conversion moment from "interesting" to "indispensable." If the export looks like a data dump, the magic dies.
+
+**Make-or-break flow:** First-time submission → War Room → Score reveal. If this doesn't captivate, no user reaches Scenario Simulator, Comparative Analysis, or Ask the Board.
+
+### Experience Principles
+
+1. **🎬 Spectacle Over Speed** — the 90-second window is a show to choreograph, not a delay to minimize. The War Room isn't loading; it's performing.
+2. **🔍 Trust Is Earned, Not Claimed** — never say "our AI is accurate." Make every claim verifiable with one tap. If it can't be cited, flag it transparently.
+3. **✨ Complexity Beneath Simplicity** — five agents, cross-referencing, multi-dimensional scoring are enormously complex. The UX should feel effortless. Progressive disclosure: clean surfaces with depth underneath.
+4. **📱 Mobile-Native, Not Mobile-Adapted** — every interaction designed for thumb-reach, swipe navigation, 6" viewport. The War Room on mobile should feel better than desktop — intimate, focused, immersive.
+5. **🏆 Every Output Is Shareable** — every view should look stunning in isolation because it will be shared in isolation. If a user can't proudly share a screenshot, PDF, or link, the design has failed.
