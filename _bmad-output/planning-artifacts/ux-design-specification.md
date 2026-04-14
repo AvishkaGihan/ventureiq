@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5]
+stepsCompleted: [1, 2, 3, 4, 5, 6]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -284,3 +284,42 @@ The make-or-break emotional tensions in VentureIQ:
 | Loading spinners during processing | Streaming is the product — never hide the work |
 | Static report outputs | Every section should be interactive and explorable |
 | Cluttered multi-widget screens | Mobile-first means radical simplicity with depth on demand |
+
+## Design System Foundation
+
+### Design System Choice
+
+**Material Design 3 — Heavily Themed** is the design system foundation for VentureIQ. Flutter's built-in Material library provides the component infrastructure while a comprehensive custom `ThemeData` transforms the visual identity into VentureIQ's dark, premium, cinematic aesthetic.
+
+This is not "default Material." It is Material as an invisible foundation — providing accessibility, platform conventions, and component architecture — while VentureIQ's design language lives in the theming layer and custom widgets.
+
+### Rationale for Selection
+
+1. **Solo developer efficiency** — Material 3 provides ~80% of needed components (cards, sheets, navigation, inputs, dialogs) out of the box. The remaining 20% are purpose-built custom widgets for VentureIQ-specific elements (War Room cards, confidence badges, radar chart, Decision Timeline).
+2. **Premium aesthetic achievability** — Material 3's theming system is powerful enough to create a completely custom look. Apps like Notion and Linear use platform foundations but are unrecognizable as "default" — VentureIQ does the same.
+3. **Built-in accessibility** — Touch targets (48x48dp), screen reader semantics, contrast ratios, and dynamic text scaling are provided by default, satisfying accessibility NFRs without manual implementation.
+4. **Inspiration alignment** — ChatGPT, Perplexity, and Notion all use heavily themed platform-native components on mobile.
+
+### Implementation Approach
+
+| Layer | Approach |
+|:--|:--|
+| **Foundation** | Material 3 via Flutter — `ThemeData`, `ColorScheme`, `TextTheme` |
+| **Global Theme** | Custom dark `ThemeData` with VentureIQ palette, premium typography, custom component themes |
+| **Standard Components** | Material widgets themed to spec — cards, app bars, bottom sheets, text fields, chips, navigation |
+| **Custom Components** | Purpose-built: War Room agent cards, streaming text display, confidence badges, radar chart, Decision Timeline, Scenario Simulator sliders, source citation cards |
+| **Animation** | Flutter animation framework — staggered agent activation, score reveal, cross-reference highlights |
+| **Charting** | `fl_chart` for radar chart and market positioning visualizations |
+
+### Customization Strategy
+
+The customization targets three levels:
+
+**Level 1 — Global Theme Overrides:**
+Custom dark `ColorScheme`, typography scale (Inter or Outfit), component shape overrides (16dp radius), elevation replacements (borders + subtle glows instead of shadows).
+
+**Level 2 — Component-Level Theming:**
+Every Material component (Card, BottomSheet, AppBar, TextField, Chip, NavigationBar) receives a custom theme matching VentureIQ's premium aesthetic. No component should look like "default Material."
+
+**Level 3 — Custom Widgets:**
+Purpose-built widgets for experiences Material doesn't cover: War Room agent cards with streaming state, confidence badge system, radar chart with animated fill, Decision Timeline with scrubbing, source citation cards with inline tap previews.
