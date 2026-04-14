@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4]
+stepsCompleted: [1, 2, 3, 4, 5]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -186,3 +186,101 @@ The make-or-break emotional tensions in VentureIQ:
 4. **🛡️ Make Failure Feel Safe** — errors, partial results, and degraded outputs should feel like the system being *honest*, not the system being *broken*. A 4-of-5 completion with adjusted confidence is more trustworthy than a 5-of-5 that hides a failure.
 
 5. **👑 The User Is the Hero, Not the AI** — the agents are the user's team, not the show. The user made a smart decision by using VentureIQ. The output is *their* research brief, produced with *their* AI team. The emotional frame: empowerment, not dependence.
+
+## UX Pattern Analysis & Inspiration
+
+### Inspiring Products Analysis
+
+**1. ChatGPT — The Streaming Interaction Benchmark**
+
+| Dimension | What They Nail | VentureIQ Relevance |
+|:--|:--|:--|
+| **Streaming UX** | Token-by-token text streaming feels alive and conversational. The response builds in front of you. | War Room streaming must feel at least this smooth, but with 5 parallel streams instead of 1. ChatGPT proved streaming is engagement. |
+| **Input Simplicity** | One text field. Type and press enter. No configuration blocking the core action. | Idea Input should feel this simple — one field, one tap. Context fields are expansions, not gates. |
+| **Conversation Flow** | Each response naturally invites a follow-up. The interface is a conversation, not a form → result pattern. | Ask the Board must feel this conversational — grounded in the report but naturally inviting deeper questions. |
+| **Progressive Complexity** | Simple by default, but power users discover system prompts, custom instructions, plugins. | VentureIQ should work beautifully for Maya (just submit) but reveal depth for Priya (scenarios, timelines). |
+
+**Key lesson:** ChatGPT makes AI feel *approachable*. VentureIQ needs approachable *and* authoritative — same ease of interaction, wrapped in a premium aesthetic that signals decision intelligence.
+
+**2. Perplexity — The Trust Layer Pioneer**
+
+| Dimension | What They Nail | VentureIQ Relevance |
+|:--|:--|:--|
+| **Inline Citations** | Every factual claim has a numbered source reference. Verifiable without leaving the flow. | VentureIQ's Trust Layer must exceed this — not just numbered references, but confidence scores on every citation. |
+| **Source Panel** | Structured source cards with title, URL, and snippet. Clean, scannable, authoritative. | Evidence Panel should take direct inspiration — clean cards, one-tap previews, organized by agent. |
+| **Answer + Sources = One Unit** | Answer and sources are integrated, not separate screens. Trust is built in the reading flow. | Reports should embed trust signals inline, then provide dedicated Evidence Panel for deep dives. |
+| **Query Understanding** | Perplexity reformulates queries, showing it understands what you’re asking. | Plausibility checks should feel helpful — "Here's how I'll analyze your idea" — not rejective. |
+
+**Key lesson:** Perplexity democratized source transparency. VentureIQ adds *multi-perspective* transparency — not just "here are the sources" but "here's how 5 experts interpreted the sources differently."
+
+**3. Notion — The Information Architecture Master**
+
+| Dimension | What They Nail | VentureIQ Relevance |
+|:--|:--|:--|
+| **Structured Elegance** | Complex hierarchical information feels clean and navigable. Depth without clutter. | Report navigation should feel like browsing a beautifully structured Notion document, not clicking through menus. |
+| **Typography & Whitespace** | Generous spacing, clear heading hierarchy, restrained color. Content breathes. | Agent streaming text must use excellent typography — well-typeset report feel, not chat messages. |
+| **Blocks as Building Blocks** | Every content piece is a consistent "block" that can be expanded or collapsed. | Report sections follow a card/block metaphor — consistent visual language across content types. |
+| **Dark Mode Excellence** | Muted backgrounds, high-contrast text, subtle borders. Nothing glows or screams. | Premium dark ≠ neon glows. Muted backgrounds with strategic pops of color for important elements. |
+| **Progressive Disclosure** | Pages reveal depth on click. Toggle blocks hide detail until requested. | War Room → Report uses this — summary by default, expandable depth everywhere. |
+
+**Key lesson:** Notion proved information-dense products can feel calm and elegant. VentureIQ's design system must be even more disciplined about hierarchy, spacing, and progressive disclosure.
+
+### Transferable UX Patterns
+
+**Navigation Patterns:**
+- **ChatGPT's conversation list → Notion's sidebar** — Report History as a structured, scannable sidebar or bottom sheet. Each past report is a card with idea title, Viability Score, and date.
+- **Perplexity's thread continuity** — Ask the Board maintains conversation continuity. Returning users resume naturally with prior context.
+
+**Interaction Patterns:**
+- **ChatGPT's streaming + stop button** — War Room offers a "Skip to Results" affordance, always available, never disruptive.
+- **Perplexity's inline source taps** — Source citations tappable inline (numbered superscripts or badges). One tap → source preview card or bottom sheet.
+- **Notion's toggle/expand blocks** — Agent cards expand/collapse. Post-report, each agent section is a toggleable block.
+
+**Visual Patterns:**
+- **Notion's typography hierarchy** — Clear heading levels with generous spacing. Agent names are H3-weight, key findings are callout blocks.
+- **Perplexity's source card design** — Clean cards with title, domain favicon, relevance snippet. VentureIQ adds confidence badges (color-coded: green ≥80%, amber 50-79%, red <50%).
+- **ChatGPT's dark mode simplicity** — Dark backgrounds with white text and minimal accent colors. Agent identity colors are the primary color system.
+
+### Anti-Patterns to Avoid
+
+1. **❌ Dashboard Overload (Generic BI Tools)** — VentureIQ's War Room is NOT a dashboard. It's a *narrative experience*. Each agent tells a story; the Viability Score is the conclusion, not one of 47 widgets.
+
+2. **❌ Static AI Output (Wrapper Apps)** — No loading spinner → static document. VentureIQ must feel *alive* — streaming, interactive, explorable. The output is a living analysis.
+
+3. **❌ Gamification of Trust Signals** — Confidence scores should feel *institutional* and *authoritative* (Bloomberg-style), not gamified (Duolingo-style). Color-coded text, not animated trophy icons.
+
+4. **❌ Nested Menu Navigation** — No hamburger → sub-menu → screen patterns. Navigation is flat and fluid — swipe between sections, tap to expand, scroll to explore.
+
+5. **❌ Loading Spinners Hiding Work** — Never show a spinner when you could show agents working. Streaming is the product.
+
+### Design Inspiration Strategy
+
+**What to Adopt Directly:**
+
+| Pattern | Source | Application |
+|:--|:--|:--|
+| Token streaming with typing simulation | ChatGPT | War Room agent streams |
+| Inline numbered source citations | Perplexity | Trust Layer superscript references |
+| Toggle/expand content blocks | Notion | Agent analysis sections |
+| Dark mode with muted backgrounds | Notion | App-wide dark theme |
+| One-field input simplicity | ChatGPT | Idea Input screen |
+
+**What to Adapt:**
+
+| Pattern | Source | Adaptation |
+|:--|:--|:--|
+| Single-stream response | ChatGPT | → 5 parallel streams with agent identity and orchestrated choreography |
+| Flat source list | Perplexity | → Source cards grouped by agent, with confidence scores and verified/unverified badges |
+| Static page layout | Notion | → Dynamic, time-based layout (streaming → static post-completion) |
+| Conversation history | ChatGPT | → Ask the Board with report-grounded context |
+| Search follow-ups | Perplexity | → Scenario Simulator with variable sliders |
+
+**What to Explicitly Avoid:**
+
+| Anti-Pattern | Why |
+|:--|:--|
+| Dashboard grid layouts | VentureIQ is a narrative, not a monitoring dashboard |
+| Gamified trust signals | Confidence must feel institutional, not playful |
+| Loading spinners during processing | Streaming is the product — never hide the work |
+| Static report outputs | Every section should be interactive and explorable |
+| Cluttered multi-widget screens | Mobile-first means radical simplicity with depth on demand |
