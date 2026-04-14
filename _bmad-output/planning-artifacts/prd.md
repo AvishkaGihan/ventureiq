@@ -1,5 +1,10 @@
 ---
 stepsCompleted: ["step-01-init", "step-02-discovery", "step-02b-vision", "step-02c-executive-summary", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-08-scoping", "step-09-functional", "step-10-nonfunctional", "step-11-polish", "step-12-complete"]
+date: '2026-04-13'
+lastEdited: '2026-04-14'
+editHistory:
+  - date: '2026-04-14'
+    changes: 'Refined FR/NFR measurability; removed implementation leakage from requirements; added API documentation and enumerated error codes.'
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -364,6 +369,12 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 - **Protocol:** REST for CRUD operations + WebSocket for real-time streaming
 - **Data format:** JSON request/response bodies; structured output schemas for all agent outputs
 
+### API Documentation
+
+- **API contract:** Maintain a versioned, machine-readable API specification (OpenAPI 3.0 or equivalent) covering endpoints, authentication, schemas, error codes, and rate limits
+- **Reference docs:** Provide human-readable API reference docs with example requests/responses for each endpoint and streaming event type
+- **Change discipline:** Update documentation alongside any API change; keep docs aligned to deployed `/api/v1/` behavior
+
 ### Core Endpoint Specification
 
 | Endpoint                            | Method | Purpose                           |
@@ -399,9 +410,28 @@ VentureIQ is a hybrid **Flutter mobile app** (iOS & Android) backed by a **FastA
 
 ### Error Handling
 
-- **Structured error responses:** All API errors return `{ error_code: string, message: string, details?: object }`
+- **Structured error responses:** All API errors return `{ error_code: string, message: string, details?: object }` where `error_code` is one of the enumerated codes below
 - **Agent failure graceful degradation:** If individual agents fail, remaining agents complete; Coordinator synthesizes available data with reduced confidence score
-- **WebSocket reconnection:** Client auto-reconnects on connection drop; server replays missed events from Redis-cached stream
+- **WebSocket reconnection:** Client auto-reconnects on connection drop; server replays missed events from a server-side stream buffer
+
+### Error Codes
+
+| error_code | HTTP status | Description | Retryable |
+| :-- | :--: | :-- | :--: |
+| `AUTH_REQUIRED` | 401 | Missing authentication for a protected endpoint | No |
+| `AUTH_INVALID_TOKEN` | 401 | Provided access token/session is invalid or expired | No |
+| `AUTH_PROVIDER_TOKEN_INVALID` | 401 | Third-party identity token exchange failed | No |
+| `RATE_LIMIT_EXCEEDED` | 429 | Tier-based usage limit exceeded | Yes |
+| `INPUT_VALIDATION_ERROR` | 400 | Request payload is invalid (schema/fields) | No |
+| `IDEA_NOT_FOUND` | 404 | Idea ID does not exist | No |
+| `REPORT_NOT_FOUND` | 404 | Report ID does not exist | No |
+| `REPORT_NOT_READY` | 409 | Report is still generating and not yet available | Yes |
+| `PROVIDER_RATE_LIMITED` | 503 | Upstream provider rate-limited the request | Yes |
+| `PROVIDER_UNAVAILABLE` | 503 | Upstream provider unavailable/timeouts | Yes |
+| `EXPORT_FAILED` | 500 | PDF export generation failed | Yes |
+| `SHARE_LINK_FAILED` | 500 | Share link creation failed | Yes |
+| `STREAM_NOT_FOUND` | 404 | Streaming session/resource does not exist | No |
+| `INTERNAL_ERROR` | 500 | Unhandled server error | Yes |
 
 ### Implementation Considerations
 
@@ -555,7 +585,7 @@ Features explicitly excluded from V1 that represent future expansion:
 
 - **FR23:** Users can place two or more previously generated reports side-by-side for structured comparison
 - **FR24:** Users can view a diff-style visualization highlighting key differences between compared ideas
-- **FR25:** The system can surface a clear comparative recommendation based on structured scoring differences
+- **FR25:** The system can surface a comparative recommendation that includes (a) a recommended option or "no recommendation", (b) per-dimension score deltas, and (c) key drivers/assumptions behind the recommendation
 
 ### Conversational AI (Ask the Board)
 
@@ -572,14 +602,14 @@ Features explicitly excluded from V1 that represent future expansion:
 
 ### Export & Sharing
 
-- **FR33:** Users can export a completed report as a polished, investor-grade PDF
+- **FR33:** Users can export a completed report as a PDF that includes the Executive Summary, Viability Score breakdown, agent analyses, and citations/confidence scores
 - **FR34:** Users can generate a shareable web link to a report
 - **FR35:** Recipients of a shared link can view the report without requiring a VentureIQ account
 
 ### User Account & Access
 
-- **FR36:** Users can sign in via Google Sign-In
-- **FR37:** Users can use the app without signing in (anonymous access) with limited functionality
+- **FR36:** Users can sign in with a Google account
+- **FR37:** Users can use the app without signing in (anonymous access) to generate and view reports on-device; cross-device access requires sign-in
 - **FR38:** Anonymous users can upgrade to a signed-in account and retain their data
 - **FR39:** The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro)
 - **FR40:** Users can view their report history and revisit previously generated reports
@@ -587,7 +617,7 @@ Features explicitly excluded from V1 that represent future expansion:
 ### Offline & Persistence
 
 - **FR41:** Users can view previously generated reports while offline
-- **FR42:** Reports are persisted and accessible across sessions and devices for signed-in users
+- **FR42:** Signed-in users can access their reports across sessions and devices
 
 ### Notifications
 
@@ -613,41 +643,41 @@ Features explicitly excluded from V1 that represent future expansion:
 
 ### Performance
 
-- **NFR1:** Time-to-first-token for War Room streaming must be under 2 seconds from idea submission
-- **NFR2:** Agent token streaming must display with under 1 second latency between generation and client display
-- **NFR3:** Full 5-agent report generation (parallel execution → cross-referencing → synthesis) must complete within 60–90 seconds under standard load
-- **NFR4:** App launch to interactive state must occur within 3 seconds on mid-range devices (circa 2023 hardware)
-- **NFR5:** Offline report retrieval from local cache must load within 500 milliseconds
-- **NFR6:** Scenario Simulator variable adjustments must reflect updated projections within 10 seconds
-- **NFR7:** Ask the Board conversational responses must begin streaming within 3 seconds of query submission
-- **NFR8:** PDF export generation must complete within 15 seconds of user request
+- **NFR1:** Time-to-first-token for War Room streaming must be under 2 seconds from idea submission, measured end-to-end from client submission to first token rendered in the client UI under standard load
+- **NFR2:** Agent token streaming must display with under 1 second latency between token generation and client display, measured using server emission timestamps and client render timestamps under standard load
+- **NFR3:** Full 5-agent report generation (parallel execution → cross-referencing → synthesis) must complete within 60–90 seconds under standard load, measured end-to-end from idea submission to report completion
+- **NFR4:** App launch to interactive state must occur within 3 seconds on mid-range devices (circa 2023 hardware), measured as time-to-interactive via mobile performance instrumentation
+- **NFR5:** Offline report retrieval from local cache must load within 500 milliseconds, measured on-device as time to render the cached report view
+- **NFR6:** Scenario Simulator variable adjustments must reflect updated projections within 10 seconds, measured end-to-end from parameter change to updated projections rendered in the UI
+- **NFR7:** Ask the Board conversational responses must begin streaming within 3 seconds of query submission, measured end-to-end from request submit to first token rendered in the client UI
+- **NFR8:** PDF export generation must complete within 15 seconds of user request, measured end-to-end from export request to PDF ready for download
 
 ### Security
 
 - **NFR9:** All data in transit must be encrypted via TLS 1.2+
-- **NFR10:** All user data at rest (ideas, reports, session history) must be encrypted in PostgreSQL
+- **NFR10:** All user data at rest (ideas, reports, session history) must be encrypted in the primary persistent datastore, verified via periodic security configuration audits
 - **NFR11:** All LLM and search provider API keys must be stored server-side only; the mobile client must never have access to third-party API credentials
 - **NFR12:** All user inputs must be sanitized against prompt injection before reaching any agent prompt
 - **NFR13:** Inter-agent data flowing through shared state must be validated against expected schemas before consumption
 - **NFR14:** User-submitted ideas and generated reports must never be used for model training, analytics beyond operational metrics, or shared with third parties
-- **NFR15:** No personally identifiable information beyond what the user explicitly provides may be stored in vector storage (ChromaDB) or included in LLM prompts
-- **NFR16:** JWT tokens must implement refresh token rotation; session tokens must expire after a configurable inactivity period
-- **NFR17:** Redis ephemeral state must be cleared after session expiration
+- **NFR15:** No personally identifiable information beyond what the user explicitly provides may be stored in vector storage used for semantic memory or included in LLM prompts
+- **NFR16:** Access tokens must implement refresh token rotation; session tokens must expire after a configurable inactivity period
+- **NFR17:** Ephemeral session/state data must be cleared after session expiration
 
 ### Scalability
 
-- **NFR18:** The system must be architected to support 100+ concurrent users without degradation beyond 10% of baseline latency targets
-- **NFR19:** The backend must support horizontal scaling via stateless application servers with shared Redis/PostgreSQL state
-- **NFR20:** WebSocket connections must be managed with connection pooling that gracefully handles connection limits
-- **NFR21:** LLM API call concurrency must be managed to stay within provider rate limits while maximizing throughput
-- **NFR22:** Redis caching must reduce redundant LLM API calls by caching search results and common market data queries with configurable TTL
+- **NFR18:** The system must be architected to support 100+ concurrent users without degradation beyond 10% of baseline latency targets, measured via load testing at 100 concurrent active sessions against baseline latency targets
+- **NFR19:** The backend must support horizontal scaling via stateless application servers with shared state stores and shared persistent datastores
+- **NFR20:** WebSocket streaming must support at least 100 concurrent active streams with <1% server-side connection errors, measured via load testing and connection error logs
+- **NFR21:** LLM API call concurrency must enforce provider rate limits with backpressure so rate-limit errors attributable to concurrency control are 0 in load tests at the configured ceiling, measured via provider response codes and internal counters
+- **NFR22:** A cache layer must reduce redundant LLM/search calls by at least 20% per report compared to a no-cache baseline in a standardized test run, with configurable TTL, measured via request counters in logs/metrics
 
 ### Reliability
 
-- **NFR23:** The system must achieve >95% agent completion rate (all 5 agents + Coordinator finishing without errors)
+- **NFR23:** The system must achieve >95% agent completion rate (all 5 agents + Coordinator finishing without errors), measured via execution logs over a rolling 7-day window
 - **NFR24:** Individual agent failures must not crash the pipeline; the Coordinator must synthesize available data with a reduced confidence score
-- **NFR25:** WebSocket disconnections must trigger automatic client reconnection with server-side replay of missed events from Redis-cached stream
-- **NFR26:** LLM provider unavailability must trigger automatic failover to the fallback provider (OpenRouter) transparently to the user
+- **NFR25:** WebSocket disconnections must trigger automatic client reconnection with server-side replay of missed events from a server-side stream buffer
+- **NFR26:** LLM provider unavailability must trigger automatic failover to a fallback provider transparently to the user
 - **NFR27:** Search provider rate limiting must be handled with exponential backoff, request queuing, and cached fallback data
 - **NFR28:** Token budget overruns must result in graceful output truncation with structured summaries, not raw mid-sentence cutoffs
 - **NFR29:** The system must handle app backgrounding during report generation and resume streaming on foreground without data loss
@@ -655,22 +685,22 @@ Features explicitly excluded from V1 that represent future expansion:
 ### Observability
 
 - **NFR30:** Every report execution must generate a complete trace capturing per-agent latency, token consumption, and API cost
-- **NFR31:** Execution traces must be accessible via LangSmith or equivalent tracing infrastructure
-- **NFR32:** Prometheus metrics must capture request latency, error rates, cache hit ratios, and cost-per-report at minimum
+- **NFR31:** Execution traces must be accessible via a tracing UI or exportable to tracing infrastructure
+- **NFR32:** Metrics must capture request latency, error rates, cache hit ratios, and cost-per-report at minimum
 - **NFR33:** Agent error rates must be trackable per-agent with historical trend visibility
 - **NFR34:** Cost-per-report must be calculable from logged token consumption and provider pricing
 
 ### Accessibility
 
 - **NFR35:** The app must support platform-native screen reader accessibility (VoiceOver on iOS, TalkBack on Android) for core user flows (idea submission, report viewing)
-- **NFR36:** All interactive elements must meet minimum touch target sizes (48x48dp) per platform guidelines
-- **NFR37:** Text contrast ratios must meet WCAG 2.1 AA standards (4.5:1 for normal text, 3:1 for large text)
+- **NFR36:** All interactive elements must meet minimum touch target sizes (48x48dp) per platform guidelines, verified via automated UI checks and manual accessibility audit
+- **NFR37:** Text contrast ratios must meet WCAG 2.1 AA standards (4.5:1 for normal text, 3:1 for large text), verified via design review and accessibility audit
 - **NFR38:** The app must support dynamic text sizing based on system accessibility settings
 
 ### Integration
 
 - **NFR39:** All LLM interactions must be abstracted behind a provider-agnostic interface enabling provider swaps without agent code changes
-- **NFR40:** Search provider integration must be abstracted to support swapping DuckDuckGo for premium alternatives (SerpAPI, Tavily) without agent code changes
-- **NFR41:** Firebase Authentication must support both Google Sign-In and anonymous authentication flows
-- **NFR42:** Firebase Cloud Messaging must deliver push notifications reliably on both iOS and Android
+- **NFR40:** Search provider integration must be abstracted to support swapping providers (free vs. paid) without agent code changes
+- **NFR41:** Authentication must support both Google account sign-in and anonymous authentication flows
+- **NFR42:** Push notifications must achieve >= 99% delivery success (excluding invalid/unregistered devices), measured via push provider delivery receipts and in-app receipt telemetry
 - **NFR43:** The API must maintain backward compatibility within major versions (v1); breaking changes require version increment
