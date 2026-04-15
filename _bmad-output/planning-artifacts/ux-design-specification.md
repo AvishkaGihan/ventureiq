@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -1622,5 +1622,263 @@ Components that complete the full product experience.
 - Stagger animations to create choreography, not chaos
 - Respect "Reduce Motion" system accessibility setting — replace animations with instant state changes
 - All animations use Flutter's built-in animation framework for 60fps consistency
+
+## Responsive Design & Accessibility
+
+### Responsive Strategy
+
+**Primary Platform: Mobile (Portrait)**
+
+VentureIQ is a mobile-native Flutter app. Portrait orientation on 5.4“–6.7“ screens is the primary design target — every screen is designed for this first, with other orientations as graceful adaptations.
+
+**Screen Size Tiers:**
+
+| Tier | Width Range | Target Devices | Strategy |
+|:--|:--|:--|:--|
+| **Compact** | 320–374dp | iPhone SE, small Android | Minimum viable layout. Single column, tighter padding (12dp horizontal margins). Body text at 14px. War Room: Spotlight only, no Grid toggle. |
+| **Standard** | 375–413dp | iPhone 14/15, Pixel 7, Galaxy S24 | Primary design target. Full design spec as documented. 16dp horizontal margins. All features available. |
+| **Large** | 414–480dp | iPhone Pro Max, large Android | Extra breathing room. War Room Grid mode can show slightly larger cards. Report sections get 20dp padding. |
+| **Tablet (Future)** | 600dp+ | iPad, Android tablets | Future consideration — not V1 scope. Side-by-side layouts for Comparative Analysis. War Room Grid mode as default. |
+
+**Orientation Handling:**
+
+| Orientation | Layout Adaptation |
+|:--|:--|
+| **Portrait (Primary)** | All designs optimized for portrait. Standard vertical stacking, full-width cards. |
+| **Landscape** | Supported but not optimized. Key adaptations: War Room can show 2 agent cards side-by-side; RadarChart + DimensionalBreakdownBars display side-by-side in Executive Summary; Keyboard input doesn't obscure War Room content. |
+| **Rotation Lock** | App does NOT force orientation lock — respects system setting. Layout adapts gracefully. |
+
+**Layout Adaptation Rules:**
+
+1. **War Room — Screen-Size Adaptive:**
+   - **Compact (320–374dp):** Spotlight mode only. Compact awareness strip shows 5 agent dots (no labels), tap to expand agent detail as bottom sheet. Grid mode disabled.
+   - **Standard (375–413dp):** Full Spotlight mode + 5-agent compact awareness strip with icons+labels. Grid toggle available.
+   - **Large (414dp+):** Same as Standard with more generous spacing. Grid mode cards get slightly more content preview.
+
+2. **Score Reveal — Scale Proportionally:**
+   - Hero score scales from 56px (compact) → 72px (standard) → 80px (large) based on available width
+   - RadarChart scales from 200dp (compact) → 280dp (standard) → 320dp (large)
+   - DimensionalBreakdownBars always full-width within container margins
+
+3. **Text Content — Flexible Containers:**
+   - Report text, agent streaming content, and chat bubbles use flexible-width containers with min/max constraints
+   - Never fixed-width text — always `MediaQuery`-aware with constraint-based layout
+
+4. **Cards — Full-Width with Margins:**
+   - All cards span full width within horizontal margins (12dp compact, 16dp standard, 20dp large)
+   - No side-by-side card layouts in V1 mobile (except War Room Grid mode)
+
+5. **Bottom Sheets — Height-Adaptive:**
+   - Default snap point at 50% of available screen height
+   - Full-screen snap point available for dense content (source details, dimension breakdowns)
+   - Minimum height constraint: 200dp to ensure visible content
+
+**Safe Area Handling:**
+
+- **iOS notch/Dynamic Island:** All content respects `SafeArea` constraints. Status bar area gets `surface-000` background.
+- **Android navigation bar:** Bottom navigation bar positioned above system navigation bar/gesture area.
+- **Bottom sheet positioning:** Bottom sheets snap above bottom safe area insets.
+- **Keyboard avoidance:** `resizeToAvoidBottomInset: true` for idea input; `false` for War Room (content should not resize during streaming).
+
+### Breakpoint Implementation
+
+**Flutter-Specific Approach:**
+
+VentureIQ uses Flutter's `MediaQuery` and `LayoutBuilder` rather than CSS media queries. The responsive system is implemented as a centralized `ResponsiveConfig` utility:
+
+```
+ResponsiveConfig.of(context)
+├── .screenTier → compact | standard | large
+├── .horizontalMargin → 12dp | 16dp | 20dp
+├── .cardPadding → 12dp | 16dp | 20dp
+├── .heroScoreSize → 56px | 72px | 80px
+├── .radarChartSize → 200dp | 280dp | 320dp
+├── .warRoomMode → spotlightOnly | full
+├── .bodyFontSize → 14px | 15px | 15px
+└── .showGridToggle → false | true | true
+```
+
+**Breakpoint Values:**
+
+| Breakpoint | Width | Trigger |
+|:--|:--|:--|
+| Compact → Standard | 375dp | Margin increase, full feature set |
+| Standard → Large | 414dp | Spacing increase, larger charts |
+| Portrait → Landscape | Orientation change | Side-by-side layouts where applicable |
+
+**Key Principle:** Content-driven, not arbitrary breakpoints. Layouts adapt because content needs change, not because a fixed number was hit.
+
+### Accessibility Strategy
+
+**Compliance Target: WCAG 2.1 AA**
+
+VentureIQ targets WCAG 2.1 Level AA compliance across all core user flows. This aligns with the PRD's accessibility NFRs (NFR35–NFR38) and Material Design 3's built-in accessibility features.
+
+**Contrast Ratios (Verified):**
+
+All color combinations verified to meet or exceed WCAG 2.1 AA standards:
+
+| Combination | Ratio | Requirement | Status |
+|:--|:--|:--|:--|
+| `text-primary` on `surface-000` | 15.8:1 | 4.5:1 | ✅ Exceeds |
+| `text-secondary` on `surface-050` | 7.2:1 | 4.5:1 | ✅ Passes |
+| `text-tertiary` on `surface-100` | 4.6:1 | 3:1 (large text only) | ✅ Passes |
+| Agent Blue on `surface-050` | 5.1:1 | 4.5:1 | ✅ Passes |
+| Agent Emerald on `surface-050` | 6.8:1 | 4.5:1 | ✅ Passes |
+| Agent Amber on `surface-050` | 8.4:1 | 4.5:1 | ✅ Passes |
+| Agent Rose on `surface-050` | 4.8:1 | 4.5:1 | ✅ Passes |
+| Confidence Green on `surface-050` | 6.2:1 | 4.5:1 | ✅ Passes |
+| Confidence Amber on `surface-050` | 8.4:1 | 4.5:1 | ✅ Passes |
+| Confidence Red on `surface-050` | 4.6:1 | 3:1 (used with labels) | ✅ Passes |
+
+**Color Independence:**
+
+Information is never conveyed by color alone — critical for colorblind users (~8% of males):
+
+| Element | Color Signal | Redundant Indicators |
+|:--|:--|:--|
+| Agent identity | Agent color | Icon (🔍⚔️💰⚠️🎯) + text name |
+| Confidence level | Green/amber/red | Text label (“Verified”, “Moderate”, “Low”) + percentage |
+| Agent status | Phase color | Icon + status text label |
+| Error/warning/success | Status color | Icon (✅⚠️❌) + descriptive text message |
+| Cross-reference | Purple badge | 📎 icon + descriptive text |
+
+**Screen Reader Support (VoiceOver & TalkBack):**
+
+| Screen | Semantic Structure | Key Annotations |
+|:--|:--|:--|
+| **Idea Input** | Single-field form, labeled input, button | “Business idea input field. Type your idea and tap Validate.” |
+| **War Room** | Live region for streaming content, agent cards as groups | “War Room. 5 agents analyzing your idea. [Agent name] status: [status].” Agent content announced in batched chunks. |
+| **Score Reveal** | Heading + labeled values | “Viability Score: 78 out of 100. Strong viability.” |
+| **Executive Summary** | Hierarchical headings (H1→H2→H3), lists | Standard document reading order. Radar chart has text alternative. |
+| **Evidence Panel** | Grouped source list, each source as card | “Source [n]: [title]. Confidence: [percentage]. Cited by [agent].” |
+| **Ask the Board** | Chat messages as list, each message labeled | “[Sender]: [message]. [timestamp].” |
+
+**Live Region Strategy for War Room:**
+
+The War Room presents a unique accessibility challenge — 5 agents streaming simultaneously. Strategy:
+
+1. **Active agent announced:** When spotlight switches agents, announce: “Now showing [Agent Name]. Status: [status].”
+2. **Content batching:** Streaming text announced in batched chunks (~2 sentences) via `Semantics(liveRegion: true)`, not per-token.
+3. **Cross-reference announcements:** “Cross-reference: [Agent] is responding to [Agent]’s finding.” — announced once when badge appears.
+4. **Score reveal:** Score count-up animation is visual only. Screen reader announces final score immediately: “Viability Score: 78 out of 100.”
+5. **Status changes:** Agent status transitions announced: “[Agent Name] complete” or “[Agent Name] encountered an error.”
+
+**Touch Target Compliance:**
+
+All interactive elements meet Material Design’s 48×48dp minimum touch target:
+
+| Element | Touch Target | Implementation |
+|:--|:--|:--|
+| Buttons (all types) | 48dp height | Direct dimension |
+| Agent thumbnail (compact strip) | 48×48dp | Padded hit area around 24dp icon |
+| Citation superscript | 48×32dp | Expanded hit area around 11px text |
+| Bottom sheet drag handle | 48dp height strip | Full-width tappable area |
+| Close buttons (✕) | 48×48dp | Padded hit area around 24dp icon |
+| Chip/filter toggles | 36dp height, 48dp hit area | Vertical padding expands touch area |
+| Slider thumb | 48×48dp | Material Slider default |
+
+**Dynamic Text Scaling:**
+
+VentureIQ supports system text scaling up to 1.5× without layout breakage:
+
+| Scale | Impact | Adaptation |
+|:--|:--|:--|
+| 1.0× | Default design spec | No changes |
+| 1.25× | Text 25% larger | Cards grow vertically. Agent compact strip wraps to 2 lines if needed. Spacing maintained. |
+| 1.5× | Text 50% larger | Maximum supported. Cards significantly taller. War Room compact strip may show fewer agents (scrollable). Score display scales proportionally. |
+| >1.5× | Beyond target | Best-effort support — layout may clip. Not a blocking issue for AA compliance. |
+
+**Implementation approach:**
+- Use `MediaQuery.textScaleFactorOf(context)` to detect system setting
+- All text widgets use `TextTheme`-based styles (never hardcoded sizes)
+- Layout uses `Flexible` and `Expanded` widgets that accommodate text growth
+- Cards use `IntrinsicHeight` where needed for consistent row heights with scaled text
+
+**Reduce Motion Support:**
+
+When the system “Reduce Motion” setting is enabled (`MediaQuery.disableAnimationsOf(context)`):
+
+| Normal Behavior | Reduced Motion Alternative |
+|:--|:--|
+| Score count-up (0→78 over 1.2s) | Score appears instantly at final value |
+| Radar chart polygon animation | Radar chart appears fully rendered |
+| Agent card activation sequence | All agent cards appear simultaneously |
+| Bar chart fill animation | Bars appear at full width instantly |
+| Screen slide transitions | Instant cut transitions (no slide) |
+| Cross-reference pulse animation | Badge appears without pulse |
+| Bottom sheet slide-up | Bottom sheet appears instantly |
+
+### Testing Strategy
+
+**Responsive Testing Plan:**
+
+| Test Type | Method | Coverage |
+|:--|:--|:--|
+| **Physical device testing** | Test on minimum 3 devices: compact (iPhone SE/small Android), standard (iPhone 14/Pixel 7), large (iPhone Pro Max/large Android) | All 3 screen tiers |
+| **Orientation testing** | Rotate each device during: idea input, War Room streaming, report viewing, Ask the Board | Portrait→landscape and back |
+| **Text scale testing** | Test at 1.0×, 1.25×, 1.5× on each device | All text-heavy screens |
+| **Network condition testing** | Test War Room streaming on: WiFi, 4G, 3G (throttled), airplane mode | Streaming resilience |
+| **Safe area testing** | Verify on notched and non-notched devices | Content doesn't overlap system UI |
+
+**Accessibility Testing Plan:**
+
+| Test Type | Tool/Method | Frequency |
+|:--|:--|:--|
+| **VoiceOver testing (iOS)** | Manual + automated Accessibility Inspector | Every screen, pre-release |
+| **TalkBack testing (Android)** | Manual testing on physical Android device | Every screen, pre-release |
+| **Contrast verification** | Colour Contrast Analyser / Flutter Accessibility checks | Design phase (done), code review |
+| **Touch target audit** | Flutter layout inspector + manual measurement | Every interactive element |
+| **Dynamic text scale** | System settings → text size max → test all screens | Pre-release |
+| **Reduce motion** | System settings → reduce motion → test all animations | Pre-release |
+| **Color blindness simulation** | Sim Daltonism (iOS) / Color Oracle | Design phase + pre-release |
+| **Keyboard/switch access** | External keyboard testing (focus order, activation) | Core flows |
+
+**Accessibility Testing Checklist per Screen:**
+
+- [ ] All images/icons have semantic labels
+- [ ] Heading hierarchy is logical (H1→H2→H3)
+- [ ] Focus order matches visual reading order
+- [ ] All interactive elements are reachable and activatable
+- [ ] Touch targets meet 48dp minimum
+- [ ] Color is not the sole information carrier
+- [ ] Contrast ratios meet AA standards
+- [ ] Dynamic text scaling doesn't break layout
+- [ ] Screen reader announces content meaningfully
+- [ ] Live regions configured for dynamic content (War Room)
+
+### Implementation Guidelines
+
+**Flutter-Specific Accessibility Implementation:**
+
+Key Flutter accessibility APIs:
+
+| API | Usage |
+|:--|:--|
+| `Semantics` widget | Custom labels, hints, live regions for all custom components |
+| `ExcludeSemantics` | Hide decorative elements from screen readers (glow effects, ambient particles) |
+| `MergeSemantics` | Group related elements into single focus node (agent icon + name + status) |
+| `SemanticsService.announce()` | Programmatic announcements (score reveal, agent status changes) |
+| `FocusTraversalGroup` | Custom focus order for War Room agent navigation |
+| `MediaQuery.boldTextOf()` | Detect system bold text preference |
+| `MediaQuery.disableAnimationsOf()` | Detect Reduce Motion setting |
+
+**Responsive Implementation Rules:**
+
+1. **Never use fixed pixel widths** for content containers — use `MediaQuery.of(context).size.width` with constraints
+2. **Use `LayoutBuilder`** for components that need to know their available space (War Room Grid layout, RadarChart sizing)
+3. **Centralize breakpoint logic** in `ResponsiveConfig` utility — components query the config, not `MediaQuery` directly
+4. **Test portrait and landscape** for every screen — even if landscape is not optimized, it must not break
+5. **Use `SafeArea`** wrapper on every screen scaffold — handles notches, home indicators, and system bars
+6. **Cache `MediaQuery` results** — avoid rebuilding responsive calculations on every frame
+
+**Accessibility Implementation Rules:**
+
+1. **Every custom widget gets a `Semantics` wrapper** — Material widgets have built-in semantics, custom widgets don't
+2. **Agent streaming uses batched announcements** — `SemanticsService.announce()` called every ~2 sentences, not per token
+3. **Focus order follows visual order** — left-to-right, top-to-bottom. War Room: spotlight agent → awareness strip (left-to-right)
+4. **All colors have non-color alternatives** — enforced at the component level (ConfidenceBadge always includes label text)
+5. **Test with screen readers in development** — not just pre-release. Accessibility bugs caught early are cheap to fix
+6. **Animation respects system setting** — check `MediaQuery.disableAnimationsOf(context)` before running any animation controller
 
 
