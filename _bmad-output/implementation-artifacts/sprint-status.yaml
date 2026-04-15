@@ -1,0 +1,135 @@
+# generated: 2026-04-15T18:19:11Z
+# last_updated: 2026-04-15T18:19:11Z
+# project: ventureiq
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-04-15T18:19:11Z
+last_updated: 2026-04-15T18:19:11Z
+project: ventureiq
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # All epics, stories, and retrospectives in order
+  epic-1: backlog
+  1-1-monorepo-scaffolding-project-initialization: backlog
+  1-2-backend-core-infrastructure-config-logging-error-handling: backlog
+  1-3-database-cache-foundation-postgresql-redis-alembic: backlog
+  1-4-provider-abstraction-layer-llm-search: backlog
+  1-5-flutter-app-shell-with-navigation-theme-foundation: backlog
+  1-6-shared-ui-component-library-foundation: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-firebase-authentication-jwt-exchange-backend: backlog
+  2-2-anonymous-google-sign-in-flutter: backlog
+  2-3-anonymous-to-authenticated-upgrade-data-retention: backlog
+  2-4-tier-based-usage-limits-rate-limiting: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-idea-submission-endpoint-input-sanitization-backend: backlog
+  3-2-plausibility-check-via-llm: backlog
+  3-3-idea-input-screen-flutter: backlog
+  3-4-voice-input-for-idea-submission: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-langgraph-agent-pipeline-backend: backlog
+  4-2-websocket-streaming-endpoint-event-buffer: backlog
+  4-3-websocket-reconnection-event-replay: backlog
+  4-4-streamingtextdisplay-warroomagentcard-widgets: backlog
+  4-5-war-room-screen-with-hybrid-adaptive-layout: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-cross-referencing-pass-in-langgraph-pipeline: backlog
+  5-2-coordinator-synthesis-viability-score-computation: backlog
+  5-3-crossreferencebadge-widget-war-room-integration: backlog
+  5-4-score-reveal-screen-viability-score-display: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-report-persistence-retrieval-backend: backlog
+  6-2-executive-summary-screen-with-radar-chart: backlog
+  6-3-evidence-panel-with-inline-citations: backlog
+  6-4-report-local-caching-flutter: backlog
+  epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-market-competitor-map-view: backlog
+  7-2-risk-radar-go-to-market-plan-views: backlog
+  epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-report-history-screen: backlog
+  8-2-comparative-analysis-screen: backlog
+  epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-scenario-simulator-backend: backlog
+  9-2-scenario-simulator-screen-flutter: backlog
+  epic-9-retrospective: optional
+
+  epic-10: backlog
+  10-1-conversational-ai-backend-rag-pipeline: backlog
+  10-2-ask-the-board-screen-flutter: backlog
+  epic-10-retrospective: optional
+
+  epic-11: backlog
+  11-1-timeline-event-persistence-api: backlog
+  11-2-decision-timeline-screen-flutter: backlog
+  epic-11-retrospective: optional
+
+  epic-12: backlog
+  12-1-pdf-export: backlog
+  12-2-shareable-web-links: backlog
+  epic-12-retrospective: optional
+
+  epic-13: backlog
+  13-1-offline-report-access-cross-device-sync: backlog
+  13-2-push-notifications-for-report-completion: backlog
+  epic-13-retrospective: optional
+
+  epic-14: backlog
+  14-1-execution-tracing-cost-tracking: backlog
+  14-2-system-health-dashboard-monitoring: backlog
+  14-3-ci-cd-pipeline-production-deployment: backlog
+  epic-14-retrospective: optional
+
+  epic-15: backlog
+  15-1-splash-screen-first-launch-experience: backlog
+  15-2-profile-screen-settings: backlog
+  epic-15-retrospective: optional
