@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -1394,5 +1394,233 @@ Components that complete the full product experience.
 |:--|:--|:--|:--|
 | P3.1 | DecisionTimeline | Decision Timeline / Replay Mode | High |
 | P3.2 | AgentStatusIndicator (Full) | Timeline event markers | Low |
+
+## UX Consistency Patterns
+
+### Button Hierarchy
+
+**Primary Action (FilledButton — Electric Violet)**
+
+- **When:** One per screen/context — the most important action (e.g., "Validate", "Export PDF", "Re-simulate")
+- **Visual:** Electric Violet (`#6C5CE7`) fill, `text-inverse`, 8dp radius (`radius-sm`), 48dp height, horizontal padding `space-6` (24px)
+- **Hover/Focus:** Violet Hover (`#7E70F0`) fill + glow (`0 0 20px rgba(108,92,231,0.3)`) + 3px focus ring
+- **Disabled:** `surface-250` fill, `text-disabled`, no glow
+- **Loading:** Replace label with 20dp CircularProgressIndicator in `text-inverse`, button disabled
+- **Mobile:** Full-width on mobile when sole action; minimum 48dp touch target always
+
+**Secondary Action (OutlinedButton/TextButton)**
+
+- **When:** Supporting actions — "Skip to Results", "Add Context", "Validate Another"
+- **Visual:** Transparent fill, Electric Violet border (1px), Electric Violet text, 8dp radius, 48dp height
+- **Hover/Focus:** `surface-150` fill + Electric Violet border thickens to 2px
+- **Mobile:** Adequate spacing from primary (16dp gap minimum)
+
+**Tertiary/Ghost (TextButton)**
+
+- **When:** Low-priority actions — "Cancel", "Dismiss", navigation links
+- **Visual:** No fill, no border, `text-secondary` label, 48dp touch target
+- **Hover/Focus:** `text-primary` on hover, subtle `surface-150` background
+
+**Destructive Action**
+
+- **When:** Rare — deleting a saved report, clearing history
+- **Visual:** Error Red (`#EF4444`) outline, Error Red text. Confirmation dialog required.
+- **Never:** Never use destructive styling on a primary action button
+
+**Icon Buttons**
+
+- **When:** Compact actions — share, export, close, navigation
+- **Visual:** 48×48dp touch target, 24dp icon, `text-secondary` default, agent/brand color on hover
+- **Placement:** App bars, card action rows, inline with content
+
+**Floating Action Buttons (FAB)**
+
+- **When:** Not used. VentureIQ's primary actions are contextual, not global. FAB breaks the premium, minimal aesthetic.
+
+### Feedback Patterns
+
+**Success States**
+
+- **Visual:** Success Green (`#22C55E`) left border on feedback card, ✅ icon, `surface-100` background
+- **When:** Agent completion, report generation complete, PDF exported, link copied
+- **Duration:** SnackBar auto-dismisses in 4 seconds; persistent success states remain on-screen (e.g., agent "Complete" status)
+- **Haptic:** Light haptic on score reveal landing, agent completion
+
+**Error States**
+
+- **Visual:** Error Red (`#EF4444`) left border, ⚠️ icon, clear error message + recovery action
+- **When:** Agent failure, network disconnection, export failure, input validation failure
+- **Pattern:** Always provide: (1) what happened, (2) why, (3) what to do next
+- **Agent failure specific:** "4 of 5 agents completed. Confidence adjusted." — not "Something went wrong." Graceful degradation is a trust signal.
+- **Retry:** Retryable errors show "Tap to retry" action button. Non-retryable show recovery guidance.
+
+**Warning States**
+
+- **Visual:** Caution Amber (`#F59E0B`) left border, ⚠️ icon
+- **When:** Low confidence scores, degraded performance, approaching rate limits
+- **Pattern:** Informational — no blocking action required. Transparent about limitations.
+
+**Info States**
+
+- **Visual:** Intelligence Blue (`#3B82F6`) left border, ℹ️ icon
+- **When:** Tips, suggestions, plausibility check guidance, first-use hints
+- **Pattern:** Dismissable, never blocking. Subtle and helpful, not noisy.
+
+**Loading / Progress**
+
+- **Streaming (War Room):** Never use a spinner when you can show agents working. Streaming text IS the progress indicator.
+- **Synthesis progress:** LinearProgressIndicator (Cyan) filling left-to-right during Coordinator synthesis
+- **Non-streaming loads:** Skeleton screens (animated shimmer on `surface-100` shapes) for content loading. Never blank screens.
+- **PDF export:** CircularProgressIndicator within the button → download icon on completion
+
+**Toast/SnackBar Rules**
+
+- Position: Bottom of screen, above navigation bar
+- Background: `surface-100` with accent-colored left border
+- Typography: Body SM, `text-primary`
+- Duration: 4 seconds auto-dismiss (configurable), swipe to dismiss
+- Maximum 1 snackbar visible at a time (queue subsequent)
+
+### Form Patterns
+
+**Text Input (Idea Submission)**
+
+- **Visual:** `surface-200` fill, `radius-md` (12dp), `text-tertiary` placeholder, 48dp min height
+- **Focus:** Electric Violet bottom border (2px) + subtle glow transition (0.2s ease)
+- **Error:** Error Red bottom border, error message in Body SM below field in Error Red
+- **Character guidance:** Subtle character count in `text-tertiary`, right-aligned (e.g., "23 characters"), no hard max (soft guidance)
+- **Voice input:** Microphone icon button (48dp) right-aligned within field; tap activates, animated recording indicator replaces icon
+
+**Context Fields (Optional Expander)**
+
+- **Collapsed:** "Add context (optional)" text button with ▼ chevron, `text-secondary`
+- **Expanded:** Smooth expand animation (0.3s ease), context fields appear vertically stacked: Target Audience, Industry, Monetization Model, Region
+- **Each field:** `surface-200` fill, helpful placeholder text (e.g., "e.g., 25-45 urban professionals"), optional badge visible
+- **Pattern:** Optional fields never block submission. Visual weight lower than primary input.
+
+**Validation Rules**
+
+- **Inline validation:** Validate on blur, not on keystroke. Show error below field.
+- **Submission validation:** Validate all fields on tap "Validate". Scroll to first error if multiple.
+- **Plausibility check:** If idea is too short or nonsensical, show inline info nudge: "Add more detail about your business idea for better results" — never blocking, always helpful.
+
+### Navigation Patterns
+
+**Bottom Navigation Bar (Primary)**
+
+- **Components:** 4 tabs maximum — Home (Idea Input), Reports (History), Board (Ask the Board), Profile/Settings
+- **Visual:** `surface-050` background, `text-tertiary` inactive icons/labels, Electric Violet active icon/label, 48dp tab height
+- **Behavior:** Tab switch is instant (no transition animation). Scroll position preserved per tab. Active tab shows filled icon variant.
+- **During War Room:** Navigation bar hidden to maximize immersive experience. "Back" gesture exits War Room with confirmation if streaming is active.
+
+**Screen Transitions**
+
+- **Forward navigation:** Slide-in from right (0.3s, ease-in-out) — e.g., Idea Input → War Room → Report
+- **Modal/overlay:** Slide-up from bottom (0.3s, ease-out) — bottom sheets, source details, dimension breakdowns
+- **Back navigation:** Slide-out to right (0.25s, ease-in) — reverse of forward
+- **Tab switching:** Fade crossfade (0.15s) — instant feel, no directional slide
+
+**Back/Escape Patterns**
+
+- **System back gesture:** Always functional. In War Room, prompts "Exit analysis?" confirmation if agents are still streaming.
+- **Close buttons:** ✕ icon (24dp) in top-right of bottom sheets, dialogs, and overlays. 48dp touch target.
+- **Swipe-to-dismiss:** Bottom sheets can be swiped down to dismiss. Consistent across all bottom sheets.
+
+**Deep Linking**
+
+- **Shared report links:** Open in-app if installed, browser fallback if not
+- **Pattern:** `ventureiq.app/report/{id}` → opens report directly, bypasses splash
+
+### Modal & Overlay Patterns
+
+**Bottom Sheet (Primary Overlay)**
+
+- **When:** Source citation details, dimension breakdowns, agent detail expansion, settings
+- **Visual:** `surface-100` background, `radius-xl` (20dp) top corners, drag handle (40×4dp, `surface-300`, centered)
+- **Behavior:** Slide-up from bottom, backdrop dimming (50% black overlay), swipe-down to dismiss
+- **Snap points:** Half-screen (default), full-screen (drag up). Content determines default height.
+- **Scrollable content:** Internal scroll within sheet; sheet itself stays at snap point
+
+**Dialog (Confirmation Only)**
+
+- **When:** Destructive actions only — delete report, exit streaming War Room, clear history
+- **Visual:** `surface-100` background, `radius-xl`, centered on screen with backdrop
+- **Content:** Clear question + two buttons (Cancel as TextButton, Confirm as FilledButton or Destructive)
+- **Never:** Never use dialogs for information display, settings, or non-destructive flows
+
+**Fullscreen Overlay**
+
+- **When:** PDF preview, Decision Timeline expanded view
+- **Visual:** `surface-000` background, close button top-right, full immersive content
+- **Transition:** Fade/scale-up from trigger element (0.3s)
+
+### Empty States
+
+**No Reports Yet (Report History)**
+
+- **Visual:** Centered illustration area, "No reports yet" in H3, "Validate your first idea to see it here" in Body `text-secondary`, primary CTA button "Validate an Idea"
+- **Tone:** Encouraging, not blaming. "Get started" energy.
+
+**No Conversation History (Ask the Board)**
+
+- **Visual:** Board icon, "Start a conversation" in H3, "Ask questions about your report" in Body, suggested starter questions as tappable chips
+
+**Agent Error (Partial Results)**
+
+- **Visual:** Agent card shows amber/red state, "[Agent Name] encountered an issue" + "Results available from 4 agents. Confidence adjusted." in Body SM
+- **Tone:** Transparent, not apologetic. Honesty builds trust.
+
+**Offline (No Connection)**
+
+- **Visual:** Offline icon, "You're offline" in H3, "Cached reports are available below" in Body, cached report list below
+- **Tone:** Helpful — emphasize what IS available, not what isn't
+
+### Search & Filtering Patterns
+
+**Report History Search**
+
+- **Visual:** SearchBar at top of history list, `surface-200` fill, search icon, "Search your ideas..." placeholder
+- **Behavior:** Filter-as-you-type (debounced 300ms), matches on idea title/summary
+- **Empty results:** "No reports match '[query]'" with "Validate a new idea" CTA
+
+**Dimension Filtering (Comparative Analysis)**
+
+- **Visual:** Horizontal FilterChip row — Market, Competition, Financials, Risk, Execution
+- **Behavior:** Toggle chips to show/hide dimensions in comparison view. At least 1 always selected.
+- **Chip styling:** Muted dimension-color backgrounds when selected, `surface-200` when unselected
+
+**Agent Filtering (Evidence Panel)**
+
+- **Visual:** Horizontal FilterChip row with agent icons — 🔍 Scout, ⚔️ Rival, 💰 CFO, ⚠️ DA, 🎯 Strategist
+- **Behavior:** Toggle to filter citations by citing agent. "All" chip at start, selected by default.
+
+### Gesture Patterns
+
+| Gesture | Action | Context |
+|:--|:--|:--|
+| **Tap** | Primary selection/action | Buttons, cards, citations, agent thumbnails |
+| **Long-press** | Copy text / secondary action | Streaming text copy, report text copy |
+| **Swipe down** | Dismiss bottom sheet / pull-to-refresh | Overlays, report history |
+| **Swipe horizontally** | Scrub Decision Timeline / switch comparison columns | Timeline, Comparative Analysis |
+| **Pinch-to-zoom** | Not used | Complexity avoided for mobile-first simplicity |
+| **Double-tap** | Not used | Avoided to prevent accidental triggers |
+
+### Animation Timing Standards
+
+| Animation Type | Duration | Easing | Usage |
+|:--|:--|:--|:--|
+| **Micro-interaction** | 0.15–0.2s | ease-out | Button press, badge highlight, chip toggle |
+| **Content transition** | 0.25–0.3s | ease-in-out | Screen navigation, bottom sheet slide |
+| **Expansion** | 0.3–0.4s | ease-out | Context field expand, card expand, section toggle |
+| **Data reveal** | 0.8–1.2s | ease-out | Score count-up, radar fill, bar chart fill |
+| **Attention pulse** | 0.3s × 2 | ease-in-out | Cross-reference badge appear, first-token "alive" pulse |
+| **Stagger delay** | 0.05–0.1s per item | — | Agent card activation sequence, bar chart stagger |
+
+**Animation Principles:**
+
+- Never exceed 1.2s for any single animation (except score count-up at 1.2s)
+- Stagger animations to create choreography, not chaos
+- Respect "Reduce Motion" system accessibility setting — replace animations with instant state changes
+- All animations use Flutter's built-in animation framework for 60fps consistency
 
 
