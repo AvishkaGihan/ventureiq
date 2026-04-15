@@ -229,7 +229,7 @@ FR53: Epic 4 — WebSocket reconnection
 
 ## Epic List
 
-### Epic 1: Project Foundation & Development Environment
+### Epic 1 — Walking Skeleton (Idea to Mock Report)
 Developers have a fully operational monorepo with both platforms scaffolded, local dev environment running, and the foundational design system + networking layer ready for feature development.
 **FRs covered:** None directly (infrastructure enables all FRs)
 **NFRs addressed:** NFR4, NFR9, NFR11, NFR19, NFR35-38, NFR39-40
@@ -311,7 +311,7 @@ Users experience a polished first impression with cinematic splash screen, intui
 
 ---
 
-## Epic 1: Project Foundation & Development Environment
+## Epic 1 — Walking Skeleton (Idea to Mock Report)
 
 Developers have a fully operational monorepo with both platforms scaffolded, local dev environment running, and the foundational design system + networking layer ready for feature development.
 
@@ -457,8 +457,8 @@ So that the backend can verify Firebase ID tokens and issue its own JWTs with cu
 **When** the auth system is implemented
 **Then** `app/core/security.py` implements Firebase ID token verification using Firebase Admin SDK
 **And** `app/core/security.py` implements backend JWT generation with custom claims (`user_id`, `tier`, `auth_method`)
-**And** `app/endpoints/auth.py` provides `POST /api/v1/auth/exchange` that accepts a Firebase ID token and returns a backend JWT + refresh token pair
-**And** `app/endpoints/auth.py` provides `POST /api/v1/auth/refresh` that accepts a refresh token and returns a new JWT + rotated refresh token (NFR16)
+**And** `app/api/v1/endpoints/auth.py` provides `POST /api/v1/auth/exchange` that accepts a Firebase ID token and returns a backend JWT + refresh token pair
+**And** `app/api/v1/endpoints/auth.py` provides `POST /api/v1/auth/refresh` that accepts a refresh token and returns a new JWT + rotated refresh token (NFR16)
 **And** JWT access tokens expire after a configurable period (default: 1 hour)
 **And** Refresh token rotation is enforced — each refresh token is single-use (NFR16)
 **And** `app/core/dependencies.py` provides `get_current_user()` dependency that extracts and validates JWT from `Authorization: Bearer` header
@@ -543,7 +543,7 @@ So that user-submitted ideas are validated and safe before consuming AI resource
 **When** the idea submission endpoint is implemented
 **Then** `app/models/idea.py` defines SQLAlchemy `Idea` model with fields: `id` (UUID), `user_id`, `idea_text`, `target_audience`, `industry`, `monetization_model`, `region`, `status`, `created_at`
 **And** `app/schemas/idea.py` defines Pydantic request schema `IdeaCreateRequest` (idea_text required, context fields optional) and response schema `IdeaResponse`
-**And** `app/endpoints/ideas.py` provides `POST /api/v1/ideas` that validates, sanitizes, and persists the idea
+**And** `app/api/v1/endpoints/ideas.py` provides `POST /api/v1/ideas` that validates, sanitizes, and persists the idea
 **And** `app/services/sanitization_service.py` implements input sanitization against prompt injection using pattern matching and content filtering (NFR12, FR50)
 **And** Ideas shorter than 10 characters or flagged as non-business content return `422` with helpful guidance: "Add more detail about your business idea for better results"
 **And** Alembic migration creates the `ideas` table
@@ -655,7 +655,7 @@ So that users can observe the War Room's live analysis.
 
 **Given** the LangGraph pipeline from Story 4.1
 **When** WebSocket streaming is implemented
-**Then** `app/websockets/analysis.py` provides `WS /api/v1/ws/analysis/{idea_id}` WebSocket endpoint
+**Then** `app/api/v1/websockets/analysis.py` provides `WS /api/v1/ws/analysis/{idea_id}` WebSocket endpoint
 **And** The WebSocket uses the single-connection model: one bidirectional connection per analysis session
 **And** All server→client events follow the envelope format: `{ "event_type", "timestamp", "payload" }` with types: `agent_token`, `agent_status`, `search_result`, `cross_reference`, `synthesis_progress`, `score_reveal`, `analysis_complete`, `error`, `heartbeat`, `replay_batch`
 **And** Client→server control messages support: `control_pause`, `control_resume`, `control_skip`
@@ -838,8 +838,8 @@ So that reports are durable, retrievable, and available for all downstream featu
 **Then** `app/models/report.py` defines SQLAlchemy `Report` model with fields: `id` (UUID), `idea_id` (FK), `user_id`, `viability_score`, `dimensional_scores` (JSON), `executive_summary`, `key_insight`, `agent_outputs` (JSON), `citations` (JSON), `status`, `agent_completion_count`, `created_at`
 **And** `app/services/report_service.py` persists the complete report after Coordinator synthesis completes
 **And** Alembic migration creates the `reports` table
-**And** `app/endpoints/reports.py` provides `GET /api/v1/reports/{id}` returning the full report in envelope format
-**And** `app/endpoints/reports.py` provides `GET /api/v1/reports` returning paginated report list (most recent first) for the authenticated user
+**And** `app/api/v1/endpoints/reports.py` provides `GET /api/v1/reports/{id}` returning the full report in envelope format
+**And** `app/api/v1/endpoints/reports.py` provides `GET /api/v1/reports` returning paginated report list (most recent first) for the authenticated user
 **And** Reports include confidence scores per citation and unverified estimate flags (FR15)
 **And** Each citation includes: source title, URL, snippet, confidence percentage, citing agent, and verified/unverified status
 **And** Reports are scoped to the authenticated user — users cannot access others' reports
@@ -982,7 +982,7 @@ So that I can make an informed decision between competing ideas.
 **Given** 2 reports selected from the History screen (Story 8.1)
 **When** comparative analysis is implemented
 **Then** `features/history/presentation/comparative_analysis_screen.dart` displays two reports side-by-side (FR23)
-**And** `app/endpoints/comparisons.py` provides `POST /api/v1/comparisons` accepting two report IDs and returning a comparison result
+**And** `app/api/v1/endpoints/comparisons.py` provides `POST /api/v1/comparisons` accepting two report IDs and returning a comparison result
 **And** Diff visualization highlights key score differences between the two ideas with color-coded indicators (green for advantage, red for weakness) (FR24)
 **And** Horizontal FilterChip row toggles dimensions (Market, Competition, Financials, Risk, Execution) to filter the comparison view
 **And** RadarChart comparison overlay renders two polygons (Electric Violet + Cyan) on the same chart (UX-DR10)
@@ -1006,7 +1006,7 @@ So that scenario simulation can produce updated projections.
 
 **Given** a completed report
 **When** scenario simulation is implemented
-**Then** `app/endpoints/scenarios.py` provides `POST /api/v1/reports/{id}/scenarios` accepting modified parameters (pricing, target audience, region, stage)
+**Then** `app/api/v1/endpoints/scenarios.py` provides `POST /api/v1/reports/{id}/scenarios` accepting modified parameters (pricing, target audience, region, stage)
 **And** `app/services/scenario_service.py` re-invokes relevant agents (primarily CFO and Strategist) with modified parameters, reusing cached Scout/Rival data where parameters don't affect market research (FR21)
 **And** Updated dimensional scores and overall Viability Score are computed
 **And** Scenario results are persisted with a reference to the original report
@@ -1051,7 +1051,7 @@ So that users can ask follow-up questions and receive cited, report-specific res
 **Given** ChromaDB from Docker Compose and a persisted report
 **When** the conversational backend is implemented
 **Then** `app/services/conversation_service.py` implements RAG: embeds report content into ChromaDB (per-report collection), retrieves relevant chunks for user queries, and generates grounded responses via LLMProvider
-**And** `app/endpoints/conversations.py` provides `POST /api/v1/reports/{id}/conversations` for submitting questions and receiving streaming responses
+**And** `app/api/v1/endpoints/conversations.py` provides `POST /api/v1/reports/{id}/conversations` for submitting questions and receiving streaming responses
 **And** Responses include inline citation references linking to existing report sources (FR27)
 **And** `app/models/conversation.py` defines SQLAlchemy model for conversation history: `id`, `report_id`, `user_id`, `messages` (JSON array), `created_at`, `updated_at`
 **And** Conversation history is persisted per report and resumable across sessions (FR28)
@@ -1101,7 +1101,7 @@ So that the Decision Timeline can replay how multi-agent analysis unfolded.
 **Then** `app/services/timeline_service.py` freezes the Redis event buffer into a permanent `timeline_events` JSON column on the Report model after analysis completes
 **And** Each event includes: `timestamp`, `agent`, `event_type`, `content_snapshot`, `causal_link` (optional reference to a preceding event that influenced this one)
 **And** Causal links are populated for cross-reference events — linking the cross-reference to the original finding that triggered it
-**And** `app/endpoints/reports.py` extends `GET /api/v1/reports/{id}` to include `timeline_events` in the response
+**And** `app/api/v1/endpoints/reports.py` extends `GET /api/v1/reports/{id}` to include `timeline_events` in the response
 **And** Alembic migration adds `timeline_events` column to `reports` table
 **And** Unit tests verify event freezing, causal link construction, and API response
 
@@ -1141,7 +1141,7 @@ So that I can share my validated idea with investors or team members in a polish
 **Given** a completed report
 **When** PDF export is implemented
 **Then** `app/services/pdf_service.py` generates a PDF using ReportLab including: Executive Summary, Viability Score breakdown, all 5 agent analyses, citation list with confidence scores, and dimensional radar chart as rendered image
-**And** `app/endpoints/exports.py` provides `POST /api/v1/reports/{id}/export/pdf` returning a download URL
+**And** `app/api/v1/endpoints/exports.py` provides `POST /api/v1/reports/{id}/export/pdf` returning a download URL
 **And** The PDF uses VentureIQ branding (dark theme colors, logo, "Generated by VentureIQ" footer)
 **And** PDF generation completes within 15 seconds (NFR8)
 **And** Flutter client triggers export via `features/report/presentation/widgets/export_button.dart`, showing progress indicator then opening share sheet with the PDF file (FR33)
@@ -1158,8 +1158,8 @@ So that I can quickly share my analysis with others for feedback.
 
 **Given** a completed report
 **When** sharing is implemented
-**Then** `app/endpoints/sharing.py` provides `POST /api/v1/reports/{id}/share` generating a random token and returning a shareable URL (FR34)
-**And** `app/endpoints/sharing.py` provides `GET /api/v1/shared/{token}` returning the full report data without authentication (FR35)
+**Then** `app/api/v1/endpoints/sharing.py` provides `POST /api/v1/reports/{id}/share` generating a random token and returning a shareable URL (FR34)
+**And** `app/api/v1/endpoints/sharing.py` provides `GET /api/v1/shared/{token}` returning the full report data without authentication (FR35)
 **And** Shared links expire after a configurable period (default 30 days)
 **And** Report owners can revoke shared links via `DELETE /api/v1/reports/{id}/share`
 **And** Flutter client shows "Share Report" button that generates the link and opens platform share sheet (FR34)
@@ -1227,7 +1227,7 @@ So that I can monitor system performance and control AI spending.
 **When** observability is implemented
 **Then** `app/services/tracing_service.py` captures per-agent execution traces: start/end timestamps, token consumption (input + output), API cost (computed using provider pricing tables), search calls made, error events (FR45)
 **And** `app/models/trace.py` defines SQLAlchemy `ExecutionTrace` model persisted per report
-**And** `app/endpoints/admin.py` provides `GET /api/v1/admin/traces` with filtering (date range, idea_id, min_cost) and pagination
+**And** `app/api/v1/endpoints/admin.py` provides `GET /api/v1/admin/traces` with filtering (date range, idea_id, min_cost) and pagination
 **And** Cost-per-report is calculable from logged token data (NFR34), exposed via `GET /api/v1/admin/costs/summary` (FR46)
 **And** Alembic migration creates the `execution_traces` table
 **And** Structured JSON logging (from Story 1.2) includes `request_id`, `agent_name`, `tokens_used`, and `cost_usd` fields

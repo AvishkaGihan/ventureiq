@@ -292,6 +292,8 @@ ventureiq/
 | Offline strategy | Hive key-value cache — completed reports + metadata only; on-demand invalidation + connectivity-triggered sync; 50-report LRU eviction | Hive latest | PRD-specified storage engine; simple, fast reads; 50-report cap manages device storage | Report viewing, offline mode |
 | Image/chart rendering | Client-side via fl_chart — radar chart, dimensional bars, market positioning | fl_chart latest | PRD-specified; renders from structured report data; no server-side chart generation needed | Executive Summary, Comparative Analysis |
 | Voice input | Platform-native speech-to-text (iOS Speech, Android STT) | N/A | Zero additional API cost; good enough quality for idea input (short phrases); no cloud dependency | Idea Input screen |
+| Accessibility (Haptics) | Subtle haptic feedback via platform integrations (`HapticFeedback.lightImpact()`) | N/A | UX-DR20 requirement: score reveal, agent completion, cross-reference triggers. Fallback gracefully if hardware unsupported. | War Room, Executive Summary |
+| Accessibility (Reduce Motion) | `MediaQuery.disableAnimationsOf(context)` | N/A | UX-DR24 requirement: disabled or simplified animations when OS setting is on. | All animated UI |
 
 ### Infrastructure & Deployment
 
@@ -507,9 +509,15 @@ All WebSocket messages use a typed envelope:
 | `synthesis_progress` | `progress_pct`, `phase` | Server → Client |
 | `score_reveal` | `score`, `dimensions`, `anchor_label` | Server → Client |
 | `error` | `agent`, `error_code`, `message` | Server → Client |
+| `analysis_complete` | `agent`, `metadata` | Server → Client |
+| `search_result` | `agent`, `query`, `summary` | Server → Client |
+| `heartbeat` | `timestamp` | Server → Client |
+| `replay_batch` | `events` (list of events) | Server → Client |
+
+| `control_resume` | `agent` (optional) | Client → Server |
 | `control_spotlight` | `agent` | Client → Server |
 | `control_skip` | — | Client → Server |
-| `control_pause` | `paused` (bool) | Client → Server |
+
 
 **Data Format Rules:**
 

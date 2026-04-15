@@ -613,7 +613,7 @@ Features explicitly excluded from V1 that represent future expansion:
 - **FR36:** Users can sign in with a Google account
 - **FR37:** Users can use the app without signing in (anonymous access) to generate and view reports on-device; cross-device access requires sign-in
 - **FR38:** Anonymous users can upgrade to a signed-in account and retain their data
-- **FR39:** The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro)
+- **FR39:** The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro) and validate Pro tier subscriptions via platform native receipt validation (App Store/Play Store)
 - **FR40:** Users can view their report history and revisit previously generated reports
 
 ### Offline & Persistence
@@ -640,6 +640,9 @@ Features explicitly excluded from V1 that represent future expansion:
 - **FR51:** The system can enforce per-agent token budget ceilings with graceful degradation on exceeding limits
 - **FR52:** The system can complete reports with reduced confidence when individual agents fail (graceful degradation)
 - **FR53:** The system can automatically reconnect streaming sessions after connection drops and replay missed events
+- **FR54:** Users can delete their account and all associated data
+- **FR55:** Users can explicitly save specific scenario combinations to their history
+- **FR56:** New users are presented with an onboarding carousel explaining the core value proposition
 
 ## Non-Functional Requirements
 
