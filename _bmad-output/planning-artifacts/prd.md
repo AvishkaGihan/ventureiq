@@ -613,7 +613,7 @@ Features explicitly excluded from V1 that represent future expansion:
 - **FR36:** Users can sign in with a Google account
 - **FR37:** Users can use the app without signing in (anonymous access) to generate and view reports on-device; cross-device access requires sign-in
 - **FR38:** Anonymous users can upgrade to a signed-in account and retain their data
-- **FR39:** The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro) and validate Pro tier subscriptions via platform native receipt validation (App Store/Play Store)
+- **FR39:** The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro) — _Note: In-app purchase and platform-native receipt validation (App Store/Play Store) deferred to post-V1; V1 enforces tiers via server-side rate limiting_
 - **FR40:** Users can view their report history and revisit previously generated reports
 
 ### Offline & Persistence

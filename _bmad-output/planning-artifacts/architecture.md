@@ -22,7 +22,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 ### Requirements Overview
 
-**Functional Requirements (53 FRs across 11 areas):**
+**Functional Requirements (56 FRs across 13 areas):**
 
 | Area | FRs | Architectural Implication |
 |:--|:--|:--|
@@ -40,6 +40,9 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 | Notifications (FR43-44) | Push notifications for report completion, opt-in/out | Firebase Cloud Messaging integration |
 | Observability (FR45-49) | Execution traces, cost tracking, error monitoring | LangSmith/Prometheus integration, structured logging, metrics aggregation |
 | System Safety (FR50-53) | Prompt injection defense, token budgets, graceful degradation, reconnection | Input sanitization layer, token budget enforcement per agent, WebSocket replay buffer |
+| User Lifecycle (FR54) | Account & data deletion | Cascading delete across PostgreSQL, ChromaDB, Redis; GDPR-style data removal |
+| Scenario Persistence (FR55) | Save scenario combinations | Scenario state persistence, history linkage |
+| Onboarding (FR56) | First-launch onboarding carousel | Hive flag for onboarding completion, 3-slide carousel UI |
 
 **Non-Functional Requirements (43 NFRs across 6 categories):**
 
@@ -515,6 +518,7 @@ All WebSocket messages use a typed envelope:
 | `replay_batch` | `events` (list of events) | Server → Client |
 
 | `control_resume` | `agent` (optional) | Client → Server |
+| `control_pause` | `agent` (optional) | Client → Server |
 | `control_spotlight` | `agent` | Client → Server |
 | `control_skip` | — | Client → Server |
 
@@ -1014,7 +1018,7 @@ WS /ws/analysis    ──────►   AnalysisService.execute()
 
 ### Requirements Coverage Validation ✅
 
-**Functional Requirements Coverage: 53/53 (100%)**
+**Functional Requirements Coverage: 56/56 (100%)**
 
 | FR Group | Status | Architectural Support |
 |:--|:--|:--|
@@ -1032,6 +1036,9 @@ WS /ws/analysis    ──────►   AnalysisService.execute()
 | FR43-44 (Notifications) | ✅ | Firebase Cloud Messaging |
 | FR45-49 (Observability) | ✅ | `core/logging.py` + LangSmith + Prometheus |
 | FR50-53 (Safety) | ✅ | Defense-in-depth + token budgets + reconnection |
+| FR54 (Account Deletion) | ✅ | `features/settings/` + cascading delete service |
+| FR55 (Scenario Save) | ✅ | `features/scenario/` + `endpoints/scenarios.py` |
+| FR56 (Onboarding) | ✅ | `features/splash/` + Hive onboarding flag |
 
 **Non-Functional Requirements Coverage: 43/43 (100%)**
 
@@ -1059,6 +1066,7 @@ WS /ws/analysis    ──────►   AnalysisService.execute()
 1. Database schema details — will be defined during Alembic migration stories
 2. LangGraph conditional edge logic — implementation decision per agent
 3. Push notification triggers beyond report completion — implementation decision
+4. NFR10 (encryption at rest) and NFR14 (no-training-data policy) — enforced via PostgreSQL configuration and data handling policy during deployment; no dedicated epic required
 
 **Deferred (Post-V1):**
 - CDN for shared report links
@@ -1069,7 +1077,7 @@ WS /ws/analysis    ──────►   AnalysisService.execute()
 
 ### Architecture Completeness Checklist
 
-- [x] Project context thoroughly analyzed (53 FRs, 43 NFRs)
+- [x] Project context thoroughly analyzed (56 FRs, 43 NFRs)
 - [x] Scale and complexity assessed (HIGH)
 - [x] Technical constraints identified (10 constraints)
 - [x] Cross-cutting concerns mapped (8 concerns)
@@ -1097,7 +1105,7 @@ WS /ws/analysis    ──────►   AnalysisService.execute()
 **Confidence Level: HIGH**
 
 **Key Strengths:**
-- Complete requirement coverage (53/53 FRs, 43/43 NFRs)
+- Complete requirement coverage (56/56 FRs, 43/43 NFRs)
 - Provider-agnostic abstractions for painless LLM/search provider swaps
 - Streaming-first design for the War Room
 - Defense-in-depth security across all layers

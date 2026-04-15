@@ -54,7 +54,7 @@ FR35: Recipients of a shared link can view the report without requiring a Ventur
 FR36: Users can sign in with a Google account
 FR37: Users can use the app without signing in (anonymous access) to generate and view reports on-device; cross-device access requires sign-in
 FR38: Anonymous users can upgrade to a signed-in account and retain their data
-FR39: The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro)
+FR39: The system can enforce tier-based usage limits (3 reports/month for free tier, unlimited for Pro) — Note: In-app purchase and platform receipt validation deferred to post-V1
 FR40: Users can view their report history and revisit previously generated reports
 FR41: Users can view previously generated reports while offline
 FR42: Signed-in users can access their reports across sessions and devices
@@ -69,6 +69,9 @@ FR50: The system can sanitize all user inputs against prompt injection before pa
 FR51: The system can enforce per-agent token budget ceilings with graceful degradation on exceeding limits
 FR52: The system can complete reports with reduced confidence when individual agents fail (graceful degradation)
 FR53: The system can automatically reconnect streaming sessions after connection drops and replay missed events
+FR54: Users can delete their account and all associated data
+FR55: Users can explicitly save specific scenario combinations to their history
+FR56: New users are presented with an onboarding carousel explaining the core value proposition
 
 ### NonFunctional Requirements
 
@@ -226,6 +229,9 @@ FR50: Epic 4 — Prompt injection defense
 FR51: Epic 4 — Token budget enforcement
 FR52: Epic 4 — Graceful degradation
 FR53: Epic 4 — WebSocket reconnection
+FR54: Epic 15 — Account & data deletion
+FR55: Epic 9 — Save scenario combinations
+FR56: Epic 15 — Onboarding carousel
 
 ## Epic List
 
@@ -658,7 +664,7 @@ So that users can observe the War Room's live analysis.
 **Then** `app/api/v1/websockets/analysis.py` provides `WS /api/v1/ws/analysis/{idea_id}` WebSocket endpoint
 **And** The WebSocket uses the single-connection model: one bidirectional connection per analysis session
 **And** All server→client events follow the envelope format: `{ "event_type", "timestamp", "payload" }` with types: `agent_token`, `agent_status`, `search_result`, `cross_reference`, `synthesis_progress`, `score_reveal`, `analysis_complete`, `error`, `heartbeat`, `replay_batch`
-**And** Client→server control messages support: `control_pause`, `control_resume`, `control_skip`
+**And** Client→server control messages support: `control_pause`, `control_resume`, `control_skip`, `control_spotlight`
 **And** `app/services/streaming_service.py` buffers all events in Redis db0 with TTL for replay on reconnection
 **And** Time-to-first-token is under 2 seconds from WebSocket connection to first `agent_token` event (NFR1)
 **And** Agent token streaming latency is under 1 second between server emission and event delivery (NFR2)
