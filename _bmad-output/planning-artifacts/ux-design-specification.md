@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -702,5 +702,215 @@ Six distinct design directions were generated and evaluated as interactive HTML 
 ### Design Direction Reference
 
 Interactive HTML mockups of all 6 explored directions are available at: `_bmad-output/planning-artifacts/ux-design-directions.html`
+
+## User Journey Flows
+
+### Journey 1: First-Time Validation (Maya's Path)
+
+The primary success path — a first-time user goes from idea to investor-grade report in 90 seconds.
+
+```mermaid
+flowchart TD
+    A[Open VentureIQ] --> B{First Launch?}
+    B -->|Yes| C[Splash Screen<br>1.5s cinematic reveal]
+    B -->|No| D[Idea Input Screen]
+    C --> D
+
+    D --> E[Type idea in text field<br>1-3 sentences]
+    E --> F{Add context?}
+    F -->|Tap expander| G[Fill context fields<br>Target audience, monetization,<br>geography, stage]
+    F -->|Skip| H[Tap 'Validate']
+    G --> H
+
+    H --> I{Input validation}
+    I -->|Too short / nonsensical| J[Inline error<br>'Add more detail about<br>your business idea']
+    I -->|Valid| K[Button transforms →<br>Screen transitions to War Room]
+    J --> E
+
+    K --> L[War Room: Agent Activation<br>5 cards ignite in sequence<br>0-2 seconds]
+    L --> M[Spotlight Mode Default<br>Most active agent expanded<br>Compact strip below]
+
+    M --> N{User interaction}
+    N -->|Tap agent thumbnail| O[Switch spotlight<br>to tapped agent]
+    N -->|Toggle 'Expand All'| P[Grid view:<br>all 5 agents visible]
+    N -->|Watch passively| Q[Auto-spotlight follows<br>most active agent]
+    N -->|Tap 'Skip to Results'| R[Jump to Score Reveal]
+    O --> N
+    P --> N
+    Q --> N
+
+    N -->|Cross-ref moment| S[📎 Badge appears<br>Strategist responds to<br>Devil's Advocate]
+    S --> T{Tap badge?}
+    T -->|Yes| U[Scroll to referenced finding<br>highlight connection]
+    T -->|No| N
+    U --> N
+
+    N -->|All agents complete| V[Coordinator synthesis<br>Progress indicator fills]
+    V --> W[Score Reveal<br>Count-up 0 → 78<br>Haptic pulse]
+    R --> W
+
+    W --> X[Dimensional bars animate<br>Market 85, Competition 68...]
+    X --> Y[Key Insight card slides up]
+    Y --> Z{User action}
+
+    Z -->|Tap dimension| AA[Dimension detail sheet<br>Contributing factors +<br>agent attribution]
+    Z -->|Tap citation| AB[Source bottom sheet<br>Title, URL, confidence, snippet]
+    Z -->|Scroll down| AC[Full Executive Summary<br>Agent sections with toggles]
+    Z -->|Tap 'Export PDF'| AD[PDF preview → download]
+    Z -->|Tap 'Share'| AE[Generate link → share sheet]
+    Z -->|Tap 'Ask the Board'| AF[Conversational AI<br>grounded in report]
+    Z -->|Tap 'Validate Another'| D
+
+    AA --> Z
+    AB --> Z
+    AC --> Z
+    AD --> Z
+    AE --> Z
+    AF --> Z
+```
+
+**Key flow decisions:**
+- **Zero-registration start** — first action is typing an idea, not creating an account
+- **Input validation** catches nonsensical/too-short input before consuming LLM resources (early stopping per PRD)
+- **War Room defaults to Spotlight mode** (low cognitive load for first-timers), with Expand All toggle for returning users
+- **Auto-spotlight** follows the most active agent, reducing need for manual interaction
+- **"Skip to Results"** always available but unobtrusive — respects both patient and impatient users
+- **Cross-reference badges** are tap targets but non-blocking — passive users still see the moment organically
+- **Post-report actions** (Export, Share, Ask the Board, Validate Another) all accessible from the same screen — no dead ends
+
+### Journey 2: Multi-Report Comparison (Daniel's Path)
+
+The power user workflow — sequential validation, comparative analysis, and conversational deep dives.
+
+```mermaid
+flowchart TD
+    A[Open VentureIQ] --> B[Idea Input Screen]
+    B --> C[Run Validation #1<br>'Pet telehealth platform']
+    C --> D[War Room → Score Reveal<br>Standard flow]
+    D --> E[Report #1 Complete<br>Score: 74/100]
+
+    E --> F{Next action}
+    F -->|'Validate Another'| G[Idea Input Screen]
+    G --> H[Run Validation #2<br>'Restaurant inventory SaaS']
+    H --> I[War Room → Score Reveal<br>Standard flow]
+    I --> J[Report #2 Complete<br>Score: 82/100]
+
+    J --> K{Next action}
+    K -->|'Validate Another'| L[Idea Input Screen]
+    L --> M[Run Validation #3<br>'Sustainable fashion marketplace']
+    M --> N[War Room → Score Reveal<br>Standard flow]
+    N --> O[Report #3 Complete<br>Score: 65/100]
+
+    O --> P{Next action}
+    P -->|Tap 'History'| Q[Report History Screen<br>3 reports listed with<br>scores and timestamps]
+
+    Q --> R{Select reports}
+    R -->|Select 2 reports| S[Compare button enabled]
+    S --> T[Comparative Analysis<br>Side-by-side diff view]
+
+    T --> U{Interaction}
+    U -->|Toggle dimensions| V[Filter by Market,<br>Competition, etc.]
+    U -->|Tap 'Ask the Board'| W[Conversational AI<br>Multi-report context]
+    U -->|Tap difference| X[Detail sheet:<br>why scores diverge]
+
+    W --> Y[Ask: 'What regulatory<br>landscape for pet telehealth?']
+    Y --> Z[Grounded response with<br>citations from report context]
+    Z --> AA[Follow-up: 'How does this<br>affect CFO projections?']
+    AA --> AB[Cross-report analysis:<br>connects regulatory to financials]
+    AB --> AC{Next action}
+    AC -->|Export| AD[Export individual or<br>comparative PDF]
+    AC -->|Share| AE[Share comparative link]
+    AC -->|New validation| B
+```
+
+**Key flow decisions:**
+- **Sequential validation is frictionless** — "Validate Another" returns to input immediately with clean state
+- **History screen** shows all past reports with scores, timestamps, and idea summaries for easy comparison selection
+- **Comparative Analysis requires exactly 2 reports** selected (checkbox selection in history list)
+- **Ask the Board is context-aware** — grounded in whichever report(s) are currently open. Multi-report context enables cross-report queries
+- **Follow-up questions chain naturally** without losing report context — session-persistent conversation
+
+### Journey 3: Scenario Simulation & Pivot Evaluation (Priya's Path)
+
+The advanced analysis workflow — variable manipulation, scenario stacking, and stakeholder-ready output.
+
+```mermaid
+flowchart TD
+    A[Open VentureIQ] --> B[Idea Input Screen]
+    B --> C[Run Validation<br>'Current product direction']
+    C --> D[Report Complete<br>Score: 61/100]
+
+    D --> E{User action}
+    E -->|'Scenario Simulator'| F[Scenario Simulator Panel<br>Variable sliders appear]
+
+    F --> G[Adjust variables:<br>Price: $19 vs $49<br>Target: SMB vs Mid-market<br>Geo: US-only vs Global]
+    G --> H[Tap 'Re-simulate']
+    H --> I{Re-run analysis}
+    I --> J[Updated Score<br>reflects new parameters]
+    J --> K{Iterate?}
+    K -->|Adjust more variables| G
+    K -->|Save this scenario| L[Scenario saved to<br>comparison stack]
+
+    L --> M{Next scenario}
+    M -->|'Validate Another'| N[New idea input<br>'Vertical SaaS pivot']
+    N --> O[Report Complete<br>Score: 82/100]
+    O -->|Scenario Simulator| P[Adjust variables,<br>save scenarios]
+    P --> Q[Scenarios saved: 2+]
+
+    Q --> R{Continue?}
+    R -->|Another scenario| S[New idea input<br>'Platform play']
+    S --> T[Report Complete<br>Score: 65/100]
+
+    T --> U[Open Comparative Analysis<br>Select all 3 directions]
+    U --> V[Side-by-side comparison<br>with scenario overlays]
+
+    V --> W{Deep analysis}
+    W -->|'Decision Timeline'| X[Timeline replay view<br>Scrub through analysis]
+    W -->|Tap 'Risk Radar'| Y[Ranked risk visualization<br>by scenario]
+
+    X --> Z[Scrub to key moment:<br>Scout's data → CFO projection]
+    Z --> AA[Screenshot for deck]
+    AA --> W
+
+    Y --> AB[Compare risk counts:<br>Platform: 3 critical<br>Vertical: 1 critical]
+    AB --> W
+
+    W -->|Export| AC[Export comparative deck<br>All scenarios included]
+    W -->|Share| AD[Share with stakeholders]
+```
+
+**Key flow decisions:**
+- **Scenario Simulator is a post-report action** — accessed from the report view, not a separate entry point. Pre-populated with original idea parameters
+- **Variable sliders** map to the context fields from input (pricing, target segment, geography, stage)
+- **Scenario stacking** — each saved scenario adds to a comparison queue accessible from Comparative Analysis
+- **Decision Timeline uses familiar video scrubbing** — shows causal chain between agents (Scout's data → CFO's projection)
+- **Risk Radar** aggregates critical/moderate/low risks across scenarios for at-a-glance comparison
+- **Export generates a comparative deck** — all scenarios side-by-side in a single PDF for stakeholder presentation
+
+### Journey Patterns
+
+Reusable interaction patterns extracted across all three journeys:
+
+| Pattern | Description | Used In |
+|:--|:--|:--|
+| **Core Pipeline** | Input → Validate → War Room → Score. Every journey passes through the same 4-phase funnel | All journeys |
+| **Spotlight → Detail Sheet** | Tap any data point → bottom sheet with detailed breakdown. Consistent gesture across dimensions, citations, agent sections | Maya, Daniel, Priya |
+| **Progressive Disclosure** | Summary first → tap to expand. Works for agent outputs, dimensional scores, individual citations | All journeys |
+| **Cross-Reference Navigation** | 📎 badge → tap → scroll to referenced content. Same gesture whether in War Room or Executive Summary | Maya, Priya |
+| **Action Bar** | Post-report actions (Export, Share, Ask the Board, Scenario Simulator) always available as a persistent action row below the score | All journeys |
+| **History → Compare** | Select 2+ reports from history → trigger Comparative Analysis. Same grid regardless of whether reports were run sequentially or across sessions | Daniel, Priya |
+| **Ground-then-Ask** | Ask the Board always grounded in current report context. System cites existing findings rather than generating new uncited claims | Daniel |
+| **Scenario Stack** | Save parameter variations as named scenarios → compare across all saved scenarios in Comparative Analysis | Priya |
+
+### Flow Optimization Principles
+
+1. **Zero-registration start** — First action is typing an idea, not creating an account. Authentication deferred until export/share (if required at all for MVP)
+2. **2-tap-to-value** — From any screen, the user is at most 2 taps from the information they need. War Room → Tap agent → Detail. Score → Tap dimension → Breakdown
+3. **Graceful impatience** — "Skip to Results" is always available during War Room streaming. Users who skip still get the full score and report; they just miss the live streaming experience
+4. **Error recovery without restart** — Input validation catches bad input before LLM calls. If an agent fails mid-stream, the system shows a "partial results" state with the remaining agents' output rather than a blank error screen
+5. **Context preservation** — Navigating away from a report and returning always restores the exact scroll position, expanded sections, and last-viewed agent
+6. **No dead ends** — Every screen has a clear "next action" (Validate Another, Compare, Ask the Board, Export). The user is never left wondering "now what?"
+7. **Progressive complexity** — Maya's journey uses only the core pipeline. Daniel adds history + comparison. Priya adds scenarios + timeline. Each persona encounters only the features they need
+
 
 
