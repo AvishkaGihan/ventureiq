@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -616,4 +616,91 @@ Confidence badges are rendered as pill-shaped elements: muted background tint + 
 ### Visual Foundation Reference
 
 A comprehensive interactive HTML reference of the complete color system, typography scale, spacing system, and UI component previews is available at: `_bmad-output/planning-artifacts/ventureiq-visual-foundation.html`
+
+## Design Direction Decision
+
+### Design Directions Explored
+
+Six distinct design directions were generated and evaluated as interactive HTML mockups (`_bmad-output/planning-artifacts/ux-design-directions.html`), each showing War Room, Score Reveal, and Evidence Panel implementations:
+
+| Direction | Concept | War Room Approach | Key Strengths |
+|:--|:--|:--|:--|
+| ① Command Center | Dense mission-control grid | All 5 agents visible simultaneously in 2x2+1 grid | Maximum information density, all-at-once awareness |
+| ② Spotlight Focus | One agent expanded at a time | Large primary card + compact thumbnail strip | Low cognitive load, Apple-like focus |
+| ③ Timeline Flow | Vertical chronological feed | Agents stack as timestamped feed entries with spine | Natural scroll, chronological story, strong cross-referencing |
+| ④ Tabbed Panels | Tab-based agent switching | Full-screen per agent, horizontal tab bar | Maximum depth per agent, document-like reading |
+| ⑤ Card Carousel | Horizontal swipe between agents | Full-width cards with paging dots | Immersive, Stories-like, thumb-friendly |
+| ⑥ Hybrid Adaptive | Spotlight + expandable grid | Spotlight default with "Expand All" toggle to grid | Serves all personas, adapts to preference |
+
+### Chosen Direction
+
+**Direction ⑥ Hybrid Adaptive** — with significant elements borrowed from **Direction ③ Timeline Flow** and **Direction ② Spotlight Focus**.
+
+**Final hybrid composition:**
+
+1. **War Room Layout: Hybrid Adaptive + Timeline Spine**
+   - **Default state:** Spotlight mode — one agent expanded with rich, readable content. Compact awareness strip showing all 5 agent statuses below.
+   - **Power user state:** "Expand All" toggle reveals Command Center 2×2+1 grid with all agents simultaneously.
+   - **Timeline integration:** Chronological timestamp spine from Direction ③ used as the connecting metaphor. Each agent's output appears with timestamps (0:12, 0:28, 0:42) showing real-time progression.
+   - **System remembers preference:** User's last mode choice (spotlight vs. expanded) persists across sessions.
+
+2. **Score Reveal: Large Cinematic Score + Dimensional Breakdown**
+   - **Hero treatment:** 72px score number with cyan→violet gradient, radial glow background effect.
+   - **Anchor label:** "Strong Viability" in confidence-green immediately below.
+   - **Dimensional bars:** Horizontal bar chart showing all 5 dimensions (Market, Execution, Financials, Risk, Competition) with color-coded fills and mono-font values.
+   - **Key Insight card:** Agent-colored left border highlighting the most important strategic recommendation.
+
+3. **Evidence Panel: Structured + Inline Citations with Confidence Badges (Perplexity-style)**
+   - **Inline citation superscripts:** Report text contains numbered reference superscripts [1], [2], [3] linking to sources — exactly like Perplexity's approach.
+   - **Expandable source cards:** Tapping a superscript reveals source details (title, URL, snippet, confidence badge).
+   - **Agent attribution:** Each citation tagged with the agent that cited it ("Cited by 🔍 Scout", "Cited by ⚠️ Devil's Advocate").
+   - **Confidence badges on every claim:** Pill-shaped badges (green/amber/red) attached to individual data points, not just sources.
+   - **Summary stats:** Header shows "12 sources · 3 agents cited · 78% avg confidence".
+
+### Design Rationale
+
+**Why Hybrid Adaptive as the base:**
+- **Serves all three personas simultaneously** — Maya (Curious Explorer) gets the focused Spotlight for her first validation; Daniel (Serial Entrepreneur) and Priya (Technical Founder) toggle to the dense Command Center grid for rapid multi-agent monitoring.
+- **Preserves the "agents are alive" moment** — Spotlight mode creates cinematic focus that makes the cross-referencing "aha!" moment (Strategist responding to Devil's Advocate) impossible to miss.
+- **Maximizes criteria coverage** — Scores ★★★ on multi-agent awareness, cross-ref visibility, mobile readability, AND cinematic impact simultaneously. No other direction achieves this.
+- **Adaptive UX builds mastery** — New users start in Spotlight (low cognitive load), naturally discover the Expand toggle as they gain confidence. The system adapts to their growing expertise.
+
+**Why Timeline spine from Direction ③:**
+- **Chronological narrative** — Timestamps create a natural sense of unfolding investigation. Users feel they're watching a live analysis happen, not reading a static report.
+- **Cross-reference continuity** — The timeline spine makes inter-agent references visually obvious (Strategist responding to Devil's Advocate at 0:42, triggered by Devil's finding at 0:28).
+- **Reusable metaphor** — The same timeline pattern powers the "Decision Timeline" replay feature in the Executive Summary, creating cognitive continuity.
+
+**Why Perplexity-style evidence:**
+- **Institutional trust** — Inline citations with confidence badges are the highest-trust pattern in AI UIs. Users can verify any claim at any time without leaving the flow.
+- **Granular confidence** — Per-claim badges (not just per-source) let users assess the strength of individual data points within a source.
+- **Agent attribution** — Knowing which agent cited which source adds a layer of multi-agent transparency that no single-agent product offers.
+
+### Implementation Approach
+
+**War Room — Phased build:**
+1. **Phase 1 (MVP):** Spotlight mode only — single expanded agent card with compact awareness strip. Timeline timestamps on each agent's output.
+2. **Phase 2:** Add "Expand All" toggle → Command Center grid view. Persist user preference.
+3. **Phase 3:** Auto-spotlight — system automatically focuses on the most active/interesting agent (cross-referencing, critical findings).
+
+**Score Reveal — Animation sequence:**
+1. Score number counts from 0→78 over 1.2 seconds (ease-out curve).
+2. Anchor label fades in 0.3s after score lands.
+3. Dimensional bars animate simultaneously, filling left-to-right over 0.8 seconds.
+4. Key Insight card slides up from below with 0.4s delay.
+
+**Evidence Panel — Integration approach:**
+1. Report text rendered with numbered superscripts linked to source index.
+2. Superscript tap → bottom sheet expands with source details, confidence badge, and agent attribution.
+3. Evidence Panel accessible as a dedicated section (scroll below report) or as overlay (tap "Sources" button).
+4. Confidence badges rendered as Flutter `Chip` widgets with muted background tints.
+
+**Responsive behavior:**
+- Portrait: Single column, Spotlight default, full-width cards
+- Landscape (future tablet): Side-by-side score + dimensional breakdown
+- All views: 48dp minimum touch targets, 16px horizontal margins
+
+### Design Direction Reference
+
+Interactive HTML mockups of all 6 explored directions are available at: `_bmad-output/planning-artifacts/ux-design-directions.html`
+
 

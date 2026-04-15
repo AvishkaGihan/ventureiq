@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VentureIQ — Design Direction Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --surface-000: #09090B;
+  --surface-050: #0F1117;
+  --surface-100: #151823;
+  --surface-150: #1A1E2E;
+  --surface-200: #222639;
+  --surface-250: #2A2F45;
+  --surface-300: #343A52;
+  --surface-400: #4A5173;
+  --text-primary: #F0F1F5;
+  --text-secondary: #A1A7BE;
+  --text-tertiary: #6B7194;
+  --text-disabled: #464D6A;
+  --accent-primary: #6C5CE7;
+  --accent-primary-hover: #7E70F0;
+  --accent-primary-muted: rgba(108, 92, 231, 0.15);
+  --accent-secondary: #00D2FF;
+  --accent-secondary-muted: rgba(0, 210, 255, 0.12);
+  --agent-scout: #3B82F6;
+  --agent-scout-muted: rgba(59, 130, 246, 0.15);
+  --agent-scout-glow: rgba(59, 130, 246, 0.30);
+  --agent-rival: #F43F5E;
+  --agent-rival-muted: rgba(244, 63, 94, 0.15);
+  --agent-rival-glow: rgba(244, 63, 94, 0.30);
+  --agent-cfo: #F59E0B;
+  --agent-cfo-muted: rgba(245, 158, 11, 0.15);
+  --agent-cfo-glow: rgba(245, 158, 11, 0.30);
+  --agent-devil: #EF4444;
+  --agent-devil-muted: rgba(239, 68, 68, 0.15);
+  --agent-devil-glow: rgba(239, 68, 68, 0.30);
+  --agent-strategist: #10B981;
+  --agent-strategist-muted: rgba(16, 185, 129, 0.15);
+  --agent-strategist-glow: rgba(16, 185, 129, 0.30);
+  --agent-coordinator: #A78BFA;
+  --agent-coordinator-muted: rgba(167, 139, 250, 0.15);
+  --confidence-high: #22C55E;
+  --confidence-high-muted: rgba(34, 197, 94, 0.15);
+  --confidence-mid: #F59E0B;
+  --confidence-mid-muted: rgba(245, 158, 11, 0.15);
+  --confidence-low: #EF4444;
+  --confidence-low-muted: rgba(239, 68, 68, 0.15);
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-primary);
+  background: var(--surface-000);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === STICKY NAV === */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(9, 9, 11, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--surface-250);
+  padding: 0 24px;
+}
+.top-nav-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: flex; align-items: center; gap: 24px;
+  height: 56px;
+}
+.nav-logo {
+  font-size: 15px; font-weight: 800; letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+.nav-tabs {
+  display: flex; gap: 4px; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  color: var(--text-tertiary); cursor: pointer;
+  white-space: nowrap; border: none; background: none;
+  transition: all 0.2s;
+}
+.nav-tab:hover { color: var(--text-secondary); background: var(--surface-100); }
+.nav-tab.active {
+  color: var(--text-primary);
+  background: var(--accent-primary-muted);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+}
+
+/* === DIRECTION SECTIONS === */
+.direction { display: none; }
+.direction.active { display: block; }
+
+.direction-header {
+  max-width: 1400px; margin: 0 auto;
+  padding: 48px 24px 32px;
+}
+.direction-num {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--accent-primary); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.direction-title {
+  font-size: 28px; font-weight: 800; letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+.direction-desc {
+  font-size: 15px; color: var(--text-secondary);
+  max-width: 700px; line-height: 1.6;
+}
+.direction-tags {
+  display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+}
+.dtag {
+  font-size: 11px; font-weight: 500; padding: 4px 10px;
+  border-radius: 999px; border: 1px solid var(--surface-300);
+  color: var(--text-tertiary);
+}
+
+/* === PHONE FRAME === */
+.phone-row {
+  max-width: 1400px; margin: 0 auto;
+  padding: 0 24px 64px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+@media (max-width: 1100px) { .phone-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 700px) { .phone-row { grid-template-columns: 1fr; } }
+
+.phone-col { display: flex; flex-direction: column; gap: 12px; }
+.phone-label {
+  font-size: 13px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.phone {
+  width: 100%; max-width: 390px; margin: 0 auto;
+  aspect-ratio: 9/19.5;
+  background: var(--surface-000);
+  border-radius: 40px;
+  border: 3px solid var(--surface-250);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.phone-notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 28px;
+  background: var(--surface-000);
+  border-radius: 0 0 16px 16px;
+  z-index: 10;
+}
+.phone-content {
+  width: 100%; height: 100%;
+  padding: 36px 0 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.phone-content::-webkit-scrollbar { display: none; }
+
+/* === SHARED: STATUS BAR === */
+.status-bar {
+  display: flex; justify-content: space-between;
+  padding: 4px 20px 8px; font-size: 11px;
+  color: var(--text-secondary); font-weight: 500;
+}
+
+/* === SHARED: WAR ROOM HEADER === */
+.wr-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px;
+}
+.wr-title {
+  font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.wr-live {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--accent-secondary);
+}
+.wr-live .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-secondary);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes blink { 50%{opacity:0} }
+@keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes countUp { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+@keyframes fillBar { from{width:0} to{width:var(--fill)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.cursor-blink {
+  display: inline-block; width: 2px; height: 12px;
+  background: var(--accent-secondary);
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom; margin-left: 1px;
+}
+
+/* === AGENT CARD SHARED === */
+.ag-card {
+  background: var(--surface-050);
+  border: 1px solid rgba(255,255,255,0.05);
+  overflow: hidden; position: relative;
+  transition: all 0.2s;
+}
+.ag-card:hover { background: var(--surface-100); }
+.ag-card::before {
+  content:''; position:absolute; top:0; left:0;
+  width: 3px; height: 100%;
+}
+.ag-card.scout::before { background: var(--agent-scout); }
+.ag-card.rival::before { background: var(--agent-rival); }
+.ag-card.cfo::before { background: var(--agent-cfo); }
+.ag-card.devil::before { background: var(--agent-devil); }
+.ag-card.strat::before { background: var(--agent-strategist); }
+
+.ag-head {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ag-name {
+  font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 5px;
+}
+.ag-status {
+  font-size: 10px; font-weight: 500; padding: 2px 7px;
+  border-radius: 999px;
+}
+.ag-status.streaming { background: var(--accent-secondary-muted); color: var(--accent-secondary); }
+.ag-status.complete { background: var(--confidence-high-muted); color: var(--confidence-high); }
+.ag-status.searching { background: var(--accent-primary-muted); color: var(--accent-primary); }
+.ag-status.xref { background: var(--agent-coordinator-muted); color: var(--agent-coordinator); }
+.ag-text { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+
+/* === CONFIDENCE BADGE === */
+.cb { display:inline-flex; align-items:center; gap:4px; padding:2px 7px; border-radius:999px; font-size:9px; font-weight:600; }
+.cb.high { background: var(--confidence-high-muted); color: var(--confidence-high); }
+.cb.mid { background: var(--confidence-mid-muted); color: var(--confidence-mid); }
+.cb.low { background: var(--confidence-low-muted); color: var(--confidence-low); }
+
+/* === XREF BADGE === */
+.xref-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:2px 7px; border-radius:999px; font-size:9px; font-weight:600;
+  background: var(--agent-coordinator-muted);
+  color: var(--agent-coordinator);
+}
+
+/* === SCORE SECTION SHARED === */
+.score-big {
+  font-size: 56px; font-weight: 800; letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: countUp 0.6s ease-out;
+}
+.score-label { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+.score-anchor { font-size: 14px; font-weight: 600; color: var(--confidence-high); margin-top: 2px; }
+
+/* === RADAR CHART (CSS) === */
+.radar-wrap {
+  position: relative;
+  width: 160px; height: 160px; margin: 0 auto;
+}
+.radar-bg {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--surface-250);
+}
+.radar-bg.inner {
+  inset: 25%; border-style: dashed; border-color: var(--surface-200);
+}
+
+/* === DIM BARS === */
+.dim-bar-row { display: flex; flex-direction: column; gap: 6px; }
+.dim-bar {
+  display: flex; align-items: center; gap: 8px;
+}
+.dim-bar-label {
+  font-size: 10px; color: var(--text-tertiary);
+  min-width: 70px; text-align: right;
+}
+.dim-bar-track {
+  flex: 1; height: 6px; background: var(--surface-200);
+  border-radius: 3px; overflow: hidden;
+}
+.dim-bar-fill {
+  height: 100%; border-radius: 3px;
+  animation: fillBar 1s ease-out forwards;
+}
+.dim-bar-val {
+  font-family: var(--font-mono); font-size: 10px;
+  font-weight: 600; min-width: 24px;
+}
+
+/* === CITATION CARD === */
+.cite-card {
+  background: var(--surface-100);
+  border-radius: 10px; padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+  display: flex; gap: 8px;
+  transition: background 0.15s; cursor: pointer;
+}
+.cite-card:hover { background: var(--surface-150); }
+.cite-num {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: var(--accent-primary);
+  background: var(--accent-primary-muted);
+  width: 20px; height: 20px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.cite-body { flex: 1; }
+.cite-title { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+.cite-url { font-size: 9px; color: var(--text-tertiary); margin-bottom: 4px; }
+.cite-snippet { font-size: 10px; color: var(--text-secondary); line-height: 1.4; }
+
+/* === SKIP BTN === */
+.skip-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 12px; border-radius: 8px;
+  font-size: 11px; font-weight: 500;
+  background: var(--surface-200); color: var(--text-tertiary);
+  border: 1px solid var(--surface-300);
+  cursor: pointer;
+}
+
+/* === BOTTOM NAV === */
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 52px; background: rgba(15,17,23,0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--surface-250);
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 0 8px;
+}
+.bnav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 9px; color: var(--text-disabled); cursor: pointer;
+}
+.bnav-item.active { color: var(--accent-primary); }
+
+/* === TAB BAR (DIRECTION 4) === */
+.tab-bar {
+  display: flex; gap: 2px; padding: 0 12px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-item {
+  padding: 8px 12px; border-radius: 8px 8px 0 0;
+  font-size: 10px; font-weight: 600;
+  color: var(--text-disabled); cursor: pointer;
+  white-space: nowrap; transition: all 0.15s;
+}
+.tab-item:hover { color: var(--text-secondary); }
+.tab-item.active {
+  color: var(--text-primary);
+  background: var(--surface-050);
+}
+
+/* === CAROUSEL DOTS (DIRECTION 5) === */
+.carousel-dots {
+  display: flex; justify-content: center; gap: 6px;
+  padding: 8px 0;
+}
+.cdot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--surface-300); transition: all 0.2s;
+}
+.cdot.active { background: var(--accent-primary); width: 18px; border-radius: 3px; }
+
+/* === TOGGLE (DIRECTION 6) === */
+.toggle-wrap {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px 8px;
+}
+.toggle-label { font-size: 10px; color: var(--text-tertiary); }
+.toggle {
+  width: 36px; height: 20px; border-radius: 10px;
+  background: var(--surface-300); position: relative;
+  cursor: pointer; transition: background 0.2s;
+}
+.toggle.on { background: var(--accent-primary); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: white; transition: transform 0.2s;
+}
+.toggle.on::after { transform: translateX(16px); }
+
+/* === PROGRESS BAR === */
+.progress-bar {
+  height: 3px; background: var(--surface-200);
+  border-radius: 2px; overflow: hidden; margin: 0 16px;
+}
+.progress-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  width: 72%; transition: width 0.3s;
+}
+
+/* === COMPARISON SECTION === */
+.comparison-section {
+  max-width: 1400px; margin: 0 auto;
+  padding: 32px 24px 64px;
+  border-top: 1px solid var(--surface-200);
+}
+.comp-title {
+  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.comp-desc { font-size: 13px; color: var(--text-tertiary); margin-bottom: 24px; }
+.comp-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+@media (max-width: 900px) { .comp-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .comp-grid { grid-template-columns: 1fr; } }
+.comp-card {
+  background: var(--surface-050); border-radius: 12px;
+  padding: 20px; border: 1px solid rgba(255,255,255,0.05);
+}
+.comp-card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.comp-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+.comp-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--surface-200);
+  font-size: 12px;
+}
+.comp-row:last-child { border-bottom: none; }
+.comp-dim { color: var(--text-tertiary); }
+.comp-val { font-weight: 600; }
+.comp-val.good { color: var(--confidence-high); }
+.comp-val.ok { color: var(--confidence-mid); }
+.comp-val.bad { color: var(--confidence-low); }
+</style>
+</head>
+<body>
+
+<!-- === TOP NAV === -->
+<nav class="top-nav">
+  <div class="top-nav-inner">
+    <div class="nav-logo">VentureIQ Directions</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showDir(1)">① Command Center</button>
+      <button class="nav-tab" onclick="showDir(2)">② Spotlight Focus</button>
+      <button class="nav-tab" onclick="showDir(3)">③ Timeline Flow</button>
+      <button class="nav-tab" onclick="showDir(4)">④ Tabbed Panels</button>
+      <button class="nav-tab" onclick="showDir(5)">⑤ Card Carousel</button>
+      <button class="nav-tab" onclick="showDir(6)">⑥ Hybrid Adaptive</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================== -->
+<!-- DIRECTION 1: COMMAND CENTER    -->
+<!-- ============================== -->
+<div class="direction active" id="dir-1">
+  <div class="direction-header">
+    <div class="direction-num">Direction 01</div>
+    <div class="direction-title">Command Center</div>
+    <div class="direction-desc">Dense, mission-control layout — all 5 agents visible simultaneously in a compact grid. Maximum information density for users who want to see everything at once. The most Bloomberg-like approach.</div>
+    <div class="direction-tags">
+      <span class="dtag">Max Density</span>
+      <span class="dtag">All Agents Visible</span>
+      <span class="dtag">Grid Layout</span>
+      <span class="dtag">Power User</span>
+    </div>
+  </div>
+  <div class="phone-row">
+    <!-- WAR ROOM -->
+    <div class="phone-col">
+      <div class="phone-label">War Room</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <div style="padding:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <!-- Scout -->
+            <div class="ag-card scout" style="border-radius:10px; padding:10px;">
+              <div class="ag-head">
+                <div class="ag-name" style="color:var(--agent-scout)">🔍 Scout</div>
+                <div class="ag-status streaming">⚡</div>
+              </div>
+              <div class="ag-text" style="margin-top:6px;">Digital fitness market $27.4B, CAGR 18.2%<span class="cursor-blink"></span></div>
+            </div>
+            <!-- Rival -->
+            <div class="ag-card rival" style="border-radius:10px; padding:10px;">
+              <div class="ag-head">
+                <div class="ag-name" style="color:var(--agent-rival)">⚔️ Rival</div>
+                <div class="ag-status searching">🔍</div>
+              </div>
+              <div class="ag-text" style="margin-top:6px;">12 competitors found. Gap in executive fitness...</div>
+            </div>
+            <!-- CFO -->
+            <div class="ag-card cfo" style="border-radius:10px; padding:10px;">
+              <div class="ag-head">
+                <div class="ag-name" style="color:var(--agent-cfo)">💰 CFO</div>
+                <div class="ag-status streaming">⚡</div>
+              </div>
+              <div class="ag-text" style="margin-top:6px;">Base: $480K ARR Y1. Optimistic: $1.2M<span class="cursor-blink"></span></div>
+            </div>
+            <!-- Devil -->
+            <div class="ag-card devil" style="border-radius:10px; padding:10px;">
+              <div class="ag-head">
+                <div class="ag-name" style="color:var(--agent-devil)">⚠️ Devil</div>
+                <div class="ag-status complete">✓</div>
+              </div>
+              <div class="ag-text" style="margin-top:6px;">⚠ 60% churn in 90 days <span class="cb low">38%</span></div>
+            </div>
+            <!-- Strategist - full width -->
+            <div class="ag-card strat" style="border-radius:10px; padding:10px; grid-column: 1/-1;">
+              <div class="ag-head">
+                <div class="ag-name" style="color:var(--agent-strategist)">🎯 Strategist</div>
+                <div class="ag-status xref">📎 Cross-ref</div>
+              </div>
+              <div class="ag-text" style="margin-top:6px;"><span class="xref-badge">📎 Devil's Advocate</span> Pivoting GTM to B2B corporate wellness to mitigate churn risk<span class="cursor-blink"></span></div>
+            </div>
+          </div>
+          <div style="padding:8px 16px;">
+            <div class="skip-btn">⏭ Skip to Results</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SCORE -->
+    <div class="phone-col">
+      <div class="phone-label">Score Reveal</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding: 24px 16px; text-align: center;">
+            <div style="font-size:12px; color:var(--text-tertiary); margin-bottom:4px;">VIABILITY SCORE</div>
+            <div class="score-big">78</div>
+            <div class="score-anchor">Strong</div>
+            <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Top 25% in this category</div>
+          </div>
+          <div style="padding:0 16px;">
+            <div class="dim-bar-row">
+              <div class="dim-bar">
+                <div class="dim-bar-label">Market</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:85%; background:var(--confidence-high);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-high)">85</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Execution</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:82%; background:var(--confidence-high);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-high)">82</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Financials</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:79%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">79</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Risk</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:72%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">72</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Competition</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:68%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">68</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:20px 16px;">
+            <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Key Insight</div>
+            <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; padding:12px; background:var(--surface-050); border-radius:10px; border-left:3px solid var(--agent-strategist);">
+              Pivot to B2B corporate wellness reduces churn risk and unlocks $85B market. <span class="cb high">88%</span>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- EVIDENCE -->
+    <div class="phone-col">
+      <div class="phone-label">Evidence Panel</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:12px 16px;">
+            <div style="font-size:16px; font-weight:700; letter-spacing:-0.02em; margin-bottom:4px;">Evidence Panel</div>
+            <div style="font-size:11px; color:var(--text-tertiary); margin-bottom:12px;">12 sources · 3 agents cited · Avg confidence 78%</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div class="cite-card">
+                <div class="cite-num">1</div>
+                <div class="cite-body">
+                  <div class="cite-title">Global Digital Health Market 2025</div>
+                  <div class="cite-url">grandviewresearch.com</div>
+                  <div class="cite-snippet">Market $27.4B, CAGR 18.2% <span class="cb high">92%</span></div>
+                </div>
+              </div>
+              <div class="cite-card">
+                <div class="cite-num">2</div>
+                <div class="cite-body">
+                  <div class="cite-title">B2C Fitness App Retention Study</div>
+                  <div class="cite-url">appannie.com/research</div>
+                  <div class="cite-snippet">90-day retention: 40%. Churn critical. <span class="cb mid">67%</span></div>
+                </div>
+              </div>
+              <div class="cite-card">
+                <div class="cite-num">3</div>
+                <div class="cite-body">
+                  <div class="cite-title">Corporate Wellness Market</div>
+                  <div class="cite-url">statista.com</div>
+                  <div class="cite-snippet">B2B wellness projected $85B by 2028 <span class="cb high">88%</span></div>
+                </div>
+              </div>
+              <div class="cite-card">
+                <div class="cite-num">4</div>
+                <div class="cite-body">
+                  <div class="cite-title">Peloton Competitive Analysis</div>
+                  <div class="cite-url">crunchbase.com</div>
+                  <div class="cite-snippet">Revenue declining 15% YoY. Market gap in SMB. <span class="cb mid">71%</span></div>
+                </div>
+              </div>
+              <div class="cite-card">
+                <div class="cite-num">5</div>
+                <div class="cite-body">
+                  <div class="cite-title">SaaS Unit Economics Benchmark</div>
+                  <div class="cite-url">openviewpartners.com</div>
+                  <div class="cite-snippet">B2B wellness SaaS: CAC $180, LTV $2,400 <span class="cb high">84%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- DIRECTION 2: SPOTLIGHT FOCUS   -->
+<!-- ============================== -->
+<div class="direction" id="dir-2">
+  <div class="direction-header">
+    <div class="direction-num">Direction 02</div>
+    <div class="direction-title">Spotlight Focus</div>
+    <div class="direction-desc">One agent spotlighted in an expanded view with others as compact thumbnails below. Reduces cognitive load by focusing attention on one stream at a time while maintaining awareness of all agents. The most Apple-like approach.</div>
+    <div class="direction-tags">
+      <span class="dtag">Low Cognitive Load</span>
+      <span class="dtag">One-at-a-Time Focus</span>
+      <span class="dtag">Thumbnail Awareness</span>
+      <span class="dtag">Most Accessible</span>
+    </div>
+  </div>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">War Room</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <!-- SPOTLIGHT CARD -->
+          <div style="padding:12px 16px;">
+            <div class="ag-card scout" style="border-radius:14px; padding:16px;">
+              <div class="ag-head">
+                <div class="ag-name" style="color:var(--agent-scout); font-size:14px;">🔍 Scout — Market Research</div>
+                <div class="ag-status streaming">⚡ Streaming</div>
+              </div>
+              <div class="ag-text" style="margin-top:10px; font-size:12px; line-height:1.6;">
+                The global digital fitness market reached <strong style="color:var(--text-primary)">$27.4 billion</strong> in 2025 with a projected CAGR of <strong style="color:var(--text-primary)">18.2%</strong> through 2030. Key growth drivers include wearable integration and AI-personalized programming.<br><br>
+                Target segment (busy professionals, 25-45) represents approximately <strong style="color:var(--text-primary)">34%</strong> of total addressable market. <span class="cb high">92%</span><span class="cursor-blink"></span>
+              </div>
+            </div>
+          </div>
+          <!-- THUMBNAILS -->
+          <div style="padding:0 16px; display:flex; gap:6px; overflow-x:auto;">
+            <div style="min-width:72px; background:var(--surface-050); border-radius:10px; padding:8px; text-align:center; border-top:2px solid var(--agent-rival);">
+              <div style="font-size:16px;">⚔️</div>
+              <div style="font-size:9px; color:var(--agent-rival); font-weight:600; margin-top:2px;">Rival</div>
+              <div style="font-size:8px; color:var(--text-disabled);">Searching</div>
+            </div>
+            <div style="min-width:72px; background:var(--surface-050); border-radius:10px; padding:8px; text-align:center; border-top:2px solid var(--agent-cfo);">
+              <div style="font-size:16px;">💰</div>
+              <div style="font-size:9px; color:var(--agent-cfo); font-weight:600; margin-top:2px;">CFO</div>
+              <div style="font-size:8px; color:var(--accent-secondary);">⚡ Live</div>
+            </div>
+            <div style="min-width:72px; background:var(--surface-050); border-radius:10px; padding:8px; text-align:center; border-top:2px solid var(--agent-devil);">
+              <div style="font-size:16px;">⚠️</div>
+              <div style="font-size:9px; color:var(--agent-devil); font-weight:600; margin-top:2px;">Devil</div>
+              <div style="font-size:8px; color:var(--confidence-high);">✓ Done</div>
+            </div>
+            <div style="min-width:72px; background:var(--surface-050); border-radius:10px; padding:8px; text-align:center; border-top:2px solid var(--agent-strategist);">
+              <div style="font-size:16px;">🎯</div>
+              <div style="font-size:9px; color:var(--agent-strategist); font-weight:600; margin-top:2px;">Strategy</div>
+              <div style="font-size:8px; color:var(--agent-coordinator);">📎 Xref</div>
+            </div>
+          </div>
+          <div style="padding:12px 16px;">
+            <div class="skip-btn">⏭ Skip to Results</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Score Reveal</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:32px 16px 16px; text-align:center; position:relative;">
+            <div style="position:absolute; inset:0; background:radial-gradient(circle at 50% 30%, rgba(0,210,255,0.08), transparent 70%);"></div>
+            <div class="score-big" style="font-size:72px;">78</div>
+            <div style="font-size:16px; font-weight:600; color:var(--confidence-high); margin-top:4px;">Strong Viability</div>
+            <div style="font-size:11px; color:var(--text-tertiary); margin-top:4px;">AI Fitness App for Busy Professionals</div>
+          </div>
+          <!-- Circular dim badges -->
+          <div style="display:flex; justify-content:center; gap:10px; padding:16px; flex-wrap:wrap;">
+            <div style="text-align:center; width:56px;">
+              <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--confidence-high);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">
+                <span style="font-size:14px; font-weight:700; color:var(--confidence-high);">85</span>
+              </div>
+              <div style="font-size:8px; color:var(--text-tertiary);">Market</div>
+            </div>
+            <div style="text-align:center; width:56px;">
+              <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--confidence-high);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">
+                <span style="font-size:14px; font-weight:700; color:var(--confidence-high);">82</span>
+              </div>
+              <div style="font-size:8px; color:var(--text-tertiary);">Execution</div>
+            </div>
+            <div style="text-align:center; width:56px;">
+              <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--confidence-mid);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">
+                <span style="font-size:14px; font-weight:700; color:var(--confidence-mid);">79</span>
+              </div>
+              <div style="font-size:8px; color:var(--text-tertiary);">Finance</div>
+            </div>
+            <div style="text-align:center; width:56px;">
+              <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--confidence-mid);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">
+                <span style="font-size:14px; font-weight:700; color:var(--confidence-mid);">72</span>
+              </div>
+              <div style="font-size:8px; color:var(--text-tertiary);">Risk</div>
+            </div>
+            <div style="text-align:center; width:56px;">
+              <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--confidence-mid);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">
+                <span style="font-size:14px; font-weight:700; color:var(--confidence-mid);">68</span>
+              </div>
+              <div style="font-size:8px; color:var(--text-tertiary);">Compete</div>
+            </div>
+          </div>
+          <div style="padding:12px 16px; display:flex; gap:8px;">
+            <button style="flex:1; padding:12px; border-radius:10px; background:var(--accent-primary); color:white; font-weight:600; font-size:13px; border:none; cursor:pointer;">Export PDF</button>
+            <button style="flex:1; padding:12px; border-radius:10px; background:var(--surface-200); color:var(--text-primary); font-weight:600; font-size:13px; border:1px solid var(--surface-300); cursor:pointer;">Share</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Evidence Panel</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <!-- Agent filter tabs -->
+          <div style="padding:12px 16px 0;">
+            <div style="font-size:16px; font-weight:700; margin-bottom:10px;">Evidence Panel</div>
+            <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+              <span style="font-size:10px; font-weight:600; padding:4px 10px; border-radius:999px; background:var(--accent-primary-muted); color:var(--accent-primary); border:1px solid rgba(108,92,231,0.3);">All Sources</span>
+              <span style="font-size:10px; font-weight:500; padding:4px 10px; border-radius:999px; color:var(--agent-scout); background:var(--agent-scout-muted);">🔍 Scout</span>
+              <span style="font-size:10px; font-weight:500; padding:4px 10px; border-radius:999px; color:var(--agent-rival); background:var(--agent-rival-muted);">⚔️ Rival</span>
+              <span style="font-size:10px; font-weight:500; padding:4px 10px; border-radius:999px; color:var(--agent-cfo); background:var(--agent-cfo-muted);">💰 CFO</span>
+            </div>
+          </div>
+          <div style="padding:0 16px; display:flex; flex-direction:column; gap:8px;">
+            <div class="cite-card">
+              <div class="cite-num">1</div>
+              <div class="cite-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div class="cite-title">Global Digital Health Market 2025</div>
+                  <span class="cb high">92%</span>
+                </div>
+                <div class="cite-url">grandviewresearch.com · Cited by 🔍 Scout</div>
+                <div class="cite-snippet">Market reached $27.4B with 18.2% CAGR through 2030.</div>
+              </div>
+            </div>
+            <div class="cite-card">
+              <div class="cite-num">2</div>
+              <div class="cite-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div class="cite-title">B2C Fitness App Retention</div>
+                  <span class="cb mid">67%</span>
+                </div>
+                <div class="cite-url">appannie.com · Cited by ⚠️ Devil's Advocate</div>
+                <div class="cite-snippet">Avg 90-day retention: 40%. Churn risk flagged.</div>
+              </div>
+            </div>
+            <div class="cite-card">
+              <div class="cite-num">3</div>
+              <div class="cite-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div class="cite-title">Corporate Wellness 2028</div>
+                  <span class="cb high">88%</span>
+                </div>
+                <div class="cite-url">statista.com · Cited by 🎯 Strategist</div>
+                <div class="cite-snippet">B2B wellness projected $85B by 2028.</div>
+              </div>
+            </div>
+            <div class="cite-card">
+              <div class="cite-num">4</div>
+              <div class="cite-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div class="cite-title">Peloton Financials FY25</div>
+                  <span class="cb mid">71%</span>
+                </div>
+                <div class="cite-url">crunchbase.com · Cited by ⚔️ Rival</div>
+                <div class="cite-snippet">Revenue declining 15% YoY post-pandemic.</div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- DIRECTION 3: TIMELINE FLOW     -->
+<!-- ============================== -->
+<div class="direction" id="dir-3">
+  <div class="direction-header">
+    <div class="direction-num">Direction 03</div>
+    <div class="direction-title">Timeline Flow</div>
+    <div class="direction-desc">Vertical scrolling narrative — agents stack as a live-updating feed with timestamps. Each agent's output appears as a feed item, creating a chronological story. The most Twitter/social-feed-like approach — natural vertical scrolling.</div>
+    <div class="direction-tags">
+      <span class="dtag">Chronological</span>
+      <span class="dtag">Natural Scroll</span>
+      <span class="dtag">Feed Pattern</span>
+      <span class="dtag">Story-like</span>
+    </div>
+  </div>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">War Room</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+          <div style="padding:12px 16px; display:flex; flex-direction:column; gap:2px;">
+            <!-- Timeline entries -->
+            <div style="display:flex; gap:10px;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:0;">
+                <div style="width:24px;height:24px;border-radius:50%;background:var(--agent-scout-muted);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🔍</div>
+                <div style="width:2px; flex:1; background:var(--surface-250);"></div>
+              </div>
+              <div style="flex:1; padding-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:12px; font-weight:600; color:var(--agent-scout);">Scout</span>
+                  <span style="font-size:9px; color:var(--text-disabled);">0:12</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">Digital fitness market reached $27.4B in 2025, CAGR 18.2%. Target segment is 34% of TAM. <span class="cb high">92%</span></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:24px;height:24px;border-radius:50%;background:var(--agent-devil-muted);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">⚠️</div>
+                <div style="width:2px; flex:1; background:var(--surface-250);"></div>
+              </div>
+              <div style="flex:1; padding-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:12px; font-weight:600; color:var(--agent-devil);">Devil's Advocate</span>
+                  <span style="font-size:9px; color:var(--text-disabled);">0:28</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">⚠ Critical risk: B2C fitness apps show 60% churn within 90 days. Historical failure rate in this segment is among the highest in consumer apps. <span class="cb low">38%</span></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:24px;height:24px;border-radius:50%;background:var(--agent-strategist-muted);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🎯</div>
+                <div style="width:2px; flex:1; background:var(--surface-250);"></div>
+              </div>
+              <div style="flex:1; padding-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:12px; font-weight:600; color:var(--agent-strategist);">Strategist</span>
+                    <span class="xref-badge">📎 Devil</span>
+                  </div>
+                  <span style="font-size:9px; color:var(--text-disabled);">0:42</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">Pivoting GTM recommendation to B2B corporate wellness based on churn risk. Corporate wellness market $85B by 2028<span class="cursor-blink"></span></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:24px;height:24px;border-radius:50%;background:var(--agent-cfo-muted);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">💰</div>
+              </div>
+              <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:12px; font-weight:600; color:var(--agent-cfo);">CFO</span>
+                  <span style="font-size:9px; color:var(--accent-secondary);">⚡ Now</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">Revenue projections — Conservative: $240K, Base: $480K, Optimistic: $1.2M ARR Y1<span class="cursor-blink"></span></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Score Reveal</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:24px 16px; text-align:center;">
+            <div class="score-big">78</div>
+            <div class="score-anchor">Strong</div>
+          </div>
+          <!-- Stacked section cards -->
+          <div style="padding:0 16px; display:flex; flex-direction:column; gap:8px;">
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; border-left:3px solid var(--agent-scout);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:600; color:var(--agent-scout);">🔍 Market Analysis</span>
+                <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--confidence-high);">85</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">$27.4B TAM with 18.2% growth. Strong fit for target demographic.</div>
+            </div>
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; border-left:3px solid var(--agent-rival);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:600; color:var(--agent-rival);">⚔️ Competition</span>
+                <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--confidence-mid);">68</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Crowded B2C space. Gap in B2B executive wellness positioning.</div>
+            </div>
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; border-left:3px solid var(--agent-cfo);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:600; color:var(--agent-cfo);">💰 Financials</span>
+                <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--confidence-mid);">79</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Base case $480K ARR Y1. Unit economics viable at $29/mo.</div>
+            </div>
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; border-left:3px solid var(--agent-devil);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:600; color:var(--agent-devil);">⚠️ Risk</span>
+                <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--confidence-mid);">72</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">High churn risk mitigated by B2B pivot recommendation.</div>
+            </div>
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; border-left:3px solid var(--agent-strategist);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:600; color:var(--agent-strategist);">🎯 Execution</span>
+                <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--confidence-high);">82</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">B2B corporate wellness pivot. Partner-led distribution.</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Evidence Panel</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:12px 16px;">
+            <div style="font-size:16px; font-weight:700; margin-bottom:10px;">Evidence Panel</div>
+            <!-- Grouped by confidence -->
+            <div style="font-size:10px; font-weight:600; color:var(--confidence-high); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">✓ High Confidence (≥80%)</div>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:16px;">
+              <div class="cite-card">
+                <div class="cite-num">1</div>
+                <div class="cite-body">
+                  <div class="cite-title">Digital Health Market 2025 <span class="cb high">92%</span></div>
+                  <div class="cite-snippet">Market $27.4B, CAGR 18.2%</div>
+                </div>
+              </div>
+              <div class="cite-card">
+                <div class="cite-num">3</div>
+                <div class="cite-body">
+                  <div class="cite-title">Corporate Wellness 2028 <span class="cb high">88%</span></div>
+                  <div class="cite-snippet">B2B wellness projected $85B</div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:10px; font-weight:600; color:var(--confidence-mid); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">◐ Moderate Confidence (50-79%)</div>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:16px;">
+              <div class="cite-card">
+                <div class="cite-num">2</div>
+                <div class="cite-body">
+                  <div class="cite-title">Fitness App Retention <span class="cb mid">67%</span></div>
+                  <div class="cite-snippet">90-day retention: 40%</div>
+                </div>
+              </div>
+              <div class="cite-card">
+                <div class="cite-num">4</div>
+                <div class="cite-body">
+                  <div class="cite-title">Peloton Financials <span class="cb mid">71%</span></div>
+                  <div class="cite-snippet">Revenue declining 15% YoY</div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:10px; font-weight:600; color:var(--confidence-low); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">⚠ Low Confidence (&lt;50%)</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div class="cite-card">
+                <div class="cite-num">5</div>
+                <div class="cite-body">
+                  <div class="cite-title">Churn Rate Estimate <span class="cb low">38%</span></div>
+                  <div class="cite-snippet">60% churn — estimated from aggregate data</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- DIRECTION 4: TABBED PANELS     -->
+<!-- ============================== -->
+<div class="direction" id="dir-4">
+  <div class="direction-header">
+    <div class="direction-num">Direction 04</div>
+    <div class="direction-title">Tabbed Panels</div>
+    <div class="direction-desc">Tab-based agent switching — one agent fills the entire screen with tabs along the top for switching. Maximum depth per agent with zero density overload. Best for users who want to read agent outputs like documents.</div>
+    <div class="direction-tags">
+      <span class="dtag">Full-Screen Depth</span>
+      <span class="dtag">Zero Overload</span>
+      <span class="dtag">Tab Switching</span>
+      <span class="dtag">Document-like</span>
+    </div>
+  </div>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">War Room</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <!-- Tab Bar -->
+          <div class="tab-bar">
+            <div class="tab-item" style="color:var(--agent-scout); border-bottom:2px solid var(--agent-scout);">🔍 Scout</div>
+            <div class="tab-item" style="color:var(--agent-rival);">⚔️ Rival</div>
+            <div class="tab-item" style="color:var(--agent-cfo);">💰 CFO</div>
+            <div class="tab-item" style="color:var(--agent-devil);">⚠️ Devil</div>
+            <div class="tab-item" style="color:var(--agent-strategist);">🎯 Strat</div>
+          </div>
+          <!-- Full tab content -->
+          <div style="background:var(--surface-050); margin:0 12px; border-radius:0 0 12px 12px; padding:16px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:14px; font-weight:700; color:var(--agent-scout);">Market Research</span>
+              <span class="ag-status streaming">⚡ Streaming</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-secondary); line-height:1.7;">
+              <p style="margin-bottom:10px;">The global digital fitness market reached <strong style="color:var(--text-primary)">$27.4 billion</strong> in 2025 with a projected CAGR of <strong style="color:var(--text-primary)">18.2%</strong> through 2030.</p>
+              <p style="margin-bottom:10px;">Key growth drivers:</p>
+              <ul style="padding-left:16px; margin-bottom:10px;">
+                <li style="margin-bottom:4px;">Wearable device integration (Apple Watch, Fitbit)</li>
+                <li style="margin-bottom:4px;">AI-personalized workout programming</li>
+                <li style="margin-bottom:4px;">Post-pandemic home fitness normalization</li>
+              </ul>
+              <p>Target segment (busy professionals, 25-45) represents approximately <strong style="color:var(--text-primary)">34%</strong> of total addressable market, or ~$9.3B. <span class="cb high">92%</span><span class="cursor-blink"></span></p>
+            </div>
+          </div>
+          <div style="padding:12px 16px;">
+            <div class="skip-btn">⏭ Skip to Results</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Score Reveal</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:20px 16px; text-align:center; background:linear-gradient(180deg, rgba(0,210,255,0.05), transparent); border-radius:0 0 20px 20px;">
+            <div class="score-big" style="font-size:64px;">78</div>
+            <div class="score-anchor">Strong Viability</div>
+          </div>
+          <div style="padding:16px;">
+            <div class="dim-bar-row">
+              <div class="dim-bar">
+                <div class="dim-bar-label">Market</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:85%; background:var(--confidence-high);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-high)">85</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Execution</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:82%; background:var(--confidence-high);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-high)">82</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Financials</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:79%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">79</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Risk</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:72%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">72</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Competition</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:68%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">68</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:0 16px;">
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; border:1px solid rgba(255,255,255,0.05);">
+              <div style="font-size:12px; font-weight:600; margin-bottom:6px;">💡 Decision Insight</div>
+              <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">B2B corporate wellness pivot recommended. Reduces churn exposure from 60% to estimated 15% while accessing $85B market.</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Evidence Panel</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:12px 16px;">
+            <div style="font-size:16px; font-weight:700; margin-bottom:4px;">Evidence Panel</div>
+            <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:12px;">Tap any citation to view original source</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div class="cite-card" style="border-left:3px solid var(--agent-scout);">
+                <div class="cite-body">
+                  <div style="display:flex; justify-content:space-between;">
+                    <div class="cite-title">Digital Health Market 2025</div>
+                    <span class="cb high">92%</span>
+                  </div>
+                  <div class="cite-url">grandviewresearch.com · 🔍 Scout</div>
+                  <div class="cite-snippet">$27.4B market, 18.2% CAGR</div>
+                </div>
+              </div>
+              <div class="cite-card" style="border-left:3px solid var(--agent-devil);">
+                <div class="cite-body">
+                  <div style="display:flex; justify-content:space-between;">
+                    <div class="cite-title">B2C Fitness Retention</div>
+                    <span class="cb mid">67%</span>
+                  </div>
+                  <div class="cite-url">appannie.com · ⚠️ Devil's Advocate</div>
+                  <div class="cite-snippet">90-day retention: 40%</div>
+                </div>
+              </div>
+              <div class="cite-card" style="border-left:3px solid var(--agent-strategist);">
+                <div class="cite-body">
+                  <div style="display:flex; justify-content:space-between;">
+                    <div class="cite-title">Corporate Wellness 2028</div>
+                    <span class="cb high">88%</span>
+                  </div>
+                  <div class="cite-url">statista.com · 🎯 Strategist</div>
+                  <div class="cite-snippet">$85B projected by 2028</div>
+                </div>
+              </div>
+              <div class="cite-card" style="border-left:3px solid var(--agent-rival);">
+                <div class="cite-body">
+                  <div style="display:flex; justify-content:space-between;">
+                    <div class="cite-title">Peloton Financials</div>
+                    <span class="cb mid">71%</span>
+                  </div>
+                  <div class="cite-url">crunchbase.com · ⚔️ Rival</div>
+                  <div class="cite-snippet">Revenue -15% YoY</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- DIRECTION 5: CARD CAROUSEL     -->
+<!-- ============================== -->
+<div class="direction" id="dir-5">
+  <div class="direction-header">
+    <div class="direction-num">Direction 05</div>
+    <div class="direction-title">Card Carousel</div>
+    <div class="direction-desc">Horizontal swipe between full-width agent cards — each agent gets the entire screen width. Paging dots indicate position. The most iOS/Stories-like approach — immersive, focused, thumb-friendly swiping.</div>
+    <div class="direction-tags">
+      <span class="dtag">Swipe Gesture</span>
+      <span class="dtag">Full-Width Cards</span>
+      <span class="dtag">Stories Pattern</span>
+      <span class="dtag">Immersive</span>
+    </div>
+  </div>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">War Room</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <div class="carousel-dots">
+            <div class="cdot"></div>
+            <div class="cdot"></div>
+            <div class="cdot active"></div>
+            <div class="cdot"></div>
+            <div class="cdot"></div>
+          </div>
+          <!-- Full-width agent card -->
+          <div style="padding:0 16px;">
+            <div class="ag-card cfo" style="border-radius:16px; padding:20px; min-height:280px;">
+              <div class="ag-head" style="margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:24px;">💰</span>
+                  <div>
+                    <div style="font-size:16px; font-weight:700; color:var(--agent-cfo);">CFO</div>
+                    <div style="font-size:10px; color:var(--text-tertiary);">Financial Modeling</div>
+                  </div>
+                </div>
+                <div class="ag-status streaming">⚡ Streaming</div>
+              </div>
+              <div style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
+                <p style="margin-bottom:10px;"><strong style="color:var(--text-primary);">Revenue Projections (3 Scenarios):</strong></p>
+                <div style="background:var(--surface-100); border-radius:8px; padding:10px; margin-bottom:8px;">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+                    <span style="color:var(--text-tertiary);">Conservative</span>
+                    <span style="font-family:var(--font-mono); color:var(--confidence-mid);">$240K ARR</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+                    <span style="color:var(--text-tertiary);">Base</span>
+                    <span style="font-family:var(--font-mono); color:var(--text-primary); font-weight:600;">$480K ARR</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px;">
+                    <span style="color:var(--text-tertiary);">Optimistic</span>
+                    <span style="font-family:var(--font-mono); color:var(--confidence-high);">$1.2M ARR</span>
+                  </div>
+                </div>
+                <p>Unit economics at $29/mo: CAC $180, LTV $2,400 (13x ratio)<span class="cursor-blink"></span></p>
+              </div>
+            </div>
+          </div>
+          <div style="padding:16px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-disabled);">← Swipe to switch agents →</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Score Reveal</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <!-- Full immersive score -->
+          <div style="padding:40px 16px 24px; text-align:center; background:radial-gradient(ellipse at 50% 0%, rgba(108,92,231,0.12), transparent 60%);">
+            <div style="font-size:10px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Viability Score</div>
+            <div class="score-big" style="font-size:80px;">78</div>
+            <div class="score-anchor" style="font-size:18px;">Strong</div>
+          </div>
+          <!-- Dimension cards as swipeable row -->
+          <div style="padding:16px; overflow-x:auto; display:flex; gap:10px;">
+            <div style="min-width:120px; background:var(--surface-050); border-radius:12px; padding:14px; text-align:center; border-top:3px solid var(--confidence-high);">
+              <div style="font-size:24px; font-weight:800; color:var(--confidence-high);">85</div>
+              <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Market</div>
+            </div>
+            <div style="min-width:120px; background:var(--surface-050); border-radius:12px; padding:14px; text-align:center; border-top:3px solid var(--confidence-high);">
+              <div style="font-size:24px; font-weight:800; color:var(--confidence-high);">82</div>
+              <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Execution</div>
+            </div>
+            <div style="min-width:120px; background:var(--surface-050); border-radius:12px; padding:14px; text-align:center; border-top:3px solid var(--confidence-mid);">
+              <div style="font-size:24px; font-weight:800; color:var(--confidence-mid);">79</div>
+              <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Financials</div>
+            </div>
+            <div style="min-width:120px; background:var(--surface-050); border-radius:12px; padding:14px; text-align:center; border-top:3px solid var(--confidence-mid);">
+              <div style="font-size:24px; font-weight:800; color:var(--confidence-mid);">72</div>
+              <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Risk</div>
+            </div>
+          </div>
+          <div style="padding:12px 16px; display:flex; gap:8px;">
+            <button style="flex:1; padding:14px; border-radius:12px; background:var(--accent-primary); color:white; font-weight:600; font-size:14px; border:none; cursor:pointer;">Export PDF</button>
+            <button style="width:48px; height:48px; border-radius:12px; background:var(--surface-200); color:var(--text-primary); border:1px solid var(--surface-300); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center;">↗</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Evidence Panel</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:12px 16px;">
+            <div style="font-size:16px; font-weight:700; margin-bottom:12px;">Evidence Panel</div>
+            <!-- Inline evidence in report context -->
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px; margin-bottom:8px;">
+              <div style="font-size:12px; font-weight:600; margin-bottom:8px;">Market Analysis</div>
+              <div style="font-size:11px; color:var(--text-secondary); line-height:1.6;">
+                The digital fitness market reached $27.4B<sup style="color:var(--accent-primary); cursor:pointer; font-weight:600;">[1]</sup> with 18.2% CAGR. The segment targeting busy professionals aged 25-45 accounts for ~34% of TAM<sup style="color:var(--accent-primary); cursor:pointer; font-weight:600;">[2]</sup>, creating a $9.3B addressable opportunity.
+              </div>
+              <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--surface-200); display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; align-items:center; gap:6px; font-size:10px;">
+                  <span style="color:var(--accent-primary); font-weight:600;">[1]</span>
+                  <span style="color:var(--text-tertiary);">grandviewresearch.com</span>
+                  <span class="cb high">92%</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; font-size:10px;">
+                  <span style="color:var(--accent-primary); font-weight:600;">[2]</span>
+                  <span style="color:var(--text-tertiary);">ibisworld.com</span>
+                  <span class="cb high">84%</span>
+                </div>
+              </div>
+            </div>
+            <div style="background:var(--surface-050); border-radius:12px; padding:14px;">
+              <div style="font-size:12px; font-weight:600; margin-bottom:8px;">Risk Assessment</div>
+              <div style="font-size:11px; color:var(--text-secondary); line-height:1.6;">
+                B2C fitness apps show 60% churn within 90 days<sup style="color:var(--accent-primary); cursor:pointer; font-weight:600;">[3]</sup>. This is mitigated by pivoting to B2B corporate wellness, a market projected at $85B by 2028<sup style="color:var(--accent-primary); cursor:pointer; font-weight:600;">[4]</sup>.
+              </div>
+              <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--surface-200); display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; align-items:center; gap:6px; font-size:10px;">
+                  <span style="color:var(--accent-primary); font-weight:600;">[3]</span>
+                  <span style="color:var(--text-tertiary);">appannie.com</span>
+                  <span class="cb mid">67%</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; font-size:10px;">
+                  <span style="color:var(--accent-primary); font-weight:600;">[4]</span>
+                  <span style="color:var(--text-tertiary);">statista.com</span>
+                  <span class="cb high">88%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- DIRECTION 6: HYBRID ADAPTIVE   -->
+<!-- ============================== -->
+<div class="direction" id="dir-6">
+  <div class="direction-header">
+    <div class="direction-num">Direction 06</div>
+    <div class="direction-title">Hybrid Adaptive</div>
+    <div class="direction-desc">Spotlight by default with an "Expand All" toggle that reveals the Command Center grid. Best of both worlds — focuses attention for new users, opens up for power users. Adapts to user preference automatically over time.</div>
+    <div class="direction-tags">
+      <span class="dtag">Adaptive UX</span>
+      <span class="dtag">Spotlight + Grid</span>
+      <span class="dtag">User Preference</span>
+      <span class="dtag">Best of Both</span>
+    </div>
+  </div>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">War Room — Spotlight Mode</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <div class="toggle-wrap">
+            <div class="toggle-label">Show All Agents</div>
+            <div class="toggle"></div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <!-- Spotlight -->
+          <div style="padding:12px 16px;">
+            <div class="ag-card strat" style="border-radius:14px; padding:16px;">
+              <div class="ag-head" style="margin-bottom:8px;">
+                <div class="ag-name" style="color:var(--agent-strategist); font-size:14px;">🎯 Strategist — GTM</div>
+                <div class="ag-status xref">📎 Cross-ref</div>
+              </div>
+              <div style="margin-bottom:8px;">
+                <span class="xref-badge">📎 Responding to Devil's Advocate</span>
+              </div>
+              <div class="ag-text" style="font-size:12px; line-height:1.6;">
+                Given the <strong style="color:var(--agent-devil);">60% B2C churn risk</strong> flagged by Devil's Advocate, I'm pivoting the GTM recommendation from direct-to-consumer to <strong style="color:var(--text-primary);">B2B corporate wellness partnerships</strong>.<br><br>
+                The corporate wellness market is projected at $85B by 2028, with significantly lower churn rates (~15%) due to enterprise contracts.<span class="cursor-blink"></span>
+              </div>
+            </div>
+          </div>
+          <!-- Compact awareness strip -->
+          <div style="padding:0 16px; display:flex; gap:4px;">
+            <div style="flex:1; background:var(--surface-050); border-radius:8px; padding:6px; text-align:center; border-top:2px solid var(--agent-scout);">
+              <div style="font-size:12px;">🔍</div>
+              <div style="font-size:8px; color:var(--confidence-high);">✓</div>
+            </div>
+            <div style="flex:1; background:var(--surface-050); border-radius:8px; padding:6px; text-align:center; border-top:2px solid var(--agent-rival);">
+              <div style="font-size:12px;">⚔️</div>
+              <div style="font-size:8px; color:var(--confidence-high);">✓</div>
+            </div>
+            <div style="flex:1; background:var(--surface-050); border-radius:8px; padding:6px; text-align:center; border-top:2px solid var(--agent-cfo);">
+              <div style="font-size:12px;">💰</div>
+              <div style="font-size:8px; color:var(--accent-secondary);">⚡</div>
+            </div>
+            <div style="flex:1; background:var(--surface-050); border-radius:8px; padding:6px; text-align:center; border-top:2px solid var(--agent-devil);">
+              <div style="font-size:12px;">⚠️</div>
+              <div style="font-size:8px; color:var(--confidence-high);">✓</div>
+            </div>
+            <div style="flex:1; background:var(--accent-primary-muted); border-radius:8px; padding:6px; text-align:center; border-top:2px solid var(--agent-strategist); border:1px solid rgba(108,92,231,0.3);">
+              <div style="font-size:12px;">🎯</div>
+              <div style="font-size:8px; color:var(--accent-secondary);">⚡</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">War Room — Expanded Grid</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:41</span><span>⚡ 87%</span></div>
+          <div class="wr-header">
+            <div class="wr-title">⚡ War Room</div>
+            <div class="wr-live"><div class="dot"></div>Live</div>
+          </div>
+          <div class="toggle-wrap">
+            <div class="toggle-label">Show All Agents</div>
+            <div class="toggle on"></div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <div style="padding:8px 12px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <div class="ag-card scout" style="border-radius:8px; padding:8px;">
+              <div class="ag-head"><div class="ag-name" style="color:var(--agent-scout); font-size:10px;">🔍 Scout</div><div class="ag-status complete" style="font-size:8px;">✓</div></div>
+              <div class="ag-text" style="margin-top:4px; font-size:9px;">$27.4B market, 18.2% CAGR</div>
+            </div>
+            <div class="ag-card rival" style="border-radius:8px; padding:8px;">
+              <div class="ag-head"><div class="ag-name" style="color:var(--agent-rival); font-size:10px;">⚔️ Rival</div><div class="ag-status complete" style="font-size:8px;">✓</div></div>
+              <div class="ag-text" style="margin-top:4px; font-size:9px;">12 competitors, gap in exec fitness</div>
+            </div>
+            <div class="ag-card cfo" style="border-radius:8px; padding:8px;">
+              <div class="ag-head"><div class="ag-name" style="color:var(--agent-cfo); font-size:10px;">💰 CFO</div><div class="ag-status streaming" style="font-size:8px;">⚡</div></div>
+              <div class="ag-text" style="margin-top:4px; font-size:9px;">Base $480K ARR<span class="cursor-blink"></span></div>
+            </div>
+            <div class="ag-card devil" style="border-radius:8px; padding:8px;">
+              <div class="ag-head"><div class="ag-name" style="color:var(--agent-devil); font-size:10px;">⚠️ Devil</div><div class="ag-status complete" style="font-size:8px;">✓</div></div>
+              <div class="ag-text" style="margin-top:4px; font-size:9px;">60% churn ⚠ <span class="cb low" style="font-size:7px;">38%</span></div>
+            </div>
+            <div class="ag-card strat" style="border-radius:8px; padding:8px; grid-column:1/-1; border:1px solid rgba(108,92,231,0.25);">
+              <div class="ag-head"><div class="ag-name" style="color:var(--agent-strategist); font-size:10px;">🎯 Strategist</div><div class="ag-status xref" style="font-size:8px;">📎 Xref</div></div>
+              <div class="ag-text" style="margin-top:4px; font-size:9px;"><span class="xref-badge" style="font-size:7px;">📎 Devil</span> B2B corporate wellness pivot<span class="cursor-blink"></span></div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item active"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">Score Reveal</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="status-bar"><span>9:42</span><span>⚡ 86%</span></div>
+          <div style="padding:28px 16px 16px; text-align:center; position:relative;">
+            <div style="position:absolute; inset:0; background:radial-gradient(circle at 50% 20%, rgba(108,92,231,0.1), transparent 70%);"></div>
+            <div class="score-big" style="font-size:72px;">78</div>
+            <div class="score-anchor" style="font-size:16px;">Strong Viability</div>
+            <div style="font-size:10px; color:var(--text-tertiary); margin-top:4px;">5 agents · 12 sources · 78% avg confidence</div>
+          </div>
+          <div style="padding:0 16px;">
+            <div class="dim-bar-row">
+              <div class="dim-bar">
+                <div class="dim-bar-label">Market</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:85%; background:var(--confidence-high);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-high)">85</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Execution</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:82%; background:var(--confidence-high);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-high)">82</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Financials</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:79%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">79</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Risk</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:72%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">72</div>
+              </div>
+              <div class="dim-bar">
+                <div class="dim-bar-label">Competition</div>
+                <div class="dim-bar-track"><div class="dim-bar-fill" style="--fill:68%; background:var(--confidence-mid);"></div></div>
+                <div class="dim-bar-val" style="color:var(--confidence-mid)">68</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:16px; display:flex; gap:8px;">
+            <button style="flex:1; padding:12px; border-radius:10px; background:var(--accent-primary); color:white; font-weight:600; font-size:13px; border:none; cursor:pointer;">Export PDF</button>
+            <button style="flex:1; padding:12px; border-radius:10px; background:var(--surface-200); color:var(--text-primary); font-weight:600; font-size:13px; border:1px solid var(--surface-300); cursor:pointer;">Ask the Board</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="bnav-item"><span>💡</span><span>Input</span></div>
+            <div class="bnav-item"><span>⚡</span><span>War Room</span></div>
+            <div class="bnav-item active"><span>📊</span><span>Report</span></div>
+            <div class="bnav-item"><span>📁</span><span>History</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === COMPARISON SECTION === -->
+<div class="comparison-section">
+  <div class="comp-title">Direction Comparison</div>
+  <div class="comp-desc">Side-by-side evaluation of all 6 directions across key criteria.</div>
+  <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; font-size:12px; min-width:800px;">
+      <thead>
+        <tr style="border-bottom:2px solid var(--surface-250);">
+          <th style="text-align:left; padding:10px 12px; color:var(--text-tertiary); font-weight:600;">Criterion</th>
+          <th style="padding:10px 8px; color:var(--text-tertiary); font-weight:600;">① Command</th>
+          <th style="padding:10px 8px; color:var(--text-tertiary); font-weight:600;">② Spotlight</th>
+          <th style="padding:10px 8px; color:var(--text-tertiary); font-weight:600;">③ Timeline</th>
+          <th style="padding:10px 8px; color:var(--text-tertiary); font-weight:600;">④ Tabbed</th>
+          <th style="padding:10px 8px; color:var(--text-tertiary); font-weight:600;">⑤ Carousel</th>
+          <th style="padding:10px 8px; color:var(--text-tertiary); font-weight:600;">⑥ Hybrid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--surface-200);">
+          <td style="padding:10px 12px; font-weight:500;">Cognitive Load</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-low);">High</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Low</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Low</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Low</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Low</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Adaptive</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-200);">
+          <td style="padding:10px 12px; font-weight:500;">Multi-Agent Awareness</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">★★☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">★★☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-low);">★☆☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-low);">★☆☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-200);">
+          <td style="padding:10px 12px; font-weight:500;">Cross-Ref Visibility</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">★★☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-low);">★☆☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-low);">★☆☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-200);">
+          <td style="padding:10px 12px; font-weight:500;">Mobile Readability</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-low);">★☆☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-200);">
+          <td style="padding:10px 12px; font-weight:500;">Cinematic Impact</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">★★☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">★★☆</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">★★★</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-200);">
+          <td style="padding:10px 12px; font-weight:500;">Implementation</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">Medium</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Simple</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Simple</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-high);">Simple</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">Medium</td>
+          <td style="padding:10px 8px; text-align:center; color:var(--confidence-mid);">Medium</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px; font-weight:500;">Best For</td>
+          <td style="padding:10px 8px; text-align:center; font-size:10px; color:var(--text-secondary);">Power users</td>
+          <td style="padding:10px 8px; text-align:center; font-size:10px; color:var(--text-secondary);">First-timers</td>
+          <td style="padding:10px 8px; text-align:center; font-size:10px; color:var(--text-secondary);">Story lovers</td>
+          <td style="padding:10px 8px; text-align:center; font-size:10px; color:var(--text-secondary);">Deep readers</td>
+          <td style="padding:10px 8px; text-align:center; font-size:10px; color:var(--text-secondary);">Mobile-native</td>
+          <td style="padding:10px 8px; text-align:center; font-size:10px; color:var(--text-secondary);">Everyone</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function showDir(n) {
+  document.querySelectorAll('.direction').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('dir-' + n).classList.add('active');
+  document.querySelectorAll('.nav-tab')[n - 1].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
