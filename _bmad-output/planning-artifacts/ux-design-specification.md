@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -912,5 +912,487 @@ Reusable interaction patterns extracted across all three journeys:
 6. **No dead ends** — Every screen has a clear "next action" (Validate Another, Compare, Ask the Board, Export). The user is never left wondering "now what?"
 7. **Progressive complexity** — Maya's journey uses only the core pipeline. Daniel adds history + comparison. Priya adds scenarios + timeline. Each persona encounters only the features they need
 
+
+## Component Strategy
+
+### Design System Components
+
+**Foundation: Material Design 3 (Flutter) — Heavily Themed**
+
+All Material 3 components are themed via `ThemeData` and component-level overrides. Zero components should look like "default Material." The theming layer transforms Material's accessibility, platform conventions, and component architecture into VentureIQ's dark, premium, cinematic aesthetic.
+
+**Themed Material Components:**
+
+| Component | Theming Applied |
+|:--|:--|
+| **Card** | `surface-050` background, 16dp radius (`radius-lg`), subtle border (`1px solid rgba(255,255,255,0.06)`), no elevation shadow |
+| **BottomSheet** | `surface-100`, 20dp radius top corners (`radius-xl`), drag handle |
+| **TextField** | `surface-200` fill, Electric Violet focus border + glow (`0 0 20px rgba(108,92,231,0.3)`) |
+| **FilledButton** | Electric Violet fill, 8dp radius (`radius-sm`), hover glow, `text-inverse` label |
+| **TextButton / IconButton** | `text-secondary` default, Electric Violet hover/focus, no background |
+| **Chip / FilterChip** | Muted agent-color backgrounds (15% opacity), `text-primary` labels, `radius-full` |
+| **NavigationBar** | `surface-050` background, active item in Electric Violet, 48dp touch targets |
+| **TabBar** | Transparent background, Electric Violet active indicator, `text-secondary` inactive labels |
+| **ExpansionTile** | `surface-050` collapsed, `surface-100` expanded, agent-colored leading icon |
+| **SegmentedButton** | `surface-200` background, Electric Violet active segment, used for Spotlight/Grid toggle |
+| **Slider** | Cyan track, Electric Violet thumb — base for ScenarioSlider customization |
+| **SnackBar** | `surface-100` background, accent-colored left border (success/warning/error), `text-primary` content |
+| **LinearProgressIndicator** | Cyan (`#00D2FF`) active track on `surface-200` background — used for synthesis progress |
+| **Dialog / AlertDialog** | `surface-100` background, `radius-xl`, no elevation shadow, subtle border |
+| **ListTile** | `surface-050` background, `text-primary` title, `text-secondary` subtitle, 48dp minimum height |
+| **Divider** | `surface-250` color, 1px thickness |
+| **SearchBar** | `surface-200` fill, `text-tertiary` placeholder, Electric Violet focus |
+
+### Custom Components
+
+VentureIQ requires 15 custom components for experiences that Material Design 3 does not cover — purpose-built widgets that form the product's distinctive interaction layer.
+
+#### WarRoomAgentCard
+
+**Purpose:** The primary War Room element — displays a single agent's live streaming analysis with identity, status, and interactive content. This is the product's most important custom widget.
+
+**Content:**
+- Agent icon + name + color identity (e.g., 🔍 Scout — Intelligence Blue `#3B82F6`)
+- AgentStatusIndicator showing current lifecycle phase
+- StreamingTextDisplay for token-by-token content
+- Timestamp markers at content intervals (0:12, 0:28...)
+- CrossReferenceBadge elements when triggered during cross-referencing phase
+- Search result snippets (during "searching" phase)
+
+**States:**
+
+| State | Visual Treatment |
+|:--|:--|
+| `initializing` | Card appears with agent color glow border, pulsing dot, "Initializing..." label |
+| `searching` | Search icon animates, search query terms stream in `text-secondary` |
+| `analyzing` | StreamingTextDisplay active, text streams token-by-token with cursor |
+| `cross_referencing` | Synthesis Violet highlight border, 📎 CrossReferenceBadge appears, referencing text streams |
+| `complete` | ✅ status badge, full content static, card compactable via tap |
+| `error` | Amber/red border, graceful error message, "Partial results available" label |
+
+**Variants:**
+- **Expanded (Spotlight)** — full-width, multi-line scrollable content, rich detail. Used when agent is the spotlight focus in Hybrid Adaptive default mode.
+- **Compact (Awareness Strip)** — minimal: icon + name + status badge + single-line preview. 64dp height. Used in the thumbnail strip below the spotlight.
+- **Grid (Command Center)** — 2×2+1 layout cards, medium information density, independently scrollable within cell. Used in "Expand All" grid view.
+
+**Accessibility:**
+- Semantic label: "Agent [name], status: [status], [content preview]"
+- Focus traversal: Tab through agents in strip order (Scout → Rival → CFO → Devil's Advocate → Strategist)
+- Status changes announced via live region
+- 48dp minimum touch targets on all interactive elements within card
+
+---
+
+#### StreamingTextDisplay
+
+**Purpose:** Renders token-by-token text with typing simulation, providing the "agents are alive" visual experience. Used within WarRoomAgentCard and as standalone in report views.
+
+**Content:**
+- Incoming text tokens rendered with configurable cadence (~30ms per token for natural reading rhythm)
+- Inline InlineCitationSuperscript elements `[1]` `[2]` rendered as tappable references
+- CrossReferenceBadge elements rendered inline within text flow
+- Blinking cursor (Cyan `#00D2FF`) at stream end during active streaming
+- Text styled in Body typography (15px Inter Regular, `text-secondary` during streaming, `text-primary` when complete)
+
+**States:**
+
+| State | Visual |
+|:--|:--|
+| `streaming` | Text appending with blinking cursor, smooth auto-scroll to bottom |
+| `paused` | Cursor static, "Resuming..." label if connection interrupted |
+| `complete` | Cursor removed, full text static at `text-primary`, all citations interactive |
+
+**Interaction Behavior:**
+- Auto-scrolls to latest content during streaming; user scroll-up pauses auto-scroll (resumable)
+- Tapping InlineCitationSuperscript triggers SourceCitationCard as bottom sheet
+- Long-press on text enables copy to clipboard
+- Text respects system dynamic text scaling (up to 1.5×)
+
+**Accessibility:**
+- Live region announces new content in batched chunks (~2 sentences), not per-token
+- Citations announced as "Source [number], tap to view"
+
+---
+
+#### CrossReferenceBadge
+
+**Purpose:** Tappable inline badge indicating an agent is responding to or referencing another agent's findings — the visual representation of the cross-referencing "aha!" moment.
+
+**Content:** `📎 Responding to [Agent Name]` — pill-shaped (`radius-full`), Synthesis Violet (`#A78BFA`) background at 15% opacity, Synthesis Violet text.
+
+**States:**
+- `default` — muted purple pill with text, subtle border
+- `tapped` — highlighted border at 40% opacity, navigates to referenced finding
+- `highlight` — animated pulse (0.3s) when cross-reference first appears in stream — draws attention to the critical moment
+
+**Variants:**
+- **Inline** — within StreamingTextDisplay text flow, wraps between words
+- **Card Header** — attached to top of WarRoomAgentCard during `cross_referencing` state, full-width
+
+**Accessibility:** "Cross-reference: [Agent] is responding to [Referenced Agent]'s finding. Tap to navigate to referenced content."
+
+---
+
+#### ConfidenceBadge
+
+**Purpose:** Institutional-grade confidence indicator attached to claims, sources, and data points throughout the Trust Layer. Uses color + text label (never color alone) for accessibility compliance.
+
+**Content:** `[●] [percentage]% — [label]` — pill-shaped (`radius-full`), muted background tint + colored text + leading dot indicator.
+
+**States:**
+
+| Level | Color | Hex | Background Tint | Label Examples |
+|:--|:--|:--|:--|:--|
+| High (≥80%) | Verified Green | `#22C55E` | 15% opacity green | "92% — Verified", "85% — High" |
+| Mid (50-79%) | Caution Amber | `#F59E0B` | 15% opacity amber | "67% — Moderate", "54% — Estimated" |
+| Low (<50%) | Warning Red | `#EF4444` | 15% opacity red | "38% — Low", "22% — Unverified" |
+
+**Variants:**
+- **Pill** — full badge: `[●] 92% — Verified` — used in Evidence Panel source cards and standalone claim verification
+- **Compact** — dot + percentage only: `● 92%` — used inline in report text where space is constrained
+- **Large** — larger font (Body size), used in Viability Score dimension breakdown details
+
+**Accessibility:** "[percentage] percent confidence, [label]" — color is never the sole indicator; label provides redundant semantic information.
+
+---
+
+#### ViabilityScoreDisplay
+
+**Purpose:** The cinematic hero element for the score reveal moment — large animated score number with gradient, glow, and verbal anchor label. This is the emotional climax of every validation.
+
+**Content:**
+- Score number (0–100) in Display typography (40px, ExtraBold 800, Inter)
+- Cyan→Violet text gradient (`#00D2FF` → `#6C5CE7`)
+- Radial glow background effect: `0 0 30px rgba(0, 210, 255, 0.25)`
+- Anchor label below score: verbal interpretation in confidence-colored text
+- `/100` suffix in `text-tertiary`
+
+**Anchor Labels:**
+
+| Score Range | Label | Color |
+|:--|:--|:--|
+| 80-100 | "Strong Viability" | Verified Green `#22C55E` |
+| 60-79 | "Promising — With Caveats" | Caution Amber `#F59E0B` |
+| 40-59 | "Needs Work" | Warning Red `#EF4444` |
+| 0-39 | "High Risk" | Warning Red `#EF4444` |
+
+**States:**
+
+| State | Animation |
+|:--|:--|
+| `revealing` | Score counts from 0→final over 1.2s (ease-out curve). Glow intensifies during count. Haptic pulse on landing. |
+| `static` | Final score displayed, subtle ambient glow |
+| `comparison` | Side-by-side, smaller variant, no animation, no glow |
+
+**Variants:**
+- **Hero** — 72px score, centered, used in Score Reveal moment on War Room completion
+- **Card** — 28px score, used in ReportHistoryCard and Comparative Analysis
+- **Inline** — 15px score, no glow, used in text references
+
+**Accessibility:** "[Score] out of 100, [anchor label] viability"
+
+---
+
+#### DimensionalBreakdownBar
+
+**Purpose:** Horizontal progress-style bars showing individual dimension scores (Market, Competition, Financials, Risk, Execution) with color-coded fills and monospace values.
+
+**Content:**
+- Dimension label (Inter SemiBold 600, `text-primary`)
+- Horizontal fill bar on `surface-200` track, dimension-appropriate color
+- Score value in JetBrains Mono (`text-primary`)
+- Tappable — expands to dimension detail bottom sheet
+
+**Dimension Colors:**
+
+| Dimension | Color | Hex |
+|:--|:--|:--|
+| Market | Intelligence Blue | `#3B82F6` |
+| Competition | Competitive Rose | `#F43F5E` |
+| Financials | Financial Amber | `#F59E0B` |
+| Risk | Critical Red | `#EF4444` |
+| Execution | Strategic Emerald | `#10B981` |
+
+**States:**
+- `animating` — bars fill left-to-right over 0.8s simultaneously (staggered 0.1s per bar)
+- `static` — bars filled, tappable for dimension detail
+- `highlighted` — one bar visually emphasized (brighter fill, subtle glow) when user taps/focuses
+
+**Accessibility:** "[Dimension]: [score] out of 100. Tap for detailed breakdown."
+
+---
+
+#### RadarChart
+
+**Purpose:** 5-axis radar/spider chart visualizing the Viability Score dimensional breakdown — the signature visual element of the Executive Summary.
+
+**Implementation:** Custom painter using `fl_chart` package or Flutter `CustomPaint` with `Path` rendering.
+
+**Content:**
+- 5 axes: Market, Competition, Financials, Risk, Execution
+- Filled polygon with Electric Violet fill (20% opacity) and 2px solid Electric Violet border
+- Axis labels at each vertex (Inter SemiBold, `text-secondary`)
+- Concentric grid polygons at 25/50/75/100 levels (`surface-250` stroke)
+- Score values at each vertex in JetBrains Mono (Caption size)
+
+**States:**
+- `animating` — polygon vertices animate from center outward, dimension-by-dimension over 1.0s
+- `static` — full chart displayed, vertices tappable for dimension details
+- `comparison` — two overlaid polygons in different colors (Electric Violet + Cyan) for Comparative Analysis
+
+**Sizing:**
+- Default: 280×280dp centered in available width
+- Responsive: scales proportionally within container, minimum 200×200dp
+
+**Accessibility:** Text-based alternative provided for screen readers: "Viability Score breakdown — Market: 85, Competition: 68, Financials: 79, Risk: 72, Execution: 74"
+
+---
+
+#### SourceCitationCard
+
+**Purpose:** Expandable card displaying source details when a citation is tapped — the Trust Layer's primary verification interface.
+
+**Content:**
+- Source title (Inter SemiBold, `text-primary`, tappable to open URL)
+- Domain/URL with favicon (Body SM, `text-secondary`)
+- ConfidenceBadge (Pill variant)
+- Relevant snippet/excerpt (Body SM, `text-secondary`, max 3 lines with expand)
+- Agent attribution: "Cited by 🔍 Scout" — agent icon + name in agent color
+- Access timestamp (Caption, `text-tertiary`)
+
+**States:**
+- `collapsed` — title + ConfidenceBadge + agent attribution only (in Evidence Panel list view)
+- `expanded` — full card with all fields visible (in Evidence Panel, toggled by tap)
+- `bottom_sheet` — full details presented as modal bottom sheet when tapped from InlineCitationSuperscript in report text
+
+**Visual Treatment:**
+- `surface-100` background, `radius-md` (12dp), subtle border
+- 4dp left border in citing agent's identity color
+
+**Accessibility:** "Source: [title], confidence [percentage] percent, cited by [agent name]. Tap to open original source."
+
+---
+
+#### InlineCitationSuperscript
+
+**Purpose:** Numbered inline references `[1]` `[2]` within report text that link to source evidence — the Perplexity-inspired trust pattern.
+
+**Content:** Small superscript number in Electric Violet, enclosed in light brackets, positioned as superscript inline with body text.
+
+**Visual:** Micro typography (11px, Medium 500), Electric Violet (`#6C5CE7`), subtle muted background (Electric Violet at 10% opacity), `radius-sm`.
+
+**Interaction:** Tap → SourceCitationCard opens as modal bottom sheet with source details.
+
+**Accessibility:** "Citation [number], tap to view source"
+
+---
+
+#### AgentStatusIndicator
+
+**Purpose:** Multi-phase lifecycle indicator showing an agent's current processing state — provides at-a-glance awareness of where each agent is in the analysis pipeline.
+
+**Content:** Phase-appropriate icon + status text label, colored by phase:
+
+| Phase | Icon | Text | Color |
+|:--|:--|:--|:--|
+| Started | ⚡ | "Starting..." | Agent color (muted, 50% opacity) |
+| Searching | 🔍 | "Searching..." | Agent color |
+| Analyzing | 📊 | "Analyzing..." | Agent color |
+| Cross-referencing | 📎 | "Cross-referencing..." | Synthesis Violet `#A78BFA` |
+| Complete | ✅ | "Complete" | Success Green `#22C55E` |
+| Error | ⚠️ | "Partial results" | Warning Amber `#F59E0B` |
+
+**Variants:**
+- **Badge** — icon + short label, compact. Used in WarRoomAgentCard compact variant.
+- **Full** — icon + verbose label + timestamp + duration. Used in DecisionTimeline event markers.
+- **Dot** — colored dot only, no text. Used in minimal space contexts (navigation badges).
+
+**Accessibility:** "Agent [name] status: [phase]"
+
+---
+
+#### DecisionTimeline
+
+**Purpose:** Scrubbing timeline for replaying multi-agent reasoning — a novel UX innovation that shows the causal chain between agents using a familiar video-player scrubbing metaphor.
+
+**Content:**
+- Horizontal timeline track (`surface-200` background, `radius-full`)
+- Agent-colored event markers positioned chronologically on track
+- Draggable scrubber thumb (Electric Violet, 24dp diameter)
+- Event detail panel below timeline: shows what was happening at current position
+- Causal connection lines between related events (e.g., Scout finding → CFO projection adjustment)
+- Timestamp labels at regular intervals (every 15s)
+- Playback controls: play/pause, speed selector (1×, 2×)
+
+**States:**
+- `playing` — auto-advances through events, detail panel updates, event markers glow as passed
+- `scrubbing` — user drags thumb manually, detail panel updates in real time, markers highlight on hover
+- `paused` — static at current position, detail panel shows full event context
+- `loading` — timeline populating from event data, skeleton animation
+
+**Event Detail Panel Content:**
+- Agent icon + name + status at this point in time
+- Content being generated at this moment (text snippet)
+- Causal reference if applicable: "This was triggered by [Agent]'s finding: [quote]"
+
+**Sizing:** Full-width, timeline track 48dp height (meets touch target), detail panel flexible below.
+
+**Accessibility:** "Decision timeline at [time]. [Agent] was [action]. Swipe left or right to scrub. Double-tap to play or pause."
+
+---
+
+#### ScenarioSlider
+
+**Purpose:** Enhanced variable adjustment slider for the Scenario Simulator with labels, current value display, tick marks, and score impact preview.
+
+**Content:**
+- Variable label (Inter SemiBold, `text-primary`) — e.g., "Pricing Strategy"
+- Current value display (JetBrains Mono, `text-primary`) — e.g., "$29/mo"
+- Slider track (Cyan `#00D2FF` active, `surface-200` inactive)
+- Value tick marks with labels (e.g., $19 / $29 / $49)
+- Delta indicator: `↑ +4` or `↓ -6` showing projected score impact (Success Green for positive, Warning Red for negative)
+- Original value marker on track (muted indicator)
+
+**States:**
+- `default` — slider at original parameter value, no delta shown
+- `modified` — slider at new value, delta indicator visible, track color shifts subtly
+- `processing` — slider locked (disabled), "Recalculating..." label, spinner on delta
+- `error` — slider unlocked, error toast if recalculation failed
+
+**Accessibility:** "[Variable]: current value [value]. Original value [original]. Projected score change: [delta]. Adjust with swipe gesture."
+
+---
+
+#### ReportHistoryCard
+
+**Purpose:** Card displaying a past report in the history list — designed for quick scanning, tapping to view, and selecting for Comparative Analysis.
+
+**Content:**
+- Idea title/summary (Inter SemiBold, `text-primary`, truncated to 2 lines)
+- ViabilityScoreDisplay (Card variant) — right-aligned
+- Date/time generated (Caption, `text-tertiary`)
+- Agent completion status: "5/5 agents" or "4/5 agents" with appropriate ConfidenceBadge
+- Selection checkbox (for Comparative Analysis multi-select)
+
+**States:**
+- `default` — standard card in scrollable list
+- `selected` — Electric Violet border (`active border`), checkbox checked, subtle violet background tint
+- `comparing` — dimmed (reduced opacity) if not part of current comparison selection
+
+**Visual:** `surface-050` background, `radius-md`, 48dp minimum height, 16dp horizontal padding.
+
+**Accessibility:** "Report: [idea title]. Score: [score] out of 100. Generated [date]. Tap to view. Double-tap to select for comparison."
+
+---
+
+#### KeyInsightCard
+
+**Purpose:** Highlighted callout card with agent-colored left border showing the most important strategic recommendation — the single most actionable takeaway from the analysis.
+
+**Content:**
+- Agent icon + agent name (agent identity color, Caption)
+- Insight text (Inter Body, `text-primary`, 1-3 sentences)
+- 4dp left border in the attributing agent's identity color
+- Background: `surface-100`
+
+**States:** Primarily display-only. Optional: tap to expand full agent section (navigates to agent detail in report).
+
+**Accessibility:** "Key insight from [agent name]: [insight text]"
+
+---
+
+#### AskTheBoardBubble
+
+**Purpose:** Chat message bubble for the Ask the Board conversational interface — styled for a premium, report-grounded conversation that feels like consulting a panel of experts.
+
+**Content:**
+- Message text (Inter Body) with InlineCitationSuperscript elements where data is referenced
+- Agent attribution when response references specific agents (e.g., "Based on CFO's analysis...")
+- ConfidenceBadge on data-bearing claims within responses
+- Timestamp (Caption, `text-tertiary`)
+
+**Variants:**
+- **User** — right-aligned, `surface-200` background, `radius-lg` with bottom-right square corner, `text-primary`
+- **Board** — left-aligned, `surface-100` background, `radius-lg` with bottom-left square corner, Electric Violet thin top border, agent color accents on attributions
+
+**States:**
+- `sending` — user bubble appears with muted opacity, sending indicator
+- `streaming` — board bubble appears empty, StreamingTextDisplay renders response token-by-token
+- `complete` — full text static, all citations and badges interactive
+- `error` — error card in board bubble position: "Couldn't process your question. Tap to retry."
+
+**Accessibility:** "[Sender]: [message text]. [timestamp]." Citations announced inline.
+
+### Component Implementation Strategy
+
+**Build Philosophy: Design tokens first, components second.**
+
+All custom components consume the design token system (surfaces, colors, typography, spacing, radii) defined in the Visual Design Foundation. No hardcoded values — every visual property references a token. This ensures visual consistency and enables future theme variations (e.g., light mode) without component-level changes.
+
+**Composition over inheritance.**
+
+Complex components compose simpler ones:
+- WarRoomAgentCard → composes StreamingTextDisplay + AgentStatusIndicator + CrossReferenceBadge
+- SourceCitationCard → composes ConfidenceBadge + agent attribution chip
+- DecisionTimeline → composes AgentStatusIndicator (Full variant) + event detail panel
+
+**State management integration:**
+
+All streaming components (WarRoomAgentCard, StreamingTextDisplay, AgentStatusIndicator) connect to a reactive state management layer (Riverpod or Bloc) that processes WebSocket events. State flow:
+1. WebSocket event received → parsed into typed event model
+2. State manager updates agent state (status, content delta, cross-references)
+3. UI components rebuild reactively based on state changes
+4. Animation controllers trigger appropriate transitions per state change
+
+**Testing strategy:**
+
+| Component Type | Testing Approach |
+|:--|:--|
+| Static components (ConfidenceBadge, KeyInsightCard) | Widget tests with golden image comparisons |
+| Streaming components (StreamingTextDisplay, WarRoomAgentCard) | Widget tests with mock stream controllers |
+| Interactive components (ScenarioSlider, DecisionTimeline) | Widget tests + integration tests for gesture handling |
+| Chart components (RadarChart, DimensionalBreakdownBar) | Custom painter tests with golden comparisons |
+
+### Implementation Roadmap
+
+**Phase 1 — Core Pipeline Components (Tier 1 Screens)**
+
+Components required for the War Room → Score Reveal → Evidence Panel flow — the make-or-break experience.
+
+| Priority | Component | Required For | Complexity |
+|:--|:--|:--|:--|
+| P1.1 | AgentStatusIndicator (Badge) | War Room agent lifecycle | Low |
+| P1.2 | StreamingTextDisplay | War Room agent streaming | High |
+| P1.3 | WarRoomAgentCard (Expanded + Compact) | War Room spotlight + awareness strip | High |
+| P1.4 | ConfidenceBadge (all variants) | Trust Layer everywhere | Low |
+| P1.5 | InlineCitationSuperscript | Report text citations | Medium |
+| P1.6 | ViabilityScoreDisplay (Hero) | Score Reveal moment | Medium |
+| P1.7 | DimensionalBreakdownBar | Executive Summary breakdown | Medium |
+| P1.8 | RadarChart | Executive Summary radar | High |
+| P1.9 | SourceCitationCard | Evidence Panel source display | Medium |
+| P1.10 | KeyInsightCard | Post-score recommendation | Low |
+
+**Phase 2 — Extended Intelligence Components (Tier 2 Screens)**
+
+Components that extend the core experience with interactivity and depth.
+
+| Priority | Component | Required For | Complexity |
+|:--|:--|:--|:--|
+| P2.1 | CrossReferenceBadge | War Room cross-referencing visibility | Low |
+| P2.2 | WarRoomAgentCard (Grid variant) | Command Center "Expand All" view | Medium |
+| P2.3 | ReportHistoryCard | Report History + comparison selection | Low |
+| P2.4 | ScenarioSlider | Scenario Simulator | Medium |
+| P2.5 | AskTheBoardBubble | Ask the Board conversational UI | Medium |
+| P2.6 | ViabilityScoreDisplay (Card) | History cards + Comparative Analysis | Low |
+| P2.7 | RadarChart (comparison overlay) | Comparative Analysis dual polygon | Medium |
+
+**Phase 3 — Experience Completion Components (Tier 3 Screens)**
+
+Components that complete the full product experience.
+
+| Priority | Component | Required For | Complexity |
+|:--|:--|:--|:--|
+| P3.1 | DecisionTimeline | Decision Timeline / Replay Mode | High |
+| P3.2 | AgentStatusIndicator (Full) | Timeline event markers | Low |
 
 
