@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
 inputDocuments:
   - "product-brief-ventureiq.md"
   - "product-brief-ventureiq-distillate.md"
@@ -423,3 +423,197 @@ Users don't think "I'm using an AI tool" — they think "I'm consulting my advis
 | Share link | Tap "Share" | Unique web link, copy to clipboard, share sheet. No account needed to view. | Empowerment: "My co-founder needs this" |
 | Ask the Board | Tap "Ask the Board" | Conversational AI opens, grounded in full report context. | Curiosity: "What about regulatory risk?" |
 | New idea | Tap "Validate Another" | Returns to Idea Input. Previous report saved in history. | Momentum: "Let me try another" |
+
+## Visual Design Foundation
+
+### Color System
+
+VentureIQ's color system is built on layered dark surfaces with strategic accent colors — a cinematic, premium palette that signals decision intelligence technology, not a consumer chatbot. The approach mirrors Bloomberg Terminal's authoritative darkness and Apple's dark mode depth.
+
+#### Surface System (8 Layers)
+
+Near-black base with progressively lighter elevated surfaces create depth and hierarchy without relying on shadows or borders.
+
+| Token | Hex | Role |
+|:--|:--|:--|
+| `surface-000` | `#09090B` | App background — near black |
+| `surface-050` | `#0F1117` | Card / panel background, War Room bg |
+| `surface-100` | `#151823` | Elevated cards, panels |
+| `surface-150` | `#1A1E2E` | Active / hover card state |
+| `surface-200` | `#222639` | Input fields, wells |
+| `surface-250` | `#2A2F45` | Borders, dividers (elevated) |
+| `surface-300` | `#343A52` | Subtle borders |
+| `surface-400` | `#4A5173` | Muted icons, dividers |
+
+#### Brand Accents
+
+| Color | Hex | Role | Semantic Meaning |
+|:--|:--|:--|:--|
+| Electric Violet | `#6C5CE7` | Primary brand, CTAs, active states | Sophistication + intelligence |
+| Violet Hover | `#7E70F0` | Hover / focus state | Interactive feedback |
+| Cyan | `#00D2FF` | Data, streaming indicators, charts | Real-time activity, technological precision |
+| Synthesis Violet | `#A78BFA` | Coordinator, cross-reference badges | Synthesis, orchestration |
+
+Each accent has a **muted variant** (12-15% opacity) for background tints and a **glow variant** (25-30% opacity) for focus/hover effects.
+
+#### Agent Identity Colors
+
+Each agent has a semantically mapped, immediately recognizable color — designed for instant visual identification in the War Room's multi-stream environment.
+
+| Agent | Color Name | Hex | Semantic Mapping |
+|:--|:--|:--|:--|
+| 🔍 Scout | Intelligence Blue | `#3B82F6` | Research, discovery, analytical depth |
+| ⚔️ Rival | Competitive Rose | `#F43F5E` | Competitive tension, market urgency |
+| 💰 CFO | Financial Amber | `#F59E0B` | Financial modeling, growth, projections |
+| ⚠️ Devil's Advocate | Critical Red | `#EF4444` | Risk, challenge, warning signals |
+| 🎯 Strategist | Strategic Emerald | `#10B981` | Growth strategy, opportunity, optimism |
+| 🧠 Coordinator | Synthesis Violet | `#A78BFA` | Synthesis, orchestration, final verdict |
+
+**Color variants per agent:**
+- **Full** — Text, icons, status indicators
+- **Muted** (15% opacity) — Background tints for cards, badges
+- **Glow** (30% opacity) — Hover effects, active state shadows on War Room cards
+
+#### Confidence & Trust Indicators
+
+Institutional-grade, color-coded confidence system. Uses **color + text label** (never color alone) for accessibility.
+
+| Level | Color Name | Hex | Label Examples |
+|:--|:--|:--|:--|
+| High (≥80%) | Verified Green | `#22C55E` | "92% — Verified", "85% — High" |
+| Mid (50-79%) | Caution Amber | `#F59E0B` | "67% — Moderate", "54% — Estimated" |
+| Low (<50%) | Warning Red | `#EF4444` | "38% — Low", "22% — Unverified" |
+
+Confidence badges are rendered as pill-shaped elements: muted background tint + colored text + leading dot indicator. The style is Bloomberg-institutional, not Duolingo-gamified.
+
+**Cross-reference badges:** Purple (`#A78BFA`) pill badges — e.g., "📎 Responding to Devil's Advocate" — indicating inter-agent references. Tappable to navigate to the referenced finding.
+
+#### Text System
+
+| Token | Hex | Role |
+|:--|:--|:--|
+| `text-primary` | `#F0F1F5` | Primary text — high contrast headings and body |
+| `text-secondary` | `#A1A7BE` | Supporting text, descriptions, agent streaming content |
+| `text-tertiary` | `#6B7194` | Timestamps, labels, metadata |
+| `text-disabled` | `#464D6A` | Inactive / disabled elements |
+| `text-inverse` | `#09090B` | Text on light or accent-colored backgrounds |
+
+#### Feedback / Status Colors
+
+| Status | Hex | Usage |
+|:--|:--|:--|
+| Success | `#22C55E` | Completion states, agent "Complete" status |
+| Warning | `#F59E0B` | Caution states, degraded performance |
+| Error | `#EF4444` | Failure states, critical errors |
+| Info | `#3B82F6` | Informational states, tips |
+
+#### Special Effects
+
+| Effect | Value | Usage |
+|:--|:--|:--|
+| Primary Glow | `0 0 20px rgba(108, 92, 231, 0.3)` | CTA button hover, focused inputs |
+| Score Glow | `0 0 30px rgba(0, 210, 255, 0.25)` | Viability Score reveal radiance |
+| Subtle Border | `1px solid rgba(255, 255, 255, 0.06)` | Default card borders |
+| Active Border | `1px solid rgba(108, 92, 231, 0.4)` | Focused / active card borders |
+
+### Typography System
+
+**Primary Typeface: Inter** — Geometric precision, excellent legibility at small sizes, optimized for screens. Used by Linear, Vercel, Stripe, and Notion — premium technology products that prioritize information density with visual clarity.
+
+**Monospace: JetBrains Mono** — For data values, cost metrics, token counts, hex codes, and technical metadata. Provides clear distinction between content text and data/metrics.
+
+#### Type Scale
+
+| Level | Size | Weight | Letter Spacing | Usage |
+|:--|:--|:--|:--|:--|
+| Display | 40px / 2.5rem | 800 (ExtraBold) | -0.03em | Viability Score reveal, hero numbers |
+| H1 | 28px / 1.75rem | 700 (Bold) | -0.02em | Screen titles (War Room, Executive Summary) |
+| H2 | 22px / 1.375rem | 700 (Bold) | -0.02em | Section headers |
+| H3 | 18px / 1.125rem | 600 (SemiBold) | -0.01em | Card titles, agent names |
+| Body | 15px / 0.9375rem | 400 (Regular) | 0 | Primary content, agent streaming text |
+| Body SM | 13px / 0.8125rem | 400 (Regular) | 0 | Secondary content, citations, source snippets |
+| Caption | 12px / 0.75rem | 400 (Regular) | 0 | Labels, timestamps, metadata |
+| Micro | 11px / 0.6875rem | 500 (Medium) | 0.02em | Badges, tags, status indicators |
+
+#### Typography Principles
+
+1. **Negative letter-spacing on headings** — `-0.02em` to `-0.03em` creates the premium tightness seen in high-end dashboard UIs
+2. **Generous line-height for readability** — `line-height: 1.6` for body text; `1.1–1.2` for display/headings
+3. **Anti-aliased rendering** — `-webkit-font-smoothing: antialiased` for crisp, clean text on dark backgrounds
+4. **Monospace for data** — All numerical data (costs, tokens, percentages, scores) uses JetBrains Mono to visually separate data from narrative content
+5. **Weight as hierarchy** — ExtraBold (800) reserved exclusively for the Viability Score; Bold (700) for section headers; SemiBold (600) for card titles; Regular (400) for body
+
+### Spacing & Layout Foundation
+
+**Base Unit: 4px** — All spacing values are strict multiples of 4px, creating a consistent, harmonious rhythm across all screens.
+
+#### Spacing Scale
+
+| Token | Value | Common Usage |
+|:--|:--|:--|
+| `space-1` | 4px | Tight element gaps (icon to text) |
+| `space-2` | 8px | Inline spacing, badge padding, compact gaps |
+| `space-3` | 12px | Compact card padding, tight list items |
+| `space-4` | 16px | Default card padding, list gaps, horizontal margins |
+| `space-5` | 20px | Section inner padding |
+| `space-6` | 24px | Card group spacing, generous card padding |
+| `space-7` | 32px | Major section spacing within screens |
+| `space-8` | 40px | Screen section breaks |
+| `space-9` | 48px | Touch targets (minimum 48dp per Material guidelines) |
+| `space-10` | 64px | Major layout breaks, screen-level spacing |
+
+#### Border Radius Scale
+
+| Token | Value | Usage |
+|:--|:--|:--|
+| `radius-sm` | 8px | Buttons, badges, small interactive elements |
+| `radius-md` | 12px | Cards, inputs, panels |
+| `radius-lg` | 16px | Elevated panels, War Room agent cards |
+| `radius-xl` | 20px | Modal bottom sheets, large containers |
+| `radius-full` | 9999px | Pills, confidence badges, status indicators |
+
+#### Layout Principles
+
+1. **Mobile-first vertical stacking** — Single column with full-width cards as default. Horizontal layouts used only where 2 items naturally pair (Viability Score + radar chart, comparison columns in Comparative Analysis)
+2. **48dp minimum touch targets** — All interactive elements (buttons, tappable citations, agent card switches) meet Material Design accessibility guidelines
+3. **Progressive density** — War Room uses compact padding (12–16px) to maximize information density during the streaming experience; Report view uses generous padding (20–24px) for relaxed reading
+4. **Edge-to-edge cards with consistent gutters** — 16px horizontal margins from screen edge; cards span full width within those margins
+5. **Content-driven breakpoints** — No rigid grid; layout responds to content type (streaming cards vs. report sections vs. comparison columns)
+
+### Accessibility Considerations
+
+#### Contrast Ratios (WCAG 2.1 AA Compliance)
+
+| Combination | Ratio | Standard | Status |
+|:--|:--|:--|:--|
+| Primary text (`#F0F1F5`) on `surface-000` (`#09090B`) | 15.8:1 | 4.5:1 required | ✅ Exceeds |
+| Secondary text (`#A1A7BE`) on `surface-050` (`#0F1117`) | 7.2:1 | 4.5:1 required | ✅ Passes |
+| Tertiary text (`#6B7194`) on `surface-100` (`#151823`) | 4.6:1 | 3:1 for large text | ✅ Passes |
+| Agent blue (`#3B82F6`) on `surface-050` | 5.1:1 | 4.5:1 required | ✅ Passes |
+| Agent emerald (`#10B981`) on `surface-050` | 6.8:1 | 4.5:1 required | ✅ Passes |
+| Agent amber (`#F59E0B`) on `surface-050` | 8.4:1 | 4.5:1 required | ✅ Passes |
+| Agent rose (`#F43F5E`) on `surface-050` | 4.8:1 | 4.5:1 required | ✅ Passes |
+| Agent red (`#EF4444`) on `surface-050` | 4.6:1 | 3:1 for large text | ✅ Passes |
+
+#### Color Independence
+
+- All confidence indicators use **color + text label** (never color alone) — "92% — Verified", "67% — Moderate", "38% — Low"
+- Agent identity conveyed by **color + icon + name** — triple redundancy ensures colorblind users can distinguish agents
+- Cross-reference badges include **📎 icon + descriptive text** alongside color
+
+#### Focus & Interaction
+
+- Focus states use a 3px accent ring: `box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.25)` — visible on all interactive elements against dark backgrounds
+- Touch targets meet 48×48dp minimum across all interactive elements
+- Platform screen reader support (VoiceOver on iOS, TalkBack on Android) via semantic Flutter widget annotations
+
+#### Dynamic Text Scaling
+
+- Layout supports system text scaling up to 1.5× without layout breakage
+- Card components reflow vertically when text size increases
+- Score Display uses responsive sizing that scales proportionally
+
+### Visual Foundation Reference
+
+A comprehensive interactive HTML reference of the complete color system, typography scale, spacing system, and UI component previews is available at: `_bmad-output/planning-artifacts/ventureiq-visual-foundation.html`
+

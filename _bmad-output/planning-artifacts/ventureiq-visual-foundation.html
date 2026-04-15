@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VentureIQ — Visual Foundation Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* === SURFACE SYSTEM === */
+    --surface-000: #09090B;    /* App background — near black */
+    --surface-050: #0F1117;    /* Card background, war room bg */
+    --surface-100: #151823;    /* Elevated cards, panels */
+    --surface-150: #1A1E2E;    /* Active/hover card state */
+    --surface-200: #222639;    /* Input fields, wells */
+    --surface-250: #2A2F45;    /* Borders, dividers (elevated) */
+    --surface-300: #343A52;    /* Subtle borders */
+    --surface-400: #4A5173;    /* Muted icons/dividers */
+
+    /* === TEXT SYSTEM === */
+    --text-primary: #F0F1F5;       /* Primary text — high contrast */
+    --text-secondary: #A1A7BE;     /* Secondary text — muted */
+    --text-tertiary: #6B7194;      /* Tertiary — timestamps, labels */
+    --text-disabled: #464D6A;      /* Disabled state */
+    --text-inverse: #09090B;       /* Text on light/accent bg */
+
+    /* === BRAND / ACCENT === */
+    --accent-primary: #6C5CE7;        /* Primary brand — electric violet */
+    --accent-primary-hover: #7E70F0;  /* Hover state */
+    --accent-primary-muted: rgba(108, 92, 231, 0.15); /* Subtle bg tint */
+    --accent-secondary: #00D2FF;      /* Cyan accent — data/charts */
+    --accent-secondary-muted: rgba(0, 210, 255, 0.12);
+
+    /* === AGENT IDENTITY COLORS === */
+    --agent-scout: #3B82F6;           /* Scout — Intelligence Blue */
+    --agent-scout-muted: rgba(59, 130, 246, 0.15);
+    --agent-scout-glow: rgba(59, 130, 246, 0.30);
+
+    --agent-rival: #F43F5E;           /* Rival — Competitive Rose */
+    --agent-rival-muted: rgba(244, 63, 94, 0.15);
+    --agent-rival-glow: rgba(244, 63, 94, 0.30);
+
+    --agent-cfo: #F59E0B;             /* CFO — Financial Amber */
+    --agent-cfo-muted: rgba(245, 158, 11, 0.15);
+    --agent-cfo-glow: rgba(245, 158, 11, 0.30);
+
+    --agent-devil: #EF4444;            /* Devil's Advocate — Critical Red */
+    --agent-devil-muted: rgba(239, 68, 68, 0.15);
+    --agent-devil-glow: rgba(239, 68, 68, 0.30);
+
+    --agent-strategist: #10B981;       /* Strategist — Strategic Emerald */
+    --agent-strategist-muted: rgba(16, 185, 129, 0.15);
+    --agent-strategist-glow: rgba(16, 185, 129, 0.30);
+
+    --agent-coordinator: #A78BFA;      /* Coordinator — Synthesis Violet */
+    --agent-coordinator-muted: rgba(167, 139, 250, 0.15);
+
+    /* === CONFIDENCE / SEMANTIC === */
+    --confidence-high: #22C55E;        /* ≥80% — Verified Green */
+    --confidence-high-muted: rgba(34, 197, 94, 0.15);
+    --confidence-mid: #F59E0B;         /* 50-79% — Caution Amber */
+    --confidence-mid-muted: rgba(245, 158, 11, 0.15);
+    --confidence-low: #EF4444;         /* <50% — Warning Red */
+    --confidence-low-muted: rgba(239, 68, 68, 0.15);
+
+    /* === FEEDBACK / STATUS === */
+    --status-success: #22C55E;
+    --status-warning: #F59E0B;
+    --status-error: #EF4444;
+    --status-info: #3B82F6;
+
+    /* === SPECIAL EFFECTS === */
+    --glow-primary: 0 0 20px rgba(108, 92, 231, 0.3);
+    --glow-score: 0 0 30px rgba(0, 210, 255, 0.25);
+    --border-subtle: 1px solid rgba(255, 255, 255, 0.06);
+    --border-active: 1px solid rgba(108, 92, 231, 0.4);
+
+    /* === TYPOGRAPHY SCALE === */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    --text-display: 2.5rem;    /* 40px — Score reveal, hero */
+    --text-h1: 1.75rem;        /* 28px — Screen titles */
+    --text-h2: 1.375rem;       /* 22px — Section headers */
+    --text-h3: 1.125rem;       /* 18px — Card titles, agent names */
+    --text-body: 0.9375rem;    /* 15px — Body text */
+    --text-body-sm: 0.8125rem; /* 13px — Secondary content */
+    --text-caption: 0.75rem;   /* 12px — Labels, timestamps */
+    --text-micro: 0.6875rem;   /* 11px — Badges */
+
+    /* === SPACING SCALE (8px base) === */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-7: 32px;
+    --space-8: 40px;
+    --space-9: 48px;
+    --space-10: 64px;
+
+    /* === RADIUS === */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-primary);
+    background: var(--surface-000);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 64px;
+    padding: 48px 0;
+    border-bottom: 1px solid var(--surface-250);
+  }
+  .page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    font-size: var(--text-body);
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* === SECTION === */
+  .section { margin-bottom: 64px; }
+  .section-title {
+    font-size: var(--text-h2);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .section-desc {
+    font-size: var(--text-body-sm);
+    color: var(--text-tertiary);
+    margin-bottom: 32px;
+  }
+
+  /* === COLOR GRID === */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .color-card {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: var(--border-subtle);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .color-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .color-swatch {
+    height: 80px;
+    display: flex;
+    align-items: flex-end;
+    padding: 8px 12px;
+  }
+  .color-swatch span {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: rgba(255,255,255,0.7);
+    background: rgba(0,0,0,0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .color-info {
+    background: var(--surface-050);
+    padding: 12px;
+  }
+  .color-info .name {
+    font-size: var(--text-body-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .color-info .role {
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  /* === AGENT CARDS === */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .agent-card {
+    background: var(--surface-050);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: var(--border-subtle);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .agent-card:hover {
+    transform: translateY(-2px);
+  }
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .agent-card.scout::before { background: var(--agent-scout); }
+  .agent-card.scout:hover { box-shadow: 0 4px 20px var(--agent-scout-glow); }
+  .agent-card.rival::before { background: var(--agent-rival); }
+  .agent-card.rival:hover { box-shadow: 0 4px 20px var(--agent-rival-glow); }
+  .agent-card.cfo::before { background: var(--agent-cfo); }
+  .agent-card.cfo:hover { box-shadow: 0 4px 20px var(--agent-cfo-glow); }
+  .agent-card.devil::before { background: var(--agent-devil); }
+  .agent-card.devil:hover { box-shadow: 0 4px 20px var(--agent-devil-glow); }
+  .agent-card.strategist::before { background: var(--agent-strategist); }
+  .agent-card.strategist:hover { box-shadow: 0 4px 20px var(--agent-strategist-glow); }
+  .agent-card.coordinator::before { background: var(--agent-coordinator); }
+  .agent-card.coordinator:hover { box-shadow: 0 4px 20px rgba(167, 139, 250, 0.30); }
+
+  .agent-icon {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+  .agent-name {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .agent-role {
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+  }
+  .agent-status {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-micro);
+    font-weight: 500;
+  }
+  .agent-status .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* === CONFIDENCE BADGES === */
+  .confidence-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-body-sm);
+    font-weight: 600;
+  }
+  .confidence-badge.high {
+    background: var(--confidence-high-muted);
+    color: var(--confidence-high);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  .confidence-badge.mid {
+    background: var(--confidence-mid-muted);
+    color: var(--confidence-mid);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .confidence-badge.low {
+    background: var(--confidence-low-muted);
+    color: var(--confidence-low);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  .confidence-badge .badge-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .confidence-badge.high .badge-dot { background: var(--confidence-high); }
+  .confidence-badge.mid .badge-dot { background: var(--confidence-mid); }
+  .confidence-badge.low .badge-dot { background: var(--confidence-low); }
+
+  /* === TYPOGRAPHY SHOWCASE === */
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--surface-200);
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-label {
+    min-width: 120px;
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+  .type-sample { flex: 1; }
+  .type-specs {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--text-disabled);
+    min-width: 100px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* === WAR ROOM PREVIEW === */
+  .war-room-preview {
+    background: var(--surface-050);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    border: var(--border-subtle);
+  }
+  .war-room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .war-room-title {
+    font-size: var(--text-h2);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .war-room-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-body-sm);
+    color: var(--accent-secondary);
+  }
+  .war-room-status .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-secondary);
+    animation: pulse 1.5s infinite;
+  }
+  .mini-agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .mini-agent {
+    background: var(--surface-100);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: var(--border-subtle);
+    position: relative;
+    overflow: hidden;
+  }
+  .mini-agent::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .mini-agent.s::after { background: var(--agent-scout); }
+  .mini-agent.r::after { background: var(--agent-rival); }
+  .mini-agent.c::after { background: var(--agent-cfo); }
+  .mini-agent.d::after { background: var(--agent-devil); }
+  .mini-agent.st::after { background: var(--agent-strategist); }
+  .mini-agent-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .mini-agent-name {
+    font-size: var(--text-body-sm);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mini-agent-status {
+    font-size: var(--text-micro);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+  }
+  .mini-agent-status.streaming {
+    background: rgba(0, 210, 255, 0.12);
+    color: var(--accent-secondary);
+  }
+  .mini-agent-status.complete {
+    background: var(--confidence-high-muted);
+    color: var(--confidence-high);
+  }
+  .mini-agent-status.searching {
+    background: rgba(108, 92, 231, 0.15);
+    color: var(--accent-primary);
+  }
+  .mini-agent-text {
+    font-size: var(--text-body-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .mini-agent-text .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: var(--accent-secondary);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 1px;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* === SCORE CARD === */
+  .score-card {
+    background: var(--surface-050);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    border: var(--border-subtle);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .score-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at center, rgba(0, 210, 255, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .score-value {
+    font-size: 5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .score-label {
+    font-size: var(--text-body);
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .score-anchor {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    color: var(--confidence-high);
+  }
+  .score-dimensions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .score-dim {
+    background: var(--surface-100);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .score-dim-value {
+    font-size: var(--text-h3);
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .score-dim-label {
+    font-size: var(--text-micro);
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* === CITATION CARD === */
+  .citation-list { display: flex; flex-direction: column; gap: 12px; }
+  .citation-card {
+    background: var(--surface-100);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: var(--border-subtle);
+    display: flex;
+    gap: 12px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .citation-card:hover { background: var(--surface-150); }
+  .citation-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    font-weight: 600;
+    color: var(--accent-primary);
+    background: var(--accent-primary-muted);
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .citation-body { flex: 1; }
+  .citation-title {
+    font-size: var(--text-body-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .citation-url {
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .citation-snippet {
+    font-size: var(--text-body-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* === BUTTON SHOWCASE === */
+  .button-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .btn {
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-primary);
+    font-size: var(--text-body-sm);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: -0.01em;
+  }
+  .btn-primary {
+    background: var(--accent-primary);
+    color: white;
+  }
+  .btn-primary:hover {
+    background: var(--accent-primary-hover);
+    box-shadow: var(--glow-primary);
+  }
+  .btn-secondary {
+    background: var(--surface-200);
+    color: var(--text-primary);
+    border: 1px solid var(--surface-300);
+  }
+  .btn-secondary:hover { background: var(--surface-250); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+  }
+  .btn-ghost:hover { background: var(--accent-primary-muted); }
+  .btn-danger {
+    background: var(--confidence-low-muted);
+    color: var(--confidence-low);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  /* === INPUT === */
+  .input-preview {
+    background: var(--surface-200);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    border: 1px solid var(--surface-300);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: var(--text-body);
+    width: 100%;
+    max-width: 500px;
+    transition: border-color 0.2s;
+  }
+  .input-preview:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-muted);
+  }
+
+  /* === SPACING DEMO === */
+  .spacing-grid {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .spacing-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .spacing-block {
+    background: var(--accent-primary-muted);
+    border: 1px solid var(--accent-primary);
+    border-radius: 4px;
+  }
+  .spacing-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--text-tertiary);
+  }
+
+  /* === SURFACE DEMO === */
+  .surface-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .surface-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+  }
+  .surface-bar .s-name {
+    font-size: var(--text-body-sm);
+    font-weight: 500;
+  }
+  .surface-bar .s-hex {
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+  }
+
+  /* === CROSS-REF BADGE === */
+  .cross-ref-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-micro);
+    font-weight: 600;
+    background: rgba(167, 139, 250, 0.12);
+    color: var(--agent-coordinator);
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .cross-ref-badge:hover { background: rgba(167, 139, 250, 0.2); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+    .type-row { flex-direction: column; gap: 8px; }
+    .type-specs { text-align: left; }
+  }
+
+  /* === DIVIDER === */
+  .divider {
+    height: 1px;
+    background: var(--surface-250);
+    margin: 48px 0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>VentureIQ Visual Foundation</h1>
+    <p>Dark cinematic design system — colors, typography, spacing, and component language for a premium multi-agent decision intelligence platform.</p>
+  </div>
+
+  <!-- === SURFACE SYSTEM === -->
+  <div class="section">
+    <div class="section-title">Surface System</div>
+    <div class="section-desc">Layered dark surfaces create depth and hierarchy. Lower numbers = deeper; higher = elevated.</div>
+    <div class="surface-stack">
+      <div class="surface-bar" style="background: var(--surface-000);">
+        <span class="s-name">surface-000</span><span class="s-hex">#09090B — App Background</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-050);">
+        <span class="s-name">surface-050</span><span class="s-hex">#0F1117 — Card / Panel</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-100);">
+        <span class="s-name">surface-100</span><span class="s-hex">#151823 — Elevated Card</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-150);">
+        <span class="s-name">surface-150</span><span class="s-hex">#1A1E2E — Hover/Active</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-200);">
+        <span class="s-name">surface-200</span><span class="s-hex">#222639 — Input Fields</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-250);">
+        <span class="s-name">surface-250</span><span class="s-hex">#2A2F45 — Borders</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-300);">
+        <span class="s-name">surface-300</span><span class="s-hex">#343A52 — Subtle Borders</span>
+      </div>
+      <div class="surface-bar" style="background: var(--surface-400);">
+        <span class="s-name">surface-400</span><span class="s-hex">#4A5173 — Muted Elements</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- === BRAND & ACCENT COLORS === -->
+  <div class="section">
+    <div class="section-title">Brand & Accent Colors</div>
+    <div class="section-desc">Primary accent drives CTAs and brand identity. Secondary accent powers data visualization and real-time streaming indicators.</div>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: var(--accent-primary);"><span>#6C5CE7</span></div>
+        <div class="color-info"><div class="name">Electric Violet</div><div class="role">Primary Brand / CTA</div></div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: var(--accent-primary-hover);"><span>#7E70F0</span></div>
+        <div class="color-info"><div class="name">Violet Hover</div><div class="role">Hover / Focus State</div></div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: var(--accent-secondary);"><span>#00D2FF</span></div>
+        <div class="color-info"><div class="name">Cyan</div><div class="role">Data / Streaming / Charts</div></div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: var(--agent-coordinator);"><span>#A78BFA</span></div>
+        <div class="color-info"><div class="name">Synthesis Violet</div><div class="role">Coordinator / Synthesis</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === AGENT IDENTITY SYSTEM === -->
+  <div class="section">
+    <div class="section-title">Agent Identity System</div>
+    <div class="section-desc">Each agent has a distinct, immediately recognizable color. Colors are semantically mapped to agent personality — analytical blue, competitive rose, financial amber, critical red, strategic emerald.</div>
+    <div class="agent-grid">
+      <div class="agent-card scout">
+        <div class="agent-icon">🔍</div>
+        <div class="agent-name" style="color: var(--agent-scout);">Scout</div>
+        <div class="agent-role">Market Research</div>
+        <div class="agent-status"><div class="dot" style="background: var(--agent-scout);"></div><span style="color: var(--agent-scout);">Analyzing</span></div>
+      </div>
+      <div class="agent-card rival">
+        <div class="agent-icon">⚔️</div>
+        <div class="agent-name" style="color: var(--agent-rival);">Rival</div>
+        <div class="agent-role">Competitor Intelligence</div>
+        <div class="agent-status"><div class="dot" style="background: var(--agent-rival);"></div><span style="color: var(--agent-rival);">Searching</span></div>
+      </div>
+      <div class="agent-card cfo">
+        <div class="agent-icon">💰</div>
+        <div class="agent-name" style="color: var(--agent-cfo);">CFO</div>
+        <div class="agent-role">Financial Modeling</div>
+        <div class="agent-status"><div class="dot" style="background: var(--agent-cfo);"></div><span style="color: var(--agent-cfo);">Projecting</span></div>
+      </div>
+      <div class="agent-card devil">
+        <div class="agent-icon">⚠️</div>
+        <div class="agent-name" style="color: var(--agent-devil);">Devil's Advocate</div>
+        <div class="agent-role">Risk Analysis</div>
+        <div class="agent-status"><div class="dot" style="background: var(--agent-devil);"></div><span style="color: var(--agent-devil);">Stress-testing</span></div>
+      </div>
+      <div class="agent-card strategist">
+        <div class="agent-icon">🎯</div>
+        <div class="agent-name" style="color: var(--agent-strategist);">Strategist</div>
+        <div class="agent-role">Go-to-Market</div>
+        <div class="agent-status"><div class="dot" style="background: var(--agent-strategist);"></div><span style="color: var(--agent-strategist);">Planning</span></div>
+      </div>
+      <div class="agent-card coordinator">
+        <div class="agent-icon">🧠</div>
+        <div class="agent-name" style="color: var(--agent-coordinator);">Coordinator</div>
+        <div class="agent-role">Synthesis & Scoring</div>
+        <div class="agent-status"><div class="dot" style="background: var(--agent-coordinator);"></div><span style="color: var(--agent-coordinator);">Synthesizing</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === CONFIDENCE SYSTEM === -->
+  <div class="section">
+    <div class="section-title">Confidence & Trust Indicators</div>
+    <div class="section-desc">Institutional-grade confidence badges. Green ≥80%, Amber 50-79%, Red &lt;50%. Designed to feel authoritative, not gamified.</div>
+    <div class="confidence-row">
+      <span class="confidence-badge high"><span class="badge-dot"></span> 92% — Verified</span>
+      <span class="confidence-badge high"><span class="badge-dot"></span> 85% — High</span>
+      <span class="confidence-badge mid"><span class="badge-dot"></span> 67% — Moderate</span>
+      <span class="confidence-badge mid"><span class="badge-dot"></span> 54% — Estimated</span>
+      <span class="confidence-badge low"><span class="badge-dot"></span> 38% — Low</span>
+      <span class="confidence-badge low"><span class="badge-dot"></span> 22% — Unverified</span>
+    </div>
+    <div class="confidence-row">
+      <span class="cross-ref-badge">📎 Responding to Devil's Advocate</span>
+      <span class="cross-ref-badge">📎 Based on Scout's market data</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- === TYPOGRAPHY === -->
+  <div class="section">
+    <div class="section-title">Typography System — Inter</div>
+    <div class="section-desc">Inter provides the clean, geometric precision VentureIQ needs. JetBrains Mono for data and code elements.</div>
+    <div class="type-row">
+      <div class="type-label">Display</div>
+      <div class="type-sample" style="font-size: var(--text-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">78/100</div>
+      <div class="type-specs">40px / 800</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Heading 1</div>
+      <div class="type-sample" style="font-size: var(--text-h1); font-weight: 700; letter-spacing: -0.02em;">War Room</div>
+      <div class="type-specs">28px / 700</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Heading 2</div>
+      <div class="type-sample" style="font-size: var(--text-h2); font-weight: 700; letter-spacing: -0.02em;">Executive Summary</div>
+      <div class="type-specs">22px / 700</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Heading 3</div>
+      <div class="type-sample" style="font-size: var(--text-h3); font-weight: 600;">Scout — Market Research</div>
+      <div class="type-specs">18px / 600</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Body</div>
+      <div class="type-sample" style="font-size: var(--text-body); color: var(--text-secondary);">The global digital fitness market reached $27.4B in 2025 with a projected CAGR of 18.2%.</div>
+      <div class="type-specs">15px / 400</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Body Small</div>
+      <div class="type-sample" style="font-size: var(--text-body-sm); color: var(--text-secondary);">Source: Grand View Research, 2025 Digital Health Market Report</div>
+      <div class="type-specs">13px / 400</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Caption</div>
+      <div class="type-sample" style="font-size: var(--text-caption); color: var(--text-tertiary);">Last updated 2 min ago · 5 agents complete</div>
+      <div class="type-specs">12px / 400</div>
+    </div>
+    <div class="type-row">
+      <div class="type-label">Mono</div>
+      <div class="type-sample" style="font-size: var(--text-body-sm); font-family: var(--font-mono); color: var(--accent-secondary);">$0.12 cost · 4,280 tokens · 72s</div>
+      <div class="type-specs">13px / Mono</div>
+    </div>
+  </div>
+
+  <!-- === SPACING === -->
+  <div class="section">
+    <div class="section-title">Spacing Scale — 4px Base</div>
+    <div class="section-desc">Consistent 4px-based scale. Most commonly used: 8px (tight), 16px (default), 24px (section), 32px (group).</div>
+    <div class="spacing-grid">
+      <div class="spacing-item"><div class="spacing-block" style="width:4px; height:4px;"></div><div class="spacing-label">4px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:8px; height:8px;"></div><div class="spacing-label">8px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:12px; height:12px;"></div><div class="spacing-label">12px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:16px; height:16px;"></div><div class="spacing-label">16px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:20px; height:20px;"></div><div class="spacing-label">20px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:24px; height:24px;"></div><div class="spacing-label">24px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:32px; height:32px;"></div><div class="spacing-label">32px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:40px; height:40px;"></div><div class="spacing-label">40px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:48px; height:48px;"></div><div class="spacing-label">48px</div></div>
+      <div class="spacing-item"><div class="spacing-block" style="width:64px; height:64px;"></div><div class="spacing-label">64px</div></div>
+    </div>
+  </div>
+
+  <!-- === COMPONENT PREVIEW: BUTTONS & INPUT === -->
+  <div class="section">
+    <div class="section-title">Interactive Elements</div>
+    <div class="section-desc">Buttons, inputs, and interactive affordances following the visual foundation.</div>
+    <div class="button-row">
+      <button class="btn btn-primary">Validate Idea</button>
+      <button class="btn btn-secondary">Export PDF</button>
+      <button class="btn btn-ghost">Skip to Results</button>
+      <button class="btn btn-danger">Cancel</button>
+    </div>
+    <input type="text" class="input-preview" placeholder="Describe your business idea in 1-3 sentences..." />
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- === WAR ROOM PREVIEW === -->
+  <div class="section">
+    <div class="section-title">War Room — Live Preview</div>
+    <div class="section-desc">Multi-agent streaming with distinct identity colors, status badges, and cross-reference indicators.</div>
+    <div class="war-room-preview">
+      <div class="war-room-header">
+        <div class="war-room-title">⚡ War Room</div>
+        <div class="war-room-status"><div class="live-dot"></div> Live Analysis</div>
+      </div>
+      <div class="mini-agent-grid">
+        <div class="mini-agent s">
+          <div class="mini-agent-head">
+            <div class="mini-agent-name" style="color: var(--agent-scout);">🔍 Scout</div>
+            <div class="mini-agent-status streaming">⚡ Streaming</div>
+          </div>
+          <div class="mini-agent-text">The global digital fitness market reached $27.4B in 2025 with a projected CAGR of 18.2%<span class="cursor"></span></div>
+        </div>
+        <div class="mini-agent r">
+          <div class="mini-agent-head">
+            <div class="mini-agent-name" style="color: var(--agent-rival);">⚔️ Rival</div>
+            <div class="mini-agent-status searching">🔍 Searching</div>
+          </div>
+          <div class="mini-agent-text">Mapping competitive landscape... Found 12 direct competitors in the fitness-tech space.</div>
+        </div>
+        <div class="mini-agent c">
+          <div class="mini-agent-head">
+            <div class="mini-agent-name" style="color: var(--agent-cfo);">💰 CFO</div>
+            <div class="mini-agent-status streaming">⚡ Streaming</div>
+          </div>
+          <div class="mini-agent-text">Projecting revenue across three scenarios: Conservative: $240K ARR, Base: $480K<span class="cursor"></span></div>
+        </div>
+        <div class="mini-agent d">
+          <div class="mini-agent-head">
+            <div class="mini-agent-name" style="color: var(--agent-devil);">⚠️ Devil's Advocate</div>
+            <div class="mini-agent-status complete">✓ Complete</div>
+          </div>
+          <div class="mini-agent-text">⚠️ Critical: B2C fitness apps show 60% churn within 90 days. <span class="confidence-badge low" style="font-size:10px; padding:2px 6px;">38%</span></div>
+        </div>
+        <div class="mini-agent st">
+          <div class="mini-agent-head">
+            <div class="mini-agent-name" style="color: var(--agent-strategist);">🎯 Strategist</div>
+            <div class="mini-agent-status streaming">⚡ Streaming</div>
+          </div>
+          <div class="mini-agent-text"><span class="cross-ref-badge" style="font-size:9px; margin-right: 4px;">📎 Devil's Advocate</span> Pivoting GTM: recommend B2B corporate wellness to mitigate churn<span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === VIABILITY SCORE PREVIEW === -->
+  <div class="section">
+    <div class="section-title">Viability Score — Reveal State</div>
+    <div class="section-desc">The cinematic score reveal with dimensional breakdown. Gradient treatment signals data/intelligence.</div>
+    <div class="two-col">
+      <div class="score-card">
+        <div class="score-value">78</div>
+        <div class="score-label">Viability Score</div>
+        <div class="score-anchor">Strong</div>
+        <div class="score-dimensions">
+          <div class="score-dim"><div class="score-dim-value" style="color: var(--confidence-high);">85</div><div class="score-dim-label">Market</div></div>
+          <div class="score-dim"><div class="score-dim-value" style="color: var(--confidence-mid);">68</div><div class="score-dim-label">Competition</div></div>
+          <div class="score-dim"><div class="score-dim-value" style="color: var(--confidence-mid);">79</div><div class="score-dim-label">Financials</div></div>
+          <div class="score-dim"><div class="score-dim-value" style="color: var(--confidence-mid);">72</div><div class="score-dim-label">Risk</div></div>
+          <div class="score-dim"><div class="score-dim-value" style="color: var(--confidence-high);">82</div><div class="score-dim-label">Execution</div></div>
+        </div>
+      </div>
+      <div class="citation-list">
+        <div class="section-title" style="font-size: var(--text-h3); margin-bottom: 12px;">Evidence Panel</div>
+        <div class="citation-card">
+          <div class="citation-num">1</div>
+          <div class="citation-body">
+            <div class="citation-title">Global Digital Health Market Report 2025</div>
+            <div class="citation-url">grandviewresearch.com</div>
+            <div class="citation-snippet">Market size reached $27.4B with 18.2% CAGR through 2030. <span class="confidence-badge high" style="font-size:10px; padding:2px 6px;">92%</span></div>
+          </div>
+        </div>
+        <div class="citation-card">
+          <div class="citation-num">2</div>
+          <div class="citation-body">
+            <div class="citation-title">B2C Fitness App Retention Study</div>
+            <div class="citation-url">appannie.com/research</div>
+            <div class="citation-snippet">Average 90-day retention: 40%. Churn risk flagged as critical. <span class="confidence-badge mid" style="font-size:10px; padding:2px 6px;">67%</span></div>
+          </div>
+        </div>
+        <div class="citation-card">
+          <div class="citation-num">3</div>
+          <div class="citation-body">
+            <div class="citation-title">Corporate Wellness Market Forecast</div>
+            <div class="citation-url">statista.com</div>
+            <div class="citation-snippet">B2B corporate wellness projected $85B by 2028. <span class="confidence-badge high" style="font-size:10px; padding:2px 6px;">88%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
