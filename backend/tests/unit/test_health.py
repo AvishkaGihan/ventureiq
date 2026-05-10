@@ -51,6 +51,15 @@ def test_health_check_request_id_is_valid_uuid(client):
     assert parsed.version == 4
 
 
+def test_health_check_request_id_header_matches_meta(client):
+    """Test that the request_id matches the X-Request-ID header."""
+    response = client.get("/api/v1/health")
+    data = response.json()
+
+    assert "X-Request-ID" in response.headers
+    assert response.headers["X-Request-ID"] == data["meta"]["request_id"]
+
+
 def test_health_check_unique_request_ids(client):
     """Test that each request gets a unique request_id."""
     response1 = client.get("/api/v1/health")

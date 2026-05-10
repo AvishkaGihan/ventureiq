@@ -1,10 +1,20 @@
 """VentureIQ API - FastAPI Application."""
 
+import logging
+import sys
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic_core import ValidationError
 
 from app.api.v1.router import api_v1_router
+from app.core.config import get_settings
+from app.core.exceptions import InternalError, VentureIQError
+from app.core.logging import configure_logging, request_id_ctx
+from app.core.middleware import RequestIDMiddleware
+from app.schemas.common import error_response
 
 
 @asynccontextmanager
@@ -15,7 +25,15 @@ async def lifespan(app: FastAPI):
     Startup: DB connections, cache warmup, etc. (added in later stories)
     Shutdown: Graceful cleanup of resources.
     """
-    # Startup logic — added in later stories (1.2, 1.3)
+    try:
+        settings = get_settings()
+    except ValidationError as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Configuration validation failed: {e}")
+        sys.exit(1)
+        
+    configure_logging(settings)
+    app.state.settings = settings
     yield
     # Shutdown logic — added in later stories
 
@@ -28,6 +46,45 @@ def create_app() -> FastAPI:
         version="0.1.0",
         lifespan=lifespan,
     )
+
+    app.add_middleware(RequestIDMiddleware)
+
+    @app.exception_handler(VentureIQError)
+    async def ventureiq_error_handler(request: Request, exc: VentureIQError) -> JSONResponse:
+        request_id = request_id_ctx.get("") or "unknown"
+        content = error_response(
+            code=exc.error_code,
+            message=exc.message,
+            details=exc.details,
+            request_id=request_id,
+            status_code=exc.status_code,
+        )
+        return JSONResponse(status_code=exc.status_code, content=content)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+        request_id = request_id_ctx.get("") or "unknown"
+        content = error_response(
+            code="INPUT_VALIDATION_ERROR",
+            message="Input validation error",
+            details={"error_count": len(exc.errors())},
+            request_id=request_id,
+            status_code=400,
+        )
+        return JSONResponse(status_code=400, content=content)
+
+    @app.exception_handler(Exception)
+    async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+        internal_error = InternalError()
+        request_id = request_id_ctx.get("") or "unknown"
+        content = error_response(
+            code=internal_error.error_code,
+            message=internal_error.message,
+            details=None,
+            request_id=request_id,
+            status_code=internal_error.status_code,
+        )
+        return JSONResponse(status_code=internal_error.status_code, content=content)
 
     app.include_router(api_v1_router, prefix="/api/v1")
 
