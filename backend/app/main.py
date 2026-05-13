@@ -14,6 +14,8 @@ from app.core.config import get_settings
 from app.core.exceptions import InternalError, VentureIQError
 from app.core.logging import configure_logging, request_id_ctx
 from app.core.middleware import RequestIDMiddleware
+from app.db.base import async_engine
+from app.db.redis import RedisManager
 from app.schemas.common import error_response
 
 
@@ -34,8 +36,30 @@ async def lifespan(app: FastAPI):
         
     configure_logging(settings)
     app.state.settings = settings
+
+    redis_manager = RedisManager(settings.REDIS_URL)
+    try:
+        await redis_manager.connect()
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to connect to Redis on startup: {e}")
+        # We don't exit here so the app can start degraded, or we can choose to sys.exit(1). 
+        # The spec implies graceful degradation for health endpoint.
+    app.state.redis_manager = redis_manager
+
     yield
-    # Shutdown logic — added in later stories
+
+    try:
+        await redis_manager.close()
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error closing Redis connection: {e}")
+        
+    try:
+        await async_engine.dispose()
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error disposing database engine: {e}")
 
 
 def create_app() -> FastAPI:

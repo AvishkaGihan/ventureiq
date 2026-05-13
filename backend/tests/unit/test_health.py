@@ -23,6 +23,20 @@ def test_health_check_returns_version(client):
     assert data["data"]["version"] == "0.1.0"
 
 
+def test_health_check_returns_service_status(client):
+    """Test that the health endpoint returns database and redis status."""
+    response = client.get("/api/v1/health")
+    data = response.json()
+
+    assert "services" in data["data"]
+    assert data["data"]["services"]["database"] is True
+    assert data["data"]["services"]["redis"] == {
+        "streaming": True,
+        "cache": True,
+        "rate_limit": True,
+    }
+
+
 def test_health_check_envelope_format(client):
     """Test that the health endpoint uses the standard envelope format with data and meta keys."""
     response = client.get("/api/v1/health")
@@ -35,6 +49,7 @@ def test_health_check_envelope_format(client):
     # Data should contain status and version
     assert "status" in data["data"]
     assert "version" in data["data"]
+    assert "services" in data["data"]
 
     # Meta should contain request_id
     assert "request_id" in data["meta"]
