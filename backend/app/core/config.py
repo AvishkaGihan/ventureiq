@@ -29,6 +29,10 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: SecretStr = Field(default="")
     OPENROUTER_API_KEY: SecretStr = Field(default="")
+    LLM_PRIMARY_PROVIDER: str = Field(default="gemini")
+    LLM_FALLBACK_PROVIDER: str = Field(default="openrouter")
+    SEARCH_PRIMARY_PROVIDER: str = Field(default="duckduckgo")
+    OPENROUTER_MODEL: str = Field(default="google/gemini-2.5-flash")
 
     FIREBASE_PROJECT_ID: str = Field(default="")
 

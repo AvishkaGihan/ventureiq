@@ -19,6 +19,10 @@ def test_settings_defaults(monkeypatch):
     assert settings.APP_DEBUG is True
     assert settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES == 60
     assert settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS == 7
+    assert settings.LLM_PRIMARY_PROVIDER == "gemini"
+    assert settings.LLM_FALLBACK_PROVIDER == "openrouter"
+    assert settings.SEARCH_PRIMARY_PROVIDER == "duckduckgo"
+    assert settings.OPENROUTER_MODEL == "google/gemini-2.5-flash"
     assert settings.is_development is True
 
 
