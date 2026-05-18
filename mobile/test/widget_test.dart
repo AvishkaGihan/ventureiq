@@ -1,30 +1,55 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ventureiq_app/main.dart';
 
+class _MyHttpOverrides extends HttpOverrides {}
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  TestWidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = _MyHttpOverrides();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  group('VentureIQApp', () {
+    testWidgets('renders without error inside ProviderScope', (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: VentureIQApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      expect(find.byType(MaterialApp), findsOneWidget);
+      expect(find.byType(NavigationBar), findsOneWidget);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('applies dark theme', (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: VentureIQApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final materialApp = tester.widget<MaterialApp>(
+        find.byType(MaterialApp),
+      );
+      expect(materialApp.theme?.brightness, Brightness.dark);
+    });
+
+    testWidgets('does not show debug banner', (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: VentureIQApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final materialApp = tester.widget<MaterialApp>(
+        find.byType(MaterialApp),
+      );
+      expect(materialApp.debugShowCheckedModeBanner, isFalse);
+    });
   });
 }
