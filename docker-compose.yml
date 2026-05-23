@@ -20,6 +20,7 @@ services:
       - .env
     volumes:
       - ./backend/app:/app/app
+      - ./backend/firebase-service-account.json:/app/firebase-service-account.json
     environment:
       DATABASE_URL: postgresql+asyncpg://ventureiq:ventureiq@postgres:5432/ventureiq
       REDIS_URL: redis://redis:6379

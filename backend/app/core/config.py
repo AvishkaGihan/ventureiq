@@ -35,11 +35,12 @@ class Settings(BaseSettings):
     OPENROUTER_MODEL: str = Field(default="google/gemini-2.5-flash")
 
     FIREBASE_PROJECT_ID: str = Field(default="")
+    FIREBASE_SERVICE_ACCOUNT_PATH: str = Field(default="")
 
     JWT_SECRET_KEY: SecretStr = Field(default="")
     JWT_ALGORITHM: str = Field(default="HS256")
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60)
-    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7)
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, gt=0)
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7, gt=0)
 
     APP_ENV: str = Field(default="development")
     APP_DEBUG: bool = Field(default=True)

@@ -14,6 +14,7 @@ from app.core.config import get_settings
 from app.core.exceptions import InternalError, VentureIQError
 from app.core.logging import configure_logging, request_id_ctx
 from app.core.middleware import RequestIDMiddleware
+from app.core.security import init_firebase
 from app.db.base import async_engine
 from app.db.redis import RedisManager
 from app.schemas.common import error_response
@@ -36,6 +37,13 @@ async def lifespan(app: FastAPI):
         
     configure_logging(settings)
     app.state.settings = settings
+
+    try:
+        init_firebase(settings)
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.critical(f"Failed to initialize Firebase Admin SDK: {e}")
+        raise e
 
     redis_manager = RedisManager(settings.REDIS_URL)
     try:

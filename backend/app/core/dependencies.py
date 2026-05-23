@@ -1,19 +1,28 @@
 """FastAPI dependency helpers for data stores."""
 
+import uuid
 from collections.abc import AsyncGenerator
 
 import redis.asyncio as aioredis
-from fastapi import Request
+from fastapi import Depends, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.exceptions import AuthInvalidTokenError, AuthRequiredError
+from app.core.security import verify_jwt
 from app.db.base import AsyncSessionLocal
 from app.db.redis import RedisManager
+from app.models.user import UserModel
 
 
 async def get_db() -> AsyncGenerator[AsyncSession]:
     """Yield an async database session."""
     async with AsyncSessionLocal() as session:
         yield session
+
+
+oauth2_scheme = HTTPBearer(auto_error=False)
 
 
 def get_redis_manager(request: Request) -> RedisManager:
@@ -48,3 +57,32 @@ def get_redis_cache(request: Request) -> aioredis.Redis:
 def get_redis_rate_limit(request: Request) -> aioredis.Redis:
     """Return the Redis connection for rate limiting (db2)."""
     return get_redis(request, db=2)
+
+
+async def get_current_user(
+    token: HTTPAuthorizationCredentials | None = Depends(oauth2_scheme),  # noqa: B008
+    session: AsyncSession = Depends(get_db),  # noqa: B008
+) -> UserModel:
+    """Return the current authenticated user or raise auth errors."""
+    if not token or not token.credentials:
+        raise AuthRequiredError()
+
+    claims = verify_jwt(token.credentials)
+    if claims.get("type") != "access":
+        raise AuthInvalidTokenError()
+
+    user_id = claims.get("sub")
+    if not user_id:
+        raise AuthInvalidTokenError()
+
+    try:
+        user_uuid = uuid.UUID(str(user_id))
+    except ValueError as exc:
+        raise AuthInvalidTokenError() from exc
+
+    result = await session.execute(select(UserModel).where(UserModel.id == user_uuid))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise AuthInvalidTokenError()
+
+    return user
