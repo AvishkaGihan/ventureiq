@@ -38,4 +38,7 @@ class ApiEndpoints {
 
   /// Firebase token → JWT exchange
   static const String authExchange = '$basePath/auth/exchange';
+
+  /// Refresh expired access token
+  static const String authRefresh = '$basePath/auth/refresh';
 }

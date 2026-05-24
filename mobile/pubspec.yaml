@@ -17,11 +17,27 @@ dependencies:
   dio: ^5.9.2                 # HTTP client with interceptors
   google_fonts: ^8.1.0        # Inter + JetBrains Mono typefaces
 
+  # Firebase & Auth (Story 2.2)
+  firebase_core: ^4.9.0       # Firebase platform initialization
+  firebase_auth: ^6.5.1       # Firebase Authentication (anonymous + credential)
+  google_sign_in: ^7.2.0      # Google Sign-In (v7.x singleton pattern)
+  flutter_secure_storage: ^10.2.0  # Secure token storage (RSA OAEP + AES-GCM)
+
+  # Data modeling
+  freezed_annotation: ^3.0.0  # Immutable data class annotations
+  json_annotation: ^4.9.0     # JSON serialization annotations
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+  mocktail: ^1.0.4            # Mocking for tests
+
+  # Code generation
+  freezed: ^3.0.6             # Immutable data class code gen
+  json_serializable: ^6.9.5   # JSON serialization code gen
+  build_runner: ^2.4.14       # Code generation runner
 
 flutter:
   uses-material-design: true

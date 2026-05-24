@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,8 +6,40 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ventureiq_app/app_router.dart';
 import 'package:ventureiq_app/core/theme/app_theme.dart';
+import 'package:ventureiq_app/features/auth/domain/auth_entity.dart';
+import 'package:ventureiq_app/features/auth/domain/auth_state.dart';
+import 'package:ventureiq_app/features/auth/presentation/auth_notifier.dart';
+import 'package:ventureiq_app/features/auth/presentation/auth_providers.dart';
 
 class _MyHttpOverrides extends HttpOverrides {}
+
+/// Fake [AuthNotifier] that immediately returns anonymous state for testing.
+class _FakeAuthNotifier extends AsyncNotifier<AuthState>
+    implements AuthNotifier {
+  @override
+  FutureOr<AuthState> build() {
+    return const AuthState.anonymous(
+      AuthUser(
+        id: 'test-anon-uid',
+        tier: 'free',
+        authMethod: 'anonymous',
+        isAnonymous: true,
+      ),
+    );
+  }
+
+  @override
+  Future<void> signInAnonymously() async {}
+
+  @override
+  Future<void> signInWithGoogle() async {}
+
+  @override
+  Future<void> signOut() async {}
+
+  @override
+  void forceUnauthenticated() {}
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +122,12 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [
+            // Override auth state to anonymous so the profile screen renders
+            authNotifierProvider.overrideWith(
+              () => _FakeAuthNotifier(),
+            ),
+          ],
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.darkTheme,
@@ -100,7 +139,8 @@ void main() {
       await tester.tap(find.text('Profile'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Profile'), findsWidgets);
+      // Profile screen shows "Anonymous User" for anonymous auth state
+      expect(find.text('Anonymous User'), findsOneWidget);
     });
 
     testWidgets('navigation to /splash renders Splash screen', (tester) async {

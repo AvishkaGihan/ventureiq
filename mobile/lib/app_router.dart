@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_colors.dart';
+import 'features/auth/domain/auth_entity.dart';
+import 'features/auth/domain/auth_state.dart';
+import 'features/auth/presentation/auth_providers.dart';
 
 // ──────────────────────────────────────────────────────────────
 // Placeholder Screens
@@ -47,6 +50,266 @@ class _PlaceholderScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// Profile Screen (Minimal — Story 2.2 foundation)
+// ──────────────────────────────────────────────────────────────
+
+/// Minimal Profile screen showing auth status and Google Sign-In button.
+///
+/// Anonymous users see "Sign in with Google" CTA.
+/// Authenticated users see their name/email and a sign-out option.
+/// This sets the foundation for Story 15.2 (full Profile Screen).
+class _ProfileScreen extends ConsumerWidget {
+  const _ProfileScreen();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: authState.when(
+            loading: () => const CircularProgressIndicator(
+              color: AppColors.electricViolet,
+            ),
+            error: (error, _) => _ProfileError(
+              message: error.toString(),
+              onRetry: () => ref.invalidate(authNotifierProvider),
+            ),
+            data: (state) => switch (state) {
+              AuthStateUnauthenticated() => const _ProfileLoading(),
+              AuthStateAnonymous() => const _AnonymousProfile(),
+              AuthStateAuthenticated(:final user) =>
+                _AuthenticatedProfile(user: user),
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Loading indicator shown during auto-anonymous sign-in.
+class _ProfileLoading extends StatelessWidget {
+  const _ProfileLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircularProgressIndicator(color: AppColors.electricViolet),
+        SizedBox(height: 16),
+        Text(
+          'Setting up...',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+      ],
+    );
+  }
+}
+
+/// Profile view for anonymous users — shows Google Sign-In CTA.
+class _AnonymousProfile extends ConsumerWidget {
+  const _AnonymousProfile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.person_outline,
+            size: 64,
+            color: AppColors.textTertiary,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Anonymous User',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Sign in to sync your reports across devices',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: _GoogleSignInButton(
+              onPressed: () async {
+                await ref
+                    .read(authNotifierProvider.notifier)
+                    .signInWithGoogle();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Google Sign-In button following VentureIQ design tokens.
+///
+/// Electric Violet (#6C5CE7) primary CTA, 48dp height, 8dp radius.
+/// Shows loading indicator when auth is in progress.
+class _GoogleSignInButton extends ConsumerWidget {
+  const _GoogleSignInButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(authNotifierProvider).isLoading;
+
+    return FilledButton.icon(
+      onPressed: isLoading ? null : onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.electricViolet,
+        foregroundColor: AppColors.textPrimary,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        disabledBackgroundColor:
+            AppColors.electricViolet.withValues(alpha: 0.5),
+      ),
+      icon: isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.textPrimary,
+              ),
+            )
+          : const Icon(Icons.login),
+      label: Text(
+        isLoading ? 'Signing in...' : 'Sign in with Google',
+      ),
+    );
+  }
+}
+
+/// Profile view for authenticated (Google) users.
+class _AuthenticatedProfile extends ConsumerWidget {
+  const _AuthenticatedProfile({required this.user});
+
+  final AuthUser user;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.account_circle,
+            size: 64,
+            color: AppColors.electricViolet,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            user.displayName ?? 'User',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          if (user.email != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              user.email!,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ],
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                await ref.read(authNotifierProvider.notifier).signOut();
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textSecondary,
+                side: const BorderSide(color: AppColors.textTertiary),
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              icon: const Icon(Icons.logout),
+              label: const Text('Sign Out'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Error display for profile auth failures.
+class _ProfileError extends StatelessWidget {
+  const _ProfileError({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            size: 48,
+            color: AppColors.textTertiary,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Something went wrong',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textTertiary,
+                ),
+          ),
+          const SizedBox(height: 24),
+          TextButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }
@@ -135,7 +398,7 @@ CustomTransitionPage<void> slideFromRight(
   );
 }
 
-/// Fade crossfade transition ΓÇö tab switching (0.15s)
+/// Fade crossfade transition — tab switching (0.15s)
 CustomTransitionPage<void> _fadeCrossfade(
   BuildContext context,
   GoRouterState state,
@@ -160,8 +423,12 @@ CustomTransitionPage<void> _fadeCrossfade(
 // ──────────────────────────────────────────────────────────────
 
 /// GoRouter instance provided via Riverpod for testability.
+///
+/// Depends on [authNotifierProvider] for auth-state-aware redirects.
+/// On `unauthenticated` state, triggers auto-anonymous sign-in transparently.
 final routerProvider = Provider<GoRouter>((ref) {
-  return createRouter();
+  final router = createRouter();
+  return router;
 });
 
 /// Creates the GoRouter configuration.
@@ -181,6 +448,13 @@ GoRouter createRouter() {
         builder: (context, state) => const _PlaceholderScreen(
           title: 'Splash',
           icon: Icons.rocket_launch,
+        ),
+      ),
+      GoRoute(
+        path: '/auth',
+        builder: (context, state) => const _PlaceholderScreen(
+          title: 'Auth',
+          icon: Icons.lock_outline,
         ),
       ),
       StatefulShellRoute.indexedStack(
@@ -257,10 +531,7 @@ GoRouter createRouter() {
                 pageBuilder: (context, state) => _fadeCrossfade(
                   context,
                   state,
-                  const _PlaceholderScreen(
-                    title: 'Profile',
-                    icon: Icons.person,
-                  ),
+                  const _ProfileScreen(),
                 ),
               ),
             ],

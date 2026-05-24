@@ -39,7 +39,7 @@ void main() {
 
     test('has correct base URL', () {
       final client = DioClient.instance;
-      expect(client.dio.options.baseUrl, 'http://10.0.2.2:8000');
+      expect(client.dio.options.baseUrl, DioClient.defaultBaseUrl);
     });
 
     test('has interceptors configured', () {

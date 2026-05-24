@@ -84,6 +84,9 @@ docker-compose.override.yml
 # Firebase / Secrets
 *service-account*.json
 firebase-keys/
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
 
 # -----------------------------------------------------------------------------
 # OS

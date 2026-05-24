@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ventureiq_app/core/networking/auth_interceptor.dart';
+import 'package:ventureiq_app/features/auth/data/token_storage.dart';
 
 /// VentureIQ Dio HTTP Client
 ///
@@ -16,8 +18,15 @@ class DioClient {
   /// Underlying Dio instance for direct access when needed
   Dio get dio => _dio;
 
-  /// Default base URL for Android emulator → localhost mapping
-  static const String defaultBaseUrl = 'http://10.0.2.2:8000';
+  /// Default base URL dynamically resolved:
+  /// - Android Emulator: 10.0.2.2:8000
+  /// - iOS Simulator / Web / Desktop: localhost:8000
+  static String get defaultBaseUrl {
+    // if (defaultTargetPlatform == TargetPlatform.android) {
+    //   return 'http://10.0.2.2:8000';
+    // }
+    return 'http://localhost:8000';
+  }
 
   /// Connect timeout in milliseconds
   static const Duration connectTimeout = Duration(seconds: 15);
@@ -66,6 +75,29 @@ class DioClient {
     }
   }
 
+  /// Add the [AuthInterceptor] to the interceptor chain.
+  ///
+  /// Must be called after Firebase and auth providers are initialized.
+  /// Inserts after JSON interceptor, before logging interceptor.
+  void addAuthInterceptor({
+    required TokenStorage tokenStorage,
+    required Dio plainDio,
+    required OnAuthExpired onAuthExpired,
+  }) {
+    final authInterceptor = AuthInterceptor(
+      tokenStorage: tokenStorage,
+      plainDio: plainDio,
+      onAuthExpired: onAuthExpired,
+    );
+
+    // Insert after JSON interceptor (index 0), before logging (index 1)
+    if (_dio.interceptors.length > 1) {
+      _dio.interceptors.insert(1, authInterceptor);
+    } else {
+      _dio.interceptors.add(authInterceptor);
+    }
+  }
+
   /// Factory constructor for testing — creates a new instance with custom Dio
   @visibleForTesting
   static DioClient withDio(Dio dio) {
@@ -80,3 +112,4 @@ class DioClient {
     instance._init();
   }
 }
+
