@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ventureiq_app/features/auth/data/auth_repository.dart';
+import 'package:ventureiq_app/features/auth/data/auth_repository.dart'
+    show AccountAlreadyInUseException, AuthRepository;
 import 'package:ventureiq_app/features/auth/domain/auth_entity.dart';
 import 'package:ventureiq_app/features/auth/domain/auth_state.dart';
 import 'package:ventureiq_app/features/auth/presentation/auth_providers.dart';
@@ -53,23 +55,51 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     });
   }
 
-  /// Trigger Google Sign-In flow, Firebase credential, and backend JWT exchange.
+  /// Trigger Google Sign-In flow.
   ///
-  /// Called when user taps "Sign in with Google" in Profile tab.
+  /// **Routing logic** (Story 2.3):
+  /// - If the current state is `anonymous` → calls `upgradeToGoogle()`
+  ///   which uses `linkWithCredential` to preserve the UID
+  /// - Otherwise → calls `signInWithGoogle()` for a fresh sign-in
+  ///
   /// If the user cancels the sign-in dialog, silently restores the previous state.
   Future<void> signInWithGoogle() async {
     final previousState = state;
-    state = const AsyncValue.loading();
+    // ignore: invalid_use_of_internal_member
+    state = const AsyncLoading<AuthState>().copyWithPrevious(previousState);
     try {
-      final user = await _authRepository.signInWithGoogle();
+      final AuthUser user;
+
+      // Route: anonymous → upgrade, unauthenticated → fresh sign-in
+      final currentState = previousState.value;
+      if (currentState is AuthStateAnonymous) {
+        user = await _authRepository.upgradeToGoogle();
+      } else {
+        user = await _authRepository.signInWithGoogle();
+      }
+
       state = AsyncValue.data(AuthState.authenticated(user));
+    } on AccountAlreadyInUseException catch (e) {
+      // Specific error: Google account already linked to another VentureIQ account
+      // The UI layer should listen for this error and show:
+      // "This Google account is already in use"
+      // ignore: invalid_use_of_internal_member
+      state = AsyncValue<AuthState>.error(e, StackTrace.current).copyWithPrevious(previousState);
     } catch (e) {
       // Check if this is a user cancellation — restore previous state silently
-      if (e.toString().contains('canceled') ||
-          e.toString().contains('cancelled')) {
+      final errorStr = e.toString().toLowerCase();
+      final isCancellation = (e is PlatformException &&
+              (e.code == 'sign_in_canceled' || e.code == '12501')) ||
+          errorStr.contains('canceled') ||
+          errorStr.contains('cancelled') ||
+          errorStr.contains('cancel');
+      if (isCancellation) {
         state = previousState;
       } else {
-        state = AsyncValue.error(e, StackTrace.current);
+        // On any failure during upgrade, the repository handles compensating
+        // unlink. The user remains anonymous with data intact.
+        // ignore: invalid_use_of_internal_member
+        state = AsyncValue<AuthState>.error(e, StackTrace.current).copyWithPrevious(previousState);
       }
     }
   }

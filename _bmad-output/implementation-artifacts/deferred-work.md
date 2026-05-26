@@ -16,3 +16,9 @@
 - No Server-Side Token Revocation [backend]
 - Missing Rate Limiting on Token Exchange [backend/app/api/v1/endpoints/auth.py]
 - Data Loss on Google Sign-In [mobile/lib/features/auth/data/auth_repository.dart] (Story 2.3 Account Upgrade)
+
+## Deferred from: code review of 2-3-anonymous-to-authenticated-upgrade-data-retention (2026-05-26)
+- No Concurrency Protection on Upgrade [backend/app/services/auth_service.py]
+- Synchronous Firebase SDK Call in Thread Pool Bottleneck [backend/app/services/auth_service.py]
+- Silently Swallowed Google Sign-Out Errors [mobile/lib/features/auth/data/auth_repository.dart]
+- Distributed State Inconsistency Dual-Write Hazard [mobile/lib/features/auth/data/auth_repository.dart:763-814]

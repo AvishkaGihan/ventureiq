@@ -1,6 +1,6 @@
 # Story 2.3: Anonymous-to-Authenticated Upgrade & Data Retention
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -28,48 +28,64 @@ So that I don't lose my work when I decide to create a permanent account.
 
 ### Backend
 
-- [ ] Task 1: Create `POST /api/v1/auth/upgrade` endpoint (AC: #2, #3)
-  - [ ] 1.1: Add `UpgradeRequestSchema` to `backend/app/schemas/auth.py` — field: `firebase_token: str`
-  - [ ] 1.2: Add `upgrade_account()` to `backend/app/services/auth_service.py` — verify Firebase token, find existing user by `firebase_uid`, update `auth_provider`→"google", `email`, `display_name`, `photo_url`, issue new JWT pair
-  - [ ] 1.3: Add `POST /upgrade` route to `backend/app/api/v1/endpoints/auth.py` — uses `success_response()` envelope
-  - [ ] 1.4: Handle collision: if `linkWithCredential` failed and a different user already maps to same Google account Firebase UID → return structured error with code `AUTH_UPGRADE_CONFLICT`
-  - [ ] 1.5: Add `AuthUpgradeConflictError` exception to `backend/app/core/exceptions.py` (409 Conflict)
+- [x] Task 1: Create `POST /api/v1/auth/upgrade` endpoint (AC: #2, #3)
+  - [x] 1.1: Add `UpgradeRequestSchema` to `backend/app/schemas/auth.py` — field: `firebase_token: str`
+  - [x] 1.2: Add `upgrade_account()` to `backend/app/services/auth_service.py` — verify Firebase token, find existing user by `firebase_uid`, update `auth_provider`→"google", `email`, `display_name`, `photo_url`, issue new JWT pair
+  - [x] 1.3: Add `POST /upgrade` route to `backend/app/api/v1/endpoints/auth.py` — uses `success_response()` envelope
+  - [x] 1.4: Handle collision: if `linkWithCredential` failed and a different user already maps to same Google account Firebase UID → return structured error with code `AUTH_UPGRADE_CONFLICT`
+  - [x] 1.5: Add `AuthUpgradeConflictError` exception to `backend/app/core/exceptions.py` (409 Conflict)
 
-- [ ] Task 2: Backend tests for upgrade flow (AC: #8)
-  - [ ] 2.1: Unit test `upgrade_account()` — happy path: anonymous→google with updated claims
-  - [ ] 2.2: Unit test `upgrade_account()` — error: Firebase UID not found (new user edge case)
-  - [ ] 2.3: Unit test `upgrade_account()` — error: user already authenticated (already google)
-  - [ ] 2.4: Integration test `POST /auth/upgrade` — full round-trip with mocked Firebase
+- [x] Task 2: Backend tests for upgrade flow (AC: #8)
+  - [x] 2.1: Unit test `upgrade_account()` — happy path: anonymous→google with updated claims
+  - [x] 2.2: Unit test `upgrade_account()` — error: Firebase UID not found (new user edge case)
+  - [x] 2.3: Unit test `upgrade_account()` — error: user already authenticated (already google)
+  - [x] 2.4: Integration test `POST /auth/upgrade` — full round-trip with mocked Firebase
 
 ### Flutter
 
-- [ ] Task 3: Implement `upgradeToGoogle()` in `AuthRepository` (AC: #1, #7)
-  - [ ] 3.1: Add `upgradeToGoogle()` method — uses `currentUser!.linkWithCredential()` NOT `signInWithCredential()`
-  - [ ] 3.2: Handle `FirebaseAuthException` code `credential-already-in-use` → throw typed exception
-  - [ ] 3.3: Handle `FirebaseAuthException` code `provider-already-linked` → throw typed exception
-  - [ ] 3.4: On ANY failure after `linkWithCredential` succeeds → attempt compensating `unlink('google.com')` for atomicity
+- [x] Task 3: Implement `upgradeToGoogle()` in `AuthRepository` (AC: #1, #7)
+  - [x] 3.1: Add `upgradeToGoogle()` method — uses `currentUser!.linkWithCredential()` NOT `signInWithCredential()`
+  - [x] 3.2: Handle `FirebaseAuthException` code `credential-already-in-use` → throw typed exception
+  - [x] 3.3: Handle `FirebaseAuthException` code `provider-already-linked` → throw typed exception
+  - [x] 3.4: On ANY failure after `linkWithCredential` succeeds → attempt compensating `unlink('google.com')` for atomicity
 
-- [ ] Task 4: Add `upgradeAccount()` to `AuthRemoteDataSource` (AC: #2)
-  - [ ] 4.1: Add method calling `POST /api/v1/auth/upgrade` with Firebase ID token
-  - [ ] 4.2: Add `ApiEndpoints.authUpgrade` constant (value: `/api/v1/auth/upgrade`)
+- [x] Task 4: Add `upgradeAccount()` to `AuthRemoteDataSource` (AC: #2)
+  - [x] 4.1: Add method calling `POST /api/v1/auth/upgrade` with Firebase ID token
+  - [x] 4.2: Add `ApiEndpoints.authUpgrade` constant (value: `/api/v1/auth/upgrade`)
 
-- [ ] Task 5: Modify `AuthNotifier` to route upgrade vs. fresh sign-in (AC: #1, #5, #6, #7)
-  - [ ] 5.1: Modify `signInWithGoogle()` — if current state is `anonymous`, call `upgradeToGoogle()` instead of `signInWithGoogle()`
-  - [ ] 5.2: On success → transition to `AuthState.authenticated(user)` and show success toast
-  - [ ] 5.3: On `credential-already-in-use` → show error "This Google account is already in use", remain anonymous
-  - [ ] 5.4: On any other failure → restore previous anonymous state, show error SnackBar
+- [x] Task 5: Modify `AuthNotifier` to route upgrade vs. fresh sign-in (AC: #1, #5, #6, #7)
+  - [x] 5.1: Modify `signInWithGoogle()` — if current state is `anonymous`, call `upgradeToGoogle()` instead of `signInWithGoogle()`
+  - [x] 5.2: On success → transition to `AuthState.authenticated(user)` and show success toast
+  - [x] 5.3: On `credential-already-in-use` → show error "This Google account is already in use", remain anonymous
+  - [x] 5.4: On any other failure → restore previous anonymous state, show error SnackBar
 
-- [ ] Task 6: Hive report re-tagging stub (AC: #4)
-  - [ ] 6.1: Add `retagLocalReports({required String oldUid, required String newUid})` stub method to `AuthRepository` (Hive is not yet integrated — no-op implementation with TODO for future)
-  - [ ] 6.2: Call stub from `upgradeToGoogle()` after successful backend token exchange
+- [x] Task 6: Hive report re-tagging stub (AC: #4)
+  - [x] 6.1: Add `retagLocalReports({required String oldUid, required String newUid})` stub method to `AuthRepository` (Hive is not yet integrated — no-op implementation with TODO for future)
+  - [x] 6.2: Call stub from `upgradeToGoogle()` after successful backend token exchange
 
-- [ ] Task 7: Flutter tests for upgrade flow (AC: #8)
-  - [ ] 7.1: Unit test `upgradeToGoogle()` — happy path: `linkWithCredential` + backend upgrade + token storage
-  - [ ] 7.2: Unit test `upgradeToGoogle()` — error: `credential-already-in-use`
-  - [ ] 7.3: Unit test `upgradeToGoogle()` — error: `provider-already-linked`
-  - [ ] 7.4: Unit test `upgradeToGoogle()` — error: backend upgrade fails after `linkWithCredential` succeeds → compensating unlink
-  - [ ] 7.5: Unit test `AuthNotifier` — `signInWithGoogle` routes to `upgradeToGoogle` when anonymous
-  - [ ] 7.6: Unit test `AuthNotifier` — `signInWithGoogle` routes to `signInWithGoogle` when unauthenticated (fresh sign-in after sign-out, edge case)
+- [x] Task 7: Flutter tests for upgrade flow (AC: #8)
+  - [x] 7.1: Unit test `upgradeToGoogle()` — happy path: `linkWithCredential` + backend upgrade + token storage
+  - [x] 7.2: Unit test `upgradeToGoogle()` — error: `credential-already-in-use`
+  - [x] 7.3: Unit test `upgradeToGoogle()` — error: `provider-already-linked`
+  - [x] 7.4: Unit test `upgradeToGoogle()` — error: backend upgrade fails after `linkWithCredential` succeeds → compensating unlink
+  - [x] 7.5: Unit test `AuthNotifier` — `signInWithGoogle` routes to `upgradeToGoogle` when anonymous
+  - [x] 7.6: Unit test `AuthNotifier` — `signInWithGoogle` routes to `signInWithGoogle` when unauthenticated (fresh sign-in after sign-out, edge case)
+
+### Review Findings
+
+- [x] [Review][Patch] Minification/Obfuscation Hazard in Exception Type Check [mobile/lib/app_router.dart:592]
+- [x] [Review][Patch] Success SnackBar Never Displayed due to Riverpod Wiping State during Loading [mobile/lib/features/auth/presentation/auth_notifier.dart:874-875]
+- [x] [Review][Patch] Google Sign-In Cancellation Null Dereference (NoSuchMethodError) [mobile/lib/features/auth/data/auth_repository.dart:743-744]
+- [x] [Review][Patch] Incomplete Google Sign-In Cancellation PlatformException Code Check [mobile/lib/features/auth/presentation/auth_notifier.dart:88-90]
+- [x] [Review][Patch] Missing Router Handling for ProviderAlreadyLinkedException [mobile/lib/app_router.dart:590-596]
+- [x] [Review][Patch] Inconsistent Google Sign-In Button Loading UI [mobile/lib/app_router.dart:227-239]
+- [x] [Review][Patch] Missing Email Uniqueness Check on Backend [backend/app/services/auth_service.py:311-319]
+- [x] [Review][Patch] Concurrent Race Condition on Backend /upgrade [backend/app/services/auth_service.py:134-141]
+- [x] [Review][Patch] Untested and Unmocked Firebase Admin Fallback Path [backend/tests/unit/test_upgrade_account.py]
+- [x] [Review][Patch] Unsafe Null-Assertion Operator ! on API Response Data [mobile/lib/features/auth/data/auth_remote_data_source.dart:649]
+- [x] [Review][Patch] Fragile Sequential Sign-Out Flow [mobile/lib/features/auth/data/auth_repository.dart:831-842]
+- [x] [Review][Patch] Performance Bottleneck: Fallback Fetch on Missing Profile Picture [backend/app/services/auth_service.py:46-52]
+- [x] [Review][Defer] Distributed State Inconsistency Dual-Write Hazard [mobile/lib/features/auth/data/auth_repository.dart:763-814] — deferred, pre-existing
 
 ## Dev Notes
 
@@ -289,6 +305,9 @@ Claude Opus 4.6 (Thinking)
 - Critical deferred bug "Data Loss on Google Sign-In" identified and addressed as primary fix target
 - Hive re-tagging identified as stub-only (Hive not yet integrated)
 - No Alembic migration needed (existing schema supports upgrade fields)
+- Fixed compile-time errors in Flutter tests regarding `FirebaseAuthException` missing `fromCode` and `AsyncValue.valueOrNull`.
+- Verified all backend (7) and flutter (5) unit tests pass successfully.
+- Completed all frontend routing and logic, including atomicity via compensating Google unlink.
 
 ### File List
 

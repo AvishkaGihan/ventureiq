@@ -13,6 +13,12 @@ class TokenExchangeRequestSchema(BaseModel):
     firebase_token: str = Field(..., min_length=1)
 
 
+class UpgradeRequestSchema(BaseModel):
+    """Request payload for upgrading an anonymous account to Google."""
+
+    firebase_token: str = Field(..., min_length=1)
+
+
 class TokenRefreshRequestSchema(BaseModel):
     """Request payload for refreshing a backend token."""
 
