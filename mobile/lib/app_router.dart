@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_colors.dart';
+import 'features/auth/data/auth_repository.dart';
 import 'features/auth/domain/auth_entity.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/auth_providers.dart';
@@ -69,6 +70,49 @@ class _ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(authNotifierProvider, (previous, next) {
+      // Show success toast on anonymous to authenticated upgrade
+      if (previous != null &&
+          previous.value is AuthStateAnonymous &&
+          next.value is AuthStateAuthenticated) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created! Your data has been preserved.'),
+              backgroundColor: AppColors.success,
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+
+      // Show error toast on error state (unless it's loading)
+      if (next.hasError && !next.isLoading) {
+        final error = next.error;
+        final String message;
+        if (error is AccountAlreadyInUseException) {
+          message = 'This Google account is already in use';
+        } else if (error is ProviderAlreadyLinkedException) {
+          message = 'A Google provider is already linked to this account.';
+        } else {
+          message = 'Something went wrong during sign in';
+        }
+        
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: AppColors.surface100,
+              duration: const Duration(seconds: 4),
+              shape: const Border(
+                left: BorderSide(color: AppColors.electricViolet, width: 4),
+              ),
+            ),
+          );
+        }
+      }
+    });
+
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
@@ -177,7 +221,7 @@ class _GoogleSignInButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(authNotifierProvider).isLoading;
 
-    return FilledButton.icon(
+    return FilledButton(
       onPressed: isLoading ? null : onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: AppColors.electricViolet,
@@ -189,7 +233,7 @@ class _GoogleSignInButton extends ConsumerWidget {
         disabledBackgroundColor:
             AppColors.electricViolet.withValues(alpha: 0.5),
       ),
-      icon: isLoading
+      child: isLoading
           ? const SizedBox(
               width: 20,
               height: 20,
@@ -198,10 +242,14 @@ class _GoogleSignInButton extends ConsumerWidget {
                 color: AppColors.textPrimary,
               ),
             )
-          : const Icon(Icons.login),
-      label: Text(
-        isLoading ? 'Signing in...' : 'Sign in with Google',
-      ),
+          : const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.login),
+                SizedBox(width: 8),
+                Text('Sign in with Google'),
+              ],
+            ),
     );
   }
 }

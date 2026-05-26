@@ -2,19 +2,24 @@
 
 from __future__ import annotations
 
+import asyncio
+import logging
 import uuid
 from datetime import UTC, datetime
 from typing import Any
 
 import redis.asyncio as aioredis
+from firebase_admin import auth as fb_auth
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
-from app.core.exceptions import AuthInvalidTokenError
+from app.core.exceptions import AuthInvalidTokenError, AuthUpgradeConflictError
 from app.core.security import create_access_token, create_refresh_token, verify_firebase_token, verify_jwt
 from app.models.user import UserModel
 from app.schemas.auth import TokenResponseSchema
+
+logger = logging.getLogger(__name__)
 
 
 def _normalize_auth_provider(provider: str | None) -> str:
@@ -23,6 +28,30 @@ def _normalize_auth_provider(provider: str | None) -> str:
     if provider in ("anonymous", None, ""):
         return "anonymous"
     return provider.split(".")[0]
+
+
+async def _resolve_profile(
+    firebase_uid: str,
+    claims: dict[str, Any],
+) -> tuple[str | None, str | None]:
+    """Extract display_name and photo_url from token claims.
+
+    Falls back to Firebase Admin SDK when claims lack these fields,
+    which happens for linked anonymous accounts whose ID tokens
+    don't include the Google profile data.
+    """
+    display_name = claims.get("name")
+    photo_url = claims.get("picture")
+
+    if not display_name and not photo_url:
+        try:
+            firebase_user = await asyncio.to_thread(fb_auth.get_user, firebase_uid)
+            display_name = display_name or firebase_user.display_name
+            photo_url = photo_url or firebase_user.photo_url
+        except Exception:
+            logger.warning("Failed to fetch profile from Firebase Admin SDK for uid=%s", firebase_uid)
+
+    return display_name, photo_url
 
 
 async def get_or_create_user(firebase_claims: dict[str, Any], db: AsyncSession) -> UserModel:
@@ -40,8 +69,7 @@ async def get_or_create_user(firebase_claims: dict[str, Any], db: AsyncSession) 
         sign_in_provider = firebase_dict.get("sign_in_provider")
     auth_provider = _normalize_auth_provider(sign_in_provider)
     email = firebase_claims.get("email")
-    display_name = firebase_claims.get("name")
-    photo_url = firebase_claims.get("picture")
+    display_name, photo_url = await _resolve_profile(firebase_uid, firebase_claims)
     last_login_at = datetime.now(UTC)
 
     if user is not None:
@@ -79,6 +107,65 @@ async def exchange_token(firebase_token: str, db: AsyncSession) -> TokenResponse
             "user_id": str(user.id),
             "tier": user.tier,
             "auth_method": user.auth_provider,
+        }
+    )
+    refresh_token = create_refresh_token(str(user.id))
+
+    settings = get_settings()
+    return TokenResponseSchema(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        expires_in=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+
+
+async def upgrade_account(firebase_token: str, db: AsyncSession) -> TokenResponseSchema:
+    """Upgrade an anonymous account to Google-authenticated.
+
+    Validates the user was previously anonymous, updates profile fields
+    from the Google-linked Firebase claims, and issues a new JWT pair.
+    """
+    firebase_claims = await verify_firebase_token(firebase_token)
+    firebase_uid = firebase_claims.get("uid")
+    if not firebase_uid:
+        raise AuthInvalidTokenError()
+
+    result = await db.execute(select(UserModel).where(UserModel.firebase_uid == firebase_uid).with_for_update())
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        raise AuthInvalidTokenError("User not found for upgrade")
+
+    if user.auth_provider != "anonymous":
+        raise AuthUpgradeConflictError("User is already authenticated — not an anonymous account")
+
+    # Prevent unique email constraint violation by verifying another Google user doesn't own it
+    email = firebase_claims.get("email")
+    if email:
+        email_result = await db.execute(
+            select(UserModel).where(UserModel.email == email, UserModel.firebase_uid != firebase_uid)
+        )
+        existing_email_user = email_result.scalar_one_or_none()
+        if existing_email_user is not None:
+            raise AuthUpgradeConflictError("This Google account is already linked to another VentureIQ account.")
+
+    # Update user fields from Google claims + Admin SDK fallback
+    user.auth_provider = "google"
+    user.email = email
+    display_name, photo_url = await _resolve_profile(firebase_uid, firebase_claims)
+    user.display_name = display_name
+    user.photo_url = photo_url
+    user.last_login_at = datetime.now(UTC)
+    await db.commit()
+    await db.refresh(user)
+
+    # Issue new JWT with updated claims
+    access_token = create_access_token(
+        {
+            "user_id": str(user.id),
+            "tier": user.tier,
+            "auth_method": "google",
         }
     )
     refresh_token = create_refresh_token(str(user.id))

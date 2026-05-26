@@ -126,3 +126,11 @@ class InternalError(VentureIQError):
     error_code = "INTERNAL_ERROR"
     status_code = 500
     message = "Internal server error"
+
+
+class AuthUpgradeConflictError(VentureIQError):
+    """Account upgrade conflict — user is already authenticated or Google account in use."""
+
+    error_code = "AUTH_UPGRADE_CONFLICT"
+    status_code = 409
+    message = "Account upgrade conflict"

@@ -41,4 +41,7 @@ class ApiEndpoints {
 
   /// Refresh expired access token
   static const String authRefresh = '$basePath/auth/refresh';
+
+  /// Upgrade anonymous account to Google-authenticated
+  static const String authUpgrade = '$basePath/auth/upgrade';
 }

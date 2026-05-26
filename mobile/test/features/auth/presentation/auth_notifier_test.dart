@@ -236,6 +236,9 @@ void main() {
           container = createContainer();
           await container.read(authNotifierProvider.future);
 
+          // Force to unauthenticated to route to fresh sign-in (Story 2.3 routing logic)
+          container.read(authNotifierProvider.notifier).forceUnauthenticated();
+
           // Act
           await container
               .read(authNotifierProvider.notifier)

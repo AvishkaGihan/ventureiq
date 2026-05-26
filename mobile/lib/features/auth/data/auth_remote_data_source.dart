@@ -46,6 +46,18 @@ class AuthRemoteDataSource {
 
   final Dio _dio;
 
+  Map<String, dynamic> _getNonNullData(Response<Map<String, dynamic>> response) {
+    final data = response.data;
+    if (data == null) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+        error: 'Response data is null',
+      );
+    }
+    return data;
+  }
+
   /// Exchange a Firebase ID token for a backend JWT token pair.
   ///
   /// Sends `{ "firebase_token": "<idToken>" }` and receives the
@@ -59,7 +71,7 @@ class AuthRemoteDataSource {
     );
 
     final parsed = ApiResponseParser.parse(
-      response.data!,
+      _getNonNullData(response),
       TokenResponse.fromJson,
     );
 
@@ -83,7 +95,29 @@ class AuthRemoteDataSource {
     );
 
     final parsed = ApiResponseParser.parse(
-      response.data!,
+      _getNonNullData(response),
+      TokenResponse.fromJson,
+    );
+
+    return parsed.data;
+  }
+
+  /// Upgrade an anonymous account to Google-authenticated.
+  ///
+  /// Sends the refreshed Firebase ID token (now with Google provider)
+  /// to `POST /api/v1/auth/upgrade`. The backend validates the user
+  /// was previously anonymous, updates profile fields, and issues
+  /// new JWTs with `auth_method: \"google\"`.
+  Future<TokenResponse> upgradeAccount({
+    required String firebaseToken,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      ApiEndpoints.authUpgrade,
+      data: {'firebase_token': firebaseToken},
+    );
+
+    final parsed = ApiResponseParser.parse(
+      _getNonNullData(response),
       TokenResponse.fromJson,
     );
 
