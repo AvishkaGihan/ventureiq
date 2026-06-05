@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T18:19:11Z
-last_updated: 2026-05-26T13:15:00Z
+last_updated: 2026-06-05T09:56:00Z
 project: ventureiq
 project_key: NOKEY
 tracking_system: file-system
@@ -56,7 +56,7 @@ development_status:
   2-1-firebase-authentication-jwt-exchange-backend: done
   2-2-anonymous-google-sign-in-flutter: done
   2-3-anonymous-to-authenticated-upgrade-data-retention: done
-  2-4-tier-based-usage-limits-rate-limiting: backlog
+  2-4-tier-based-usage-limits-rate-limiting: ready-for-dev
   epic-2-retrospective: optional
 
   epic-3: backlog
