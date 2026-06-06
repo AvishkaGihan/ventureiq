@@ -1,6 +1,10 @@
+---
+baseline_commit: 4c2ca02c88f8651877ae6b53831465c1ee63b612
+---
+
 # Story 2.4: Tier-Based Usage Limits & Rate Limiting
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -27,75 +31,75 @@ So that the platform can sustainably serve users while incentivizing upgrades.
 
 ### Backend
 
-- [ ] Task 1: Rate Limit Service (AC: #1, #2, #3, #8)
-  - [ ] 1.1 Create `app/services/rate_limit_service.py` with `RateLimitService` class
-  - [ ] 1.2 Implement Redis Sorted Set (ZSET) sliding window via atomic Lua script
-  - [ ] 1.3 Key pattern: `rate_limit:reports:{user_id}:{YYYY-MM}` — avoids collision with `refresh_token:{jti}` keys in db2
-  - [ ] 1.4 TTL calculated to calendar month end (UTC)
-  - [ ] 1.5 Methods: `check_and_increment(user_id, tier) → (allowed: bool, current_count: int, limit: int, reset_at: datetime)`
-  - [ ] 1.6 Method: `get_usage(user_id, tier) → (current_count: int, limit: int, reset_at: datetime)` (read-only for usage endpoint)
-  - [ ] 1.7 Tier-aware logic: skip check entirely for "pro" tier; enforce limit=3 for "free" and "anonymous"
+- [x] Task 1: Rate Limit Service (AC: #1, #2, #3, #8)
+  - [x] 1.1 Create `app/services/rate_limit_service.py` with `RateLimitService` class
+  - [x] 1.2 Implement Redis Sorted Set (ZSET) sliding window via atomic Lua script
+  - [x] 1.3 Key pattern: `rate_limit:reports:{user_id}:{YYYY-MM}` — avoids collision with `refresh_token:{jti}` keys in db2
+  - [x] 1.4 TTL calculated to calendar month end (UTC)
+  - [x] 1.5 Methods: `check_and_increment(user_id, tier) → (allowed: bool, current_count: int, limit: int, reset_at: datetime)`
+  - [x] 1.6 Method: `get_usage(user_id, tier) → (current_count: int, limit: int, reset_at: datetime)` (read-only for usage endpoint)
+  - [x] 1.7 Tier-aware logic: skip check entirely for "pro" tier; enforce limit=3 for "free" and "anonymous"
 
-- [ ] Task 2: Rate Limit Configuration (AC: #2, #3)
-  - [ ] 2.1 Add to `app/core/config.py` Settings: `RATE_LIMIT_FREE_TIER_MONTHLY: int = 3`, `RATE_LIMIT_PRO_TIER_MONTHLY: int = 0` (0 = unlimited), `RATE_LIMIT_ANONYMOUS_TIER_MONTHLY: int = 3`
-  - [ ] 2.2 Add `RATE_LIMIT_ENABLED: bool = True` toggle for development/testing
+- [x] Task 2: Rate Limit Configuration (AC: #2, #3)
+  - [x] 2.1 Add to `app/core/config.py` Settings: `RATE_LIMIT_FREE_TIER_MONTHLY: int = 3`, `RATE_LIMIT_PRO_TIER_MONTHLY: int = 0` (0 = unlimited), `RATE_LIMIT_ANONYMOUS_TIER_MONTHLY: int = 3`
+  - [x] 2.2 Add `RATE_LIMIT_ENABLED: bool = True` toggle for development/testing
 
-- [ ] Task 3: Rate Limiting Middleware (AC: #4, #5, #10)
-  - [ ] 3.1 Add `RateLimitMiddleware` class in `app/core/middleware.py` (alongside existing `RequestIDMiddleware`)
-  - [ ] 3.2 Middleware applies ONLY to configurable route prefixes (initially `["/api/v1/ideas"]` for report generation — Epic 3 endpoint)
-  - [ ] 3.3 Extract user from JWT via `get_current_user()` pattern (not full dependency injection in middleware — decode JWT manually or use a lightweight helper)
-  - [ ] 3.4 Call `RateLimitService.check_and_increment()` — if denied, raise `RateLimitExceededError` with `remaining_seconds_until_reset`
-  - [ ] 3.5 Add `X-RateLimit-Remaining` and `X-RateLimit-Reset` response headers on ALL responses to rate-limited routes (not just 429s)
-  - [ ] 3.6 **Fail-open**: If Redis is unavailable, allow the request with a warning log
-  - [ ] 3.7 Register middleware in `app/main.py` `create_app()` — AFTER `RequestIDMiddleware` so request_id is available for logging
+- [x] Task 3: Rate Limiting Middleware (AC: #4, #5, #10)
+  - [x] 3.1 Add `RateLimitMiddleware` class in `app/core/middleware.py` (alongside existing `RequestIDMiddleware`)
+  - [x] 3.2 Middleware applies ONLY to configurable route prefixes (initially `["/api/v1/ideas"]` for report generation — Epic 3 endpoint)
+  - [x] 3.3 Extract user from JWT via `get_current_user()` pattern (not full dependency injection in middleware — decode JWT manually or use a lightweight helper)
+  - [x] 3.4 Call `RateLimitService.check_and_increment()` — if denied, raise `RateLimitExceededError` with `remaining_seconds_until_reset`
+  - [x] 3.5 Add `X-RateLimit-Remaining` and `X-RateLimit-Reset` response headers on ALL responses to rate-limited routes (not just 429s)
+  - [x] 3.6 **Fail-open**: If Redis is unavailable, allow the request with a warning log
+  - [x] 3.7 Register middleware in `app/main.py` `create_app()` — AFTER `RequestIDMiddleware` so request_id is available for logging
 
-- [ ] Task 4: Usage Status Endpoint (AC: #6, #7)
-  - [ ] 4.1 Create `app/api/v1/endpoints/usage.py` with `GET /api/v1/usage/me` endpoint
-  - [ ] 4.2 Returns: `{ "data": { "reports_used": 2, "reports_limit": 3, "tier": "free", "reset_at": "2026-07-01T00:00:00Z", "limit_reached": false }, "meta": {...} }`
-  - [ ] 4.3 Depends on `get_current_user()` and `get_redis_rate_limit()`
-  - [ ] 4.4 Register in `app/api/v1/router.py`
+- [x] Task 4: Usage Status Endpoint (AC: #6, #7)
+  - [x] 4.1 Create `app/api/v1/endpoints/usage.py` with `GET /api/v1/usage/me` endpoint
+  - [x] 4.2 Returns: `{ "data": { "reports_used": 2, "reports_limit": 3, "tier": "free", "reset_at": "2026-07-01T00:00:00Z", "limit_reached": false }, "meta": {...} }`
+  - [x] 4.3 Depends on `get_current_user()` and `get_redis_rate_limit()`
+  - [x] 4.4 Register in `app/api/v1/router.py`
 
-- [ ] Task 5: Rate Limit Schemas (AC: #5)
-  - [ ] 5.1 Create `app/schemas/usage.py` with `UsageStatusSchema`, `RateLimitExceededDetailSchema`
-  - [ ] 5.2 `RateLimitExceededDetailSchema`: `reports_used: int`, `reports_limit: int`, `reset_at: datetime`, `retry_after_seconds: int`
-  - [ ] 5.3 Update `RateLimitExceededError` in `exceptions.py` to accept and include `details` dict (verify it exists from Story 1.2 — it does at line 43-48)
+- [x] Task 5: Rate Limit Schemas (AC: #5)
+  - [x] 5.1 Create `app/schemas/usage.py` with `UsageStatusSchema`, `RateLimitExceededDetailSchema`
+  - [x] 5.2 `RateLimitExceededDetailSchema`: `reports_used: int`, `reports_limit: int`, `reset_at: datetime`, `retry_after_seconds: int`
+  - [x] 5.3 Update `RateLimitExceededError` in `exceptions.py` to accept and include `details` dict (verify it exists from Story 1.2 — it does at line 43-48)
 
-- [ ] Task 6: Backend Unit & Integration Tests (AC: #9)
-  - [ ] 6.1 `tests/unit/test_rate_limit_service.py` — limit enforcement, month-boundary reset, tier bypass, Redis failure fail-open
-  - [ ] 6.2 `tests/unit/test_rate_limit_middleware.py` — middleware applies to correct routes, skips non-rate-limited routes, returns correct headers
-  - [ ] 6.3 `tests/integration/test_usage_endpoint.py` — GET /usage/me returns correct counts for different tiers
-  - [ ] 6.4 Mock Redis with `DummyRedisManager` pattern from `conftest.py`; test atomic Lua script logic
+- [x] Task 6: Backend Unit & Integration Tests (AC: #9)
+  - [x] 6.1 `tests/unit/test_rate_limit_service.py` — limit enforcement, month-boundary reset, tier bypass, Redis failure fail-open
+  - [x] 6.2 `tests/unit/test_rate_limit_middleware.py` — middleware applies to correct routes, skips non-rate-limited routes, returns correct headers
+  - [x] 6.3 `tests/integration/test_usage_endpoint.py` — GET /usage/me returns correct counts for different tiers
+  - [x] 6.4 Mock Redis with `DummyRedisManager` pattern from `conftest.py`; test atomic Lua script logic
 
 ### Flutter / Mobile
 
-- [ ] Task 7: Usage Data Layer (AC: #6, #7)
-  - [ ] 7.1 Add `usageMe` constant to `api_endpoints.dart`: `static const usageMe = '/api/v1/usage/me';`
-  - [ ] 7.2 Create `features/auth/data/usage_repository.dart` — calls `GET /usage/me`, returns `UsageStatus` entity
-  - [ ] 7.3 Create `features/auth/domain/usage_entity.dart` — freezed `UsageStatus` class: `reportsUsed`, `reportsLimit`, `tier`, `resetAt`, `limitReached`
+- [x] Task 7: Usage Data Layer (AC: #6, #7)
+  - [x] 7.1 Add `usageMe` constant to `api_endpoints.dart`: `static const usageMe = '/api/v1/usage/me';`
+  - [x] 7.2 Create `features/auth/data/usage_repository.dart` — calls `GET /usage/me`, returns `UsageStatus` entity
+  - [x] 7.3 Create `features/auth/domain/usage_entity.dart` — freezed `UsageStatus` class: `reportsUsed`, `reportsLimit`, `tier`, `resetAt`, `limitReached`
 
-- [ ] Task 8: Usage State Management (AC: #6, #7)
-  - [ ] 8.1 Create `features/auth/presentation/usage_notifier.dart` — Riverpod `AsyncNotifier<UsageStatus>`
-  - [ ] 8.2 Create `features/auth/presentation/usage_providers.dart` — `usageNotifierProvider`
-  - [ ] 8.3 Auto-refresh usage on app foreground and after report generation
+- [x] Task 8: Usage State Management (AC: #6, #7)
+  - [x] 8.1 Create `features/auth/presentation/usage_notifier.dart` — Riverpod `AsyncNotifier<UsageStatus>`
+  - [x] 8.2 Create `features/auth/presentation/usage_providers.dart` — `usageNotifierProvider`
+  - [x] 8.3 Auto-refresh usage on app foreground and after report generation
 
-- [ ] Task 9: Usage Indicator Widget (AC: #7)
-  - [ ] 9.1 Create `features/auth/presentation/widgets/usage_indicator.dart`
-  - [ ] 9.2 Shows: progress bar (e.g., 2/3), "reports used this month" label, tier badge
-  - [ ] 9.3 Warning state (Caution Amber `#F59E0B`) when usage ≥ 2 of 3
-  - [ ] 9.4 Place in Profile tab (via `app_router.dart` profile screen)
-  - [ ] 9.5 Use `AppColors`, `AppTypography`, `AppSpacing` design tokens
-  - [ ] 9.6 Pro tier: show "Unlimited" badge instead of counter
+- [x] Task 9: Usage Indicator Widget (AC: #7)
+  - [x] 9.1 Create `features/auth/presentation/widgets/usage_indicator.dart`
+  - [x] 9.2 Shows: progress bar (e.g., 2/3), "reports used this month" label, tier badge
+  - [x] 9.3 Warning state (Caution Amber `#F59E0B`) when usage ≥ 2 of 3
+  - [x] 9.4 Place in Profile tab (via `app_router.dart` profile screen)
+  - [x] 9.5 Use `AppColors`, `AppTypography`, `AppSpacing` design tokens
+  - [x] 9.6 Pro tier: show "Unlimited" badge instead of counter
 
-- [ ] Task 10: Rate Limit Error Handling & Upgrade Prompt (AC: #6)
-  - [ ] 10.1 Handle `429` responses in Dio error handling — do NOT trigger auth refresh (AuthInterceptor must NOT retry 429s)
-  - [ ] 10.2 Create `features/auth/presentation/widgets/rate_limit_dialog.dart` — bottom sheet upgrade prompt
-  - [ ] 10.3 Shows "3/3 reports used this month", "Upgrade to Pro for unlimited reports", CTA to upgrade (links to Profile/settings for now — IAP deferred post-V1)
-  - [ ] 10.4 Uses `ErrorCard` widget from `core/widgets/error_card.dart` for inline errors
+- [x] Task 10: Rate Limit Error Handling & Upgrade Prompt (AC: #6)
+  - [x] 10.1 Handle `429` responses in Dio error handling — do NOT trigger auth refresh (AuthInterceptor must NOT retry 429s)
+  - [x] 10.2 Create `features/auth/presentation/widgets/rate_limit_dialog.dart` — bottom sheet upgrade prompt
+  - [x] 10.3 Shows "3/3 reports used this month", "Upgrade to Pro for unlimited reports", CTA to upgrade (links to Profile/settings for now — IAP deferred post-V1)
+  - [x] 10.4 Uses `ErrorCard` widget from `core/widgets/error_card.dart` for inline errors
 
-- [ ] Task 11: Flutter Widget Tests (AC: #9)
-  - [ ] 11.1 `test/features/auth/presentation/widgets/usage_indicator_test.dart` — renders correctly for free/pro/anonymous tiers
-  - [ ] 11.2 `test/features/auth/presentation/widgets/rate_limit_dialog_test.dart` — shows correct messaging
-  - [ ] 11.3 Mock `usageNotifierProvider` with different states
+- [x] Task 11: Flutter Widget Tests (AC: #9)
+  - [x] 11.1 `test/features/auth/presentation/widgets/usage_indicator_test.dart` — renders correctly for free/pro/anonymous tiers
+  - [x] 11.2 `test/features/auth/presentation/widgets/rate_limit_dialog_test.dart` — shows correct messaging
+  - [x] 11.3 Mock `usageNotifierProvider` with different states
 
 ## Dev Notes
 
@@ -283,6 +287,58 @@ mobile/lib/app_router.dart                   [MODIFY] — Add usage_indicator to
 
 ### Debug Log References
 
+- 2026-06-05: Started implementation from baseline commit `4c2ca02c88f8651877ae6b53831465c1ee63b612`.
+
 ### Completion Notes List
 
+- Implemented Redis db2 monthly report rate limiting with atomic ZSET Lua script, calendar-month keys, month-end TTL, free/anonymous limits, Pro bypass, and fail-open behavior.
+- Added configurable rate-limit settings, route prefixes, middleware headers, 429 `RATE_LIMIT_EXCEEDED` envelope details, and `GET /api/v1/usage/me`.
+- Added Flutter usage data/state layer, Profile usage indicator, app-resume refresh, non-401/429 auth-interceptor pass-through, and rate-limit upgrade bottom sheet.
+- Validation passed: backend Ruff, full backend pytest, Flutter analyzer for touched files, and focused Flutter widget/router tests. Full mobile suite still fails on existing Google Fonts runtime fetch/test-environment setup unrelated to Story 2.4.
+
 ### File List
+
+- backend/app/api/v1/endpoints/usage.py
+- backend/app/api/v1/router.py
+- backend/app/core/config.py
+- backend/app/core/middleware.py
+- backend/app/main.py
+- backend/app/schemas/usage.py
+- backend/app/services/rate_limit_service.py
+- backend/tests/integration/test_usage_endpoint.py
+- backend/tests/unit/test_rate_limit_middleware.py
+- backend/tests/unit/test_rate_limit_service.py
+- mobile/lib/app_router.dart
+- mobile/lib/core/networking/api_endpoints.dart
+- mobile/lib/core/networking/auth_interceptor.dart
+- mobile/lib/features/auth/data/usage_repository.dart
+- mobile/lib/features/auth/domain/usage_entity.dart
+- mobile/lib/features/auth/domain/usage_entity.freezed.dart
+- mobile/lib/features/auth/domain/usage_entity.g.dart
+- mobile/lib/features/auth/presentation/usage_notifier.dart
+- mobile/lib/features/auth/presentation/usage_providers.dart
+- mobile/lib/features/auth/presentation/widgets/rate_limit_dialog.dart
+- mobile/lib/features/auth/presentation/widgets/usage_indicator.dart
+- mobile/test/app_router_test.dart
+- mobile/test/features/auth/presentation/widgets/rate_limit_dialog_test.dart
+- mobile/test/features/auth/presentation/widgets/usage_indicator_test.dart
+
+### Change Log
+
+- 2026-06-05: Implemented Story 2.4 rate limiting and usage UI; moved story to review.
+
+### Review Findings
+
+- [x] [Review][Defer] State Desync Between JWT and DB — Middleware uses JWT tier, but /usage/me uses DB tier. If a user upgrades to Pro, the UI will show they have unlimited reports, but the backend will still block their requests until they log out and log back in. — deferred, pre-existing (Pro upgrade flow is deferred post-V1, so handling token refresh on upgrade is also deferred)
+- [x] [Review][Patch] JSON Serialization Error on Rate Limit Exceeded Response [backend/app/core/middleware.py:74]
+- [x] [Review][Patch] Missing Display Logic for Upgrade Prompt [mobile/lib/features/auth/presentation/widgets/rate_limit_dialog.dart]
+- [x] [Review][Patch] Unused Rate Limit Error Schema [backend/app/schemas/usage.py]
+- [x] [Review][Patch] Exploding Linear Progress Indicator [mobile/lib/features/auth/presentation/widgets/usage_indicator.dart]
+- [x] [Review][Patch] Fail-Open Discrepancy Lying to Users [backend/app/services/rate_limit_service.py]
+- [x] [Review][Patch] Middleware Path Matching is Sloppy [backend/app/core/middleware.py]
+- [x] [Review][Patch] Missing Error State Handling in Frontend [mobile/lib/features/auth/presentation/usage_notifier.dart]
+- [x] [Review][Patch] Multiple requests exact same millisecond [backend/app/services/rate_limit_service.py:16]
+- [x] [Review][Patch] Expired/malformed JWT [backend/app/core/middleware.py:61]
+- [x] [Review][Patch] Redundant Redis ZREM [backend/app/services/rate_limit_service.py]
+- [x] [Review][Patch] Performance Killer TTL Updates [backend/app/services/rate_limit_service.py]
+- [x] [Review][Patch] Naive Timezone Manipulation [backend/app/services/rate_limit_service.py]

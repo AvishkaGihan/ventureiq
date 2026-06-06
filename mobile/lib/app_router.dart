@@ -7,6 +7,7 @@ import 'features/auth/data/auth_repository.dart';
 import 'features/auth/domain/auth_entity.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/auth_providers.dart';
+import 'features/auth/presentation/widgets/usage_indicator.dart';
 
 // ──────────────────────────────────────────────────────────────
 // Placeholder Screens
@@ -191,6 +192,8 @@ class _AnonymousProfile extends ConsumerWidget {
                 ),
           ),
           const SizedBox(height: 32),
+          const UsageIndicator(),
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             height: 48,
@@ -289,6 +292,8 @@ class _AuthenticatedProfile extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: 32),
+          const UsageIndicator(),
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             height: 48,

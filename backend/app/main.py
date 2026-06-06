@@ -13,7 +13,7 @@ from app.api.v1.router import api_v1_router
 from app.core.config import get_settings
 from app.core.exceptions import InternalError, VentureIQError
 from app.core.logging import configure_logging, request_id_ctx
-from app.core.middleware import RequestIDMiddleware
+from app.core.middleware import RateLimitMiddleware, RequestIDMiddleware
 from app.core.security import init_firebase
 from app.db.base import async_engine
 from app.db.redis import RedisManager
@@ -79,6 +79,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    app.add_middleware(RateLimitMiddleware, route_prefixes=get_settings().RATE_LIMIT_ROUTE_PREFIXES)
     app.add_middleware(RequestIDMiddleware)
 
     @app.exception_handler(VentureIQError)
