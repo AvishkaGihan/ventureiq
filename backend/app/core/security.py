@@ -45,6 +45,7 @@ async def verify_firebase_token(token: str) -> dict[str, Any]:
             firebase_auth.verify_id_token,
             token,
             check_revoked=True,
+            clock_skew_seconds=5,
         )
     except Exception as exc:
         logger.warning(f"Firebase token verification failed: {exc}")

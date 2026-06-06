@@ -8,8 +8,11 @@ import 'package:ventureiq_app/app_router.dart';
 import 'package:ventureiq_app/core/theme/app_theme.dart';
 import 'package:ventureiq_app/features/auth/domain/auth_entity.dart';
 import 'package:ventureiq_app/features/auth/domain/auth_state.dart';
+import 'package:ventureiq_app/features/auth/domain/usage_entity.dart';
 import 'package:ventureiq_app/features/auth/presentation/auth_notifier.dart';
 import 'package:ventureiq_app/features/auth/presentation/auth_providers.dart';
+import 'package:ventureiq_app/features/auth/presentation/usage_notifier.dart';
+import 'package:ventureiq_app/features/auth/presentation/usage_providers.dart';
 
 class _MyHttpOverrides extends HttpOverrides {}
 
@@ -39,6 +42,22 @@ class _FakeAuthNotifier extends AsyncNotifier<AuthState>
 
   @override
   void forceUnauthenticated() {}
+}
+
+class _FakeUsageNotifier extends UsageNotifier {
+  @override
+  FutureOr<UsageStatus> build() {
+    return UsageStatus(
+      reportsUsed: 1,
+      reportsLimit: 3,
+      tier: 'free',
+      resetAt: DateTime.utc(2026, 7),
+      limitReached: false,
+    );
+  }
+
+  @override
+  Future<void> refreshUsage() async {}
 }
 
 void main() {
@@ -126,6 +145,9 @@ void main() {
             // Override auth state to anonymous so the profile screen renders
             authNotifierProvider.overrideWith(
               () => _FakeAuthNotifier(),
+            ),
+            usageNotifierProvider.overrideWith(
+              () => _FakeUsageNotifier(),
             ),
           ],
           child: MaterialApp.router(

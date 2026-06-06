@@ -57,7 +57,7 @@ class AuthInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    // Only handle 401 Unauthorized
+    // Only handle 401 Unauthorized. Rate limits (429) must surface to UI.
     if (err.response?.statusCode != 401) {
       return handler.next(err);
     }

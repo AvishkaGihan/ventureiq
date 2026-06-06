@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, gt=0)
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7, gt=0)
 
+    RATE_LIMIT_FREE_TIER_MONTHLY: int = Field(default=3, ge=0)
+    RATE_LIMIT_PRO_TIER_MONTHLY: int = Field(default=0, ge=0)
+    RATE_LIMIT_ANONYMOUS_TIER_MONTHLY: int = Field(default=3, ge=0)
+    RATE_LIMIT_ENABLED: bool = Field(default=True)
+    RATE_LIMIT_ROUTE_PREFIXES: list[str] = Field(default_factory=lambda: ["/api/v1/ideas"])
+
     APP_ENV: str = Field(default="development")
     APP_DEBUG: bool = Field(default=True)
     LOG_LEVEL: str = Field(default="DEBUG")

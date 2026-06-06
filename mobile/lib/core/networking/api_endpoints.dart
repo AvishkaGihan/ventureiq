@@ -44,4 +44,7 @@ class ApiEndpoints {
 
   /// Upgrade anonymous account to Google-authenticated
   static const String authUpgrade = '$basePath/auth/upgrade';
+
+  /// Current user's report usage status
+  static const String usageMe = '$basePath/usage/me';
 }
