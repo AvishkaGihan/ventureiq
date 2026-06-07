@@ -100,7 +100,7 @@ def create_app() -> FastAPI:
         content = error_response(
             code="INPUT_VALIDATION_ERROR",
             message="Input validation error",
-            details={"error_count": len(exc.errors())},
+            details={"errors": exc.errors()},
             request_id=request_id,
             status_code=400,
         )

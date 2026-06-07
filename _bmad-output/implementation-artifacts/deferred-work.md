@@ -42,3 +42,6 @@
 
 ## Deferred from: code review of 2-4-tier-based-usage-limits-rate-limiting.md (2026-06-05)
 - State Desync Between JWT and DB — Middleware uses JWT tier, but /usage/me uses DB tier. If a user upgrades to Pro, the UI will show they have unlimited reports, but the backend will still block their requests until they log out and log back in. (Pro upgrade flow is deferred post-V1, so handling token refresh on upgrade is also deferred)
+
+## Deferred from: code review of 3-1-idea-submission-endpoint-input-sanitization-backend (2026-06-07)
+- Integration tests mock database session: test_ideas_endpoint.py uses FakeIdeaSession instead of a real database, failing to test DB constraints. Deferred as it may be a pre-existing test pattern.
