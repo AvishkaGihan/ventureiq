@@ -45,3 +45,6 @@
 
 ## Deferred from: code review of 3-1-idea-submission-endpoint-input-sanitization-backend (2026-06-07)
 - Integration tests mock database session: test_ideas_endpoint.py uses FakeIdeaSession instead of a real database, failing to test DB constraints. Deferred as it may be a pre-existing test pattern.
+
+## Deferred from: code review of 3-2-plausibility-check-via-llm.md (2026-06-08)
+- Synchronous LLM Bottleneck (inline generation ties up workers)

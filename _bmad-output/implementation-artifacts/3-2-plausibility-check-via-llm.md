@@ -1,6 +1,10 @@
+---
+baseline_commit: 78a9109f08f0057de9d528b775093efc0b62535f
+---
+
 # Story 3.2: Plausibility Check via LLM
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -64,52 +68,52 @@ so that I can refine vague or nonsensical submissions and get better results.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create PlausibilityResponse schema (AC: #2, #3, #4, #7)
-  - [ ] Add `PlausibilityResponse` Pydantic model to `app/schemas/idea.py`
-  - [ ] Fields: `verdict` (Literal["pass","refine","reject"]), `guidance` (list[str]|None), `reason` (str|None), `confidence` (float)
-  - [ ] Add `PlausibilityCheckResponse` wrapping `IdeaResponse` + `PlausibilityResponse`
+- [x] Task 1: Create PlausibilityResponse schema (AC: #2, #3, #4, #7)
+  - [x] Add `PlausibilityResponse` Pydantic model to `app/schemas/idea.py`
+  - [x] Fields: `verdict` (Literal["pass","refine","reject"]), `guidance` (list[str]|None), `reason` (str|None), `confidence` (float)
+  - [x] Add `PlausibilityCheckResponse` wrapping `IdeaResponse` + `PlausibilityResponse`
 
-- [ ] Task 2: Create PlausibilityService (AC: #1, #2, #3, #4, #5, #6)
-  - [ ] Create `app/services/plausibility_service.py`
-  - [ ] Constructor accepts `LLMProvider` and `aioredis.Redis` (cache)
-  - [ ] `async def check(self, idea_text: str, target_audience: str|None, industry: str|None, monetization_model: str|None, region: str|None) -> PlausibilityResponse`
-  - [ ] Build structured prompt (system + user message separation)
-  - [ ] Call `llm.generate(prompt, LLMConfig(temperature=0.3, max_output_tokens=512))`
-  - [ ] Parse JSON response into `PlausibilityResponse` with validation
-  - [ ] Cache check before LLM call; cache write after successful LLM call
-  - [ ] Handle `ProviderUnavailableError` gracefully
+- [x] Task 2: Create PlausibilityService (AC: #1, #2, #3, #4, #5, #6)
+  - [x] Create `app/services/plausibility_service.py`
+  - [x] Constructor accepts `LLMProvider` and `aioredis.Redis` (cache)
+  - [x] `async def check(self, idea_text: str, target_audience: str|None, industry: str|None, monetization_model: str|None, region: str|None) -> PlausibilityResponse`
+  - [x] Build structured prompt (system + user message separation)
+  - [x] Call `llm.generate(prompt, LLMConfig(temperature=0.3, max_output_tokens=512))`
+  - [x] Parse JSON response into `PlausibilityResponse` with validation
+  - [x] Cache check before LLM call; cache write after successful LLM call
+  - [x] Handle `ProviderUnavailableError` gracefully
 
-- [ ] Task 3: Create plausibility prompt (AC: #1, #3, #4)
-  - [ ] Create prompt as a constant/template in `plausibility_service.py` (or dedicated prompt file)
-  - [ ] System message: evaluator role, structured JSON output requirement
-  - [ ] User message: idea text + optional context fields
-  - [ ] Tone: helpful and encouraging, not gatekeeping (per UX spec)
-  - [ ] Criteria: coherence, specificity, analyzability, non-trivial
+- [x] Task 3: Create plausibility prompt (AC: #1, #3, #4)
+  - [x] Create prompt as a constant/template in `plausibility_service.py` (or dedicated prompt file)
+  - [x] System message: evaluator role, structured JSON output requirement
+  - [x] User message: idea text + optional context fields
+  - [x] Tone: helpful and encouraging, not gatekeeping (per UX spec)
+  - [x] Criteria: coherence, specificity, analyzability, non-trivial
 
-- [ ] Task 4: Add plausibility endpoint (AC: #7, #8)
-  - [ ] Add `POST /{idea_id}/plausibility` to `app/api/v1/endpoints/ideas.py`
-  - [ ] Look up idea by ID, verify ownership (user_id == current_user.id)
-  - [ ] Raise `IdeaNotFoundError` if idea doesn't exist or wrong user
-  - [ ] Call `PlausibilityService.check()` with idea fields
-  - [ ] Update idea `status` based on verdict
-  - [ ] Return response via `success_response()`
+- [x] Task 4: Add plausibility endpoint (AC: #7, #8)
+  - [x] Add `POST /{idea_id}/plausibility` to `app/api/v1/endpoints/ideas.py`
+  - [x] Look up idea by ID, verify ownership (user_id == current_user.id)
+  - [x] Raise `IdeaNotFoundError` if idea doesn't exist or wrong user
+  - [x] Call `PlausibilityService.check()` with idea fields
+  - [x] Update idea `status` based on verdict
+  - [x] Return response via `success_response()`
 
-- [ ] Task 5: Write unit tests (AC: #9)
-  - [ ] Create `backend/tests/unit/test_plausibility_service.py`
-  - [ ] Test `pass` verdict with mocked LLM response
-  - [ ] Test `refine` verdict with mocked LLM response
-  - [ ] Test `reject` verdict with mocked LLM response
-  - [ ] Test cache hit returns cached result (no LLM call)
-  - [ ] Test cache miss calls LLM and writes cache
-  - [ ] Test `ProviderUnavailableError` handling
+- [x] Task 5: Write unit tests (AC: #9)
+  - [x] Create `backend/tests/unit/test_plausibility_service.py`
+  - [x] Test `pass` verdict with mocked LLM response
+  - [x] Test `refine` verdict with mocked LLM response
+  - [x] Test `reject` verdict with mocked LLM response
+  - [x] Test cache hit returns cached result (no LLM call)
+  - [x] Test cache miss calls LLM and writes cache
+  - [x] Test `ProviderUnavailableError` handling
 
-- [ ] Task 6: Write integration tests (AC: #7, #8, #9)
-  - [ ] Create `backend/tests/integration/test_plausibility_endpoint.py`
-  - [ ] Test full endpoint flow: auth → lookup idea → plausibility check → status update → response envelope
-  - [ ] Test idea not found → 404
-  - [ ] Test wrong user ownership → 404 (don't leak existence)
-  - [ ] Test idea already checked (non-pending status) — decide behavior
-  - [ ] Follow existing `test_ideas_endpoint.py` patterns (FakeIdeaSession, _build_client)
+- [x] Task 6: Write integration tests (AC: #7, #8, #9)
+  - [x] Create `backend/tests/integration/test_plausibility_endpoint.py`
+  - [x] Test full endpoint flow: auth → lookup idea → plausibility check → status update → response envelope
+  - [x] Test idea not found → 404
+  - [x] Test wrong user ownership → 404 (don't leak existence)
+  - [x] Test idea already checked (non-pending status) — decide behavior
+  - [x] Follow existing `test_ideas_endpoint.py` patterns (FakeIdeaSession, _build_client)
 
 ## Dev Notes
 
@@ -347,10 +351,62 @@ mock_redis.set.return_value = True
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+GPT-5 Codex
 
 ### Debug Log References
 
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\unit\test_idea_schemas.py` - 7 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 139 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\unit\test_plausibility_service.py` - 7 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 146 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\unit\test_plausibility_service.py` - 8 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 147 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\integration\test_plausibility_endpoint.py` - 3 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 150 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\unit\test_plausibility_service.py` - 8 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 150 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\integration\test_plausibility_endpoint.py` - 5 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 152 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\ruff.exe check .` - all checks passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 152 passed, 13 warnings
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\unit\test_idea_schemas.py` - 9 passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe tests\unit\test_plausibility_service.py` - 8 passed
+- 2026-06-07: `.\.venv\Scripts\ruff.exe check .` - all checks passed
+- 2026-06-07: `.\.venv\Scripts\pytest.exe` - 154 passed, 13 warnings
+
 ### Completion Notes List
 
+- Added the plausibility response schema contract and endpoint wrapper schema for Story 3.2.
+- Added `PlausibilityService` with structured LLM prompting, low-cost generation config, Redis read-through caching, JSON validation, and structured provider-error handling.
+- Tightened the plausibility prompt contract to require a helpful, encouraging, non-gatekeeping tone and the four evaluation criteria.
+- Added the authenticated plausibility endpoint with compound ownership lookup, pending-status validation, persisted pass/fail status updates, and standard response envelope output.
+- Added unit coverage for all three verdicts, cache hit/miss behavior, prompt/config contract, provider outages, and malformed provider output.
+- Added integration coverage for successful pass/refine flows, standard envelope output, persisted status changes, missing/unauthorized ideas returning 404, and already-checked ideas returning 400.
+- Completed Story 3.2 and moved it to review after full backend tests and Ruff passed.
+- Hardened `PlausibilityResponse` validation so `refine` requires 2-4 guidance suggestions and `reject` requires a reason before any LLM result is accepted.
+
 ### File List
+
+- backend/app/schemas/idea.py
+- backend/app/api/v1/endpoints/ideas.py
+- backend/app/services/sanitization_service.py
+- backend/app/services/plausibility_service.py
+- backend/tests/integration/test_plausibility_endpoint.py
+- backend/tests/unit/test_idea_schemas.py
+- backend/tests/unit/test_plausibility_service.py
+
+### Change Log
+
+- 2026-06-07: Implemented Story 3.2 plausibility check via LLM; added schemas, service, endpoint, unit/integration tests, verdict-specific schema validation, and lint-only cleanup needed for the backend quality gate.
+
+### Review Findings
+- [x] [Review][Patch] Brittle JSON Parsing (LLM markdown block wrapper) [backend/app/services/plausibility_service.py:144]
+- [x] [Review][Patch] Concurrent Check Race Condition (missing with_for_update) [backend/app/api/v1/endpoints/ideas.py:84]
+- [x] [Review][Patch] Cache Key Collisions (overly aggressive punctuation stripping) [backend/app/services/plausibility_service.py:118]
+- [x] [Review][Patch] Prompt Injection Vulnerability in LLM prompt [backend/app/services/plausibility_service.py:92]
+- [x] [Review][Patch] Missing Rejection Encouragement in Prompt (Violates AC4) [backend/app/services/plausibility_service.py:22]
+- [x] [Review][Patch] Missing Edge Case Unit/Integration Tests [backend/tests/unit/test_plausibility_service.py]
+- [x] [Review][Patch] Confidence boundary validation (NaN/Inf, <0, >1) [backend/app/schemas/idea.py]
+- [x] [Review][Patch] Pass verdict payload validation (ensure guidance/reason are null) [backend/app/schemas/idea.py]
+- [x] [Review][Patch] Suppressed Exception Tracebacks in Redis write [backend/app/services/plausibility_service.py:140]
+- [x] [Review][Defer] Synchronous LLM Bottleneck (inline generation ties up workers) [backend/app/services/plausibility_service.py:72] — deferred, pre-existing

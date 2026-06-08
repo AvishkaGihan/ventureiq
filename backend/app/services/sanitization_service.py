@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import base64
 import binascii
+import html
 import re
 import unicodedata
-import html
 import urllib.parse
 from contextlib import suppress
 from dataclasses import dataclass
@@ -82,7 +82,10 @@ class SanitizationService:
         ),
         _PatternRule(
             "sql_injection",
-            re.compile(r"\b(?:UNION|SELECT|DROP|INSERT|DELETE|UPDATE)\b\s+.*\b(?:FROM|INTO|TABLE|DATABASE|WHERE)\b", re.IGNORECASE),
+            re.compile(
+                r"\b(?:UNION|SELECT|DROP|INSERT|DELETE|UPDATE)\b\s+.*\b(?:FROM|INTO|TABLE|DATABASE|WHERE)\b",
+                re.IGNORECASE,
+            ),
             guidance_reason=True,
         ),
         _PatternRule(
