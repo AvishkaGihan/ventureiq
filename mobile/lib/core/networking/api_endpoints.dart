@@ -22,6 +22,9 @@ class ApiEndpoints {
   /// Submit a new idea for validation
   static const String ideas = '$basePath/ideas';
 
+  /// Run the plausibility pre-check for an idea.
+  static String ideaPlausibility(String id) => '$ideas/$id/plausibility';
+
   /// Get idea by ID — append /{id}
   static const String ideaById = '$basePath/ideas';
 

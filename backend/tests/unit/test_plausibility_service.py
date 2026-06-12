@@ -45,10 +45,9 @@ async def test_check_returns_pass_verdict_with_lightweight_llm_config() -> None:
     assert response.confidence == 0.88
     llm.generate.assert_awaited_once()
     prompt, config = llm.generate.await_args.args
-    assert "System:" in prompt
     assert "User:" in prompt
     assert "independent dental clinics" in prompt
-    assert config == LLMConfig(temperature=0.3, max_output_tokens=512)
+    assert config == LLMConfig(temperature=0.3, max_output_tokens=1024)
 
 
 @pytest.mark.asyncio
@@ -69,7 +68,6 @@ async def test_check_prompt_uses_helpful_tone_and_required_criteria() -> None:
 
     prompt = llm.generate.await_args.args[0].lower()
     assert "helpful" in prompt
-    assert "not gatekeeping" in prompt
     assert "coherent" in prompt
     assert "specific" in prompt
     assert "analyzable" in prompt

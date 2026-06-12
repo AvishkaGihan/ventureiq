@@ -8,6 +8,7 @@ import 'features/auth/domain/auth_entity.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/auth_providers.dart';
 import 'features/auth/presentation/widgets/usage_indicator.dart';
+import 'features/idea_input/presentation/idea_input_screen.dart';
 
 // ──────────────────────────────────────────────────────────────
 // Placeholder Screens
@@ -16,10 +17,7 @@ import 'features/auth/presentation/widgets/usage_indicator.dart';
 /// Placeholder screen used for each tab route.
 /// Will be replaced by feature-specific screens in later stories.
 class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({
-    required this.title,
-    required this.icon,
-  });
+  const _PlaceholderScreen({required this.title, required this.icon});
 
   final String title;
   final IconData icon;
@@ -31,26 +29,44 @@ class _PlaceholderScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 48,
-              color: AppColors.textTertiary,
-            ),
+            Icon(icon, size: 48, color: AppColors.textTertiary),
             const SizedBox(height: 16),
             Text(
               title,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Coming Soon',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textTertiary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textTertiary),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Placeholder War Room screen until Epic 4 builds the full experience.
+class _WarRoomPlaceholderScreen extends StatelessWidget {
+  const _WarRoomPlaceholderScreen({required this.ideaId});
+
+  final String ideaId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('War Room')),
+      body: Center(
+        child: Text(
+          'War Room $ideaId',
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
         ),
       ),
     );
@@ -98,7 +114,7 @@ class _ProfileScreen extends ConsumerWidget {
         } else {
           message = 'Something went wrong during sign in';
         }
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -130,8 +146,9 @@ class _ProfileScreen extends ConsumerWidget {
             data: (state) => switch (state) {
               AuthStateUnauthenticated() => const _ProfileLoading(),
               AuthStateAnonymous() => const _AnonymousProfile(),
-              AuthStateAuthenticated(:final user) =>
-                _AuthenticatedProfile(user: user),
+              AuthStateAuthenticated(:final user) => _AuthenticatedProfile(
+                user: user,
+              ),
             },
           ),
         ),
@@ -151,10 +168,7 @@ class _ProfileLoading extends StatelessWidget {
       children: [
         CircularProgressIndicator(color: AppColors.electricViolet),
         SizedBox(height: 16),
-        Text(
-          'Setting up...',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
+        Text('Setting up...', style: TextStyle(color: AppColors.textSecondary)),
       ],
     );
   }
@@ -179,17 +193,17 @@ class _AnonymousProfile extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             'Anonymous User',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppColors.textPrimary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
           ),
           const SizedBox(height: 8),
           Text(
             'Sign in to sync your reports across devices',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 32),
           const UsageIndicator(),
@@ -230,11 +244,10 @@ class _GoogleSignInButton extends ConsumerWidget {
         backgroundColor: AppColors.electricViolet,
         foregroundColor: AppColors.textPrimary,
         minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        disabledBackgroundColor: AppColors.electricViolet.withValues(
+          alpha: 0.5,
         ),
-        disabledBackgroundColor:
-            AppColors.electricViolet.withValues(alpha: 0.5),
       ),
       child: isLoading
           ? const SizedBox(
@@ -278,17 +291,17 @@ class _AuthenticatedProfile extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             user.displayName ?? 'User',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppColors.textPrimary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
           ),
           if (user.email != null) ...[
             const SizedBox(height: 4),
             Text(
               user.email!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ],
           const SizedBox(height: 32),
@@ -321,10 +334,7 @@ class _AuthenticatedProfile extends ConsumerWidget {
 
 /// Error display for profile auth failures.
 class _ProfileError extends StatelessWidget {
-  const _ProfileError({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ProfileError({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -344,17 +354,17 @@ class _ProfileError extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Something went wrong',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textPrimary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
           ),
           const SizedBox(height: 8),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textTertiary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textTertiary),
           ),
           const SizedBox(height: 24),
           TextButton.icon(
@@ -374,9 +384,7 @@ class _ProfileError extends StatelessWidget {
 
 /// Bottom navigation shell that wraps all tab routes.
 class _NavigationShell extends StatelessWidget {
-  const _NavigationShell({
-    required this.navigationShell,
-  });
+  const _NavigationShell({required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -463,10 +471,7 @@ CustomTransitionPage<void> _fadeCrossfade(
     transitionDuration: const Duration(milliseconds: 150),
 
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
+      return FadeTransition(opacity: animation, child: child);
     },
   );
 }
@@ -490,11 +495,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 GoRouter createRouter() {
   return GoRouter(
     initialLocation: '/home',
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Error: ${state.error}'),
-      ),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Error: ${state.error}'))),
     routes: [
       GoRoute(
         path: '/splash',
@@ -505,10 +507,8 @@ GoRouter createRouter() {
       ),
       GoRoute(
         path: '/auth',
-        builder: (context, state) => const _PlaceholderScreen(
-          title: 'Auth',
-          icon: Icons.lock_outline,
-        ),
+        builder: (context, state) =>
+            const _PlaceholderScreen(title: 'Auth', icon: Icons.lock_outline),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -519,24 +519,19 @@ GoRouter createRouter() {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                name: 'IdeaInput',
                 path: '/home',
-                pageBuilder: (context, state) => _fadeCrossfade(
-                  context,
-                  state,
-                  const _PlaceholderScreen(
-                    title: 'Home',
-                    icon: Icons.home,
-                  ),
-                ),
+                pageBuilder: (context, state) =>
+                    _fadeCrossfade(context, state, const IdeaInputScreen()),
                 routes: [
                   GoRoute(
-                    path: 'details',
+                    name: 'WarRoom',
+                    path: 'war-room/:ideaId',
                     pageBuilder: (context, state) => slideFromRight(
                       context,
                       state,
-                      const _PlaceholderScreen(
-                        title: 'Home Details',
-                        icon: Icons.info_outline,
+                      _WarRoomPlaceholderScreen(
+                        ideaId: state.pathParameters['ideaId'] ?? '',
                       ),
                     ),
                   ),
@@ -568,10 +563,7 @@ GoRouter createRouter() {
                 pageBuilder: (context, state) => _fadeCrossfade(
                   context,
                   state,
-                  const _PlaceholderScreen(
-                    title: 'Board',
-                    icon: Icons.groups,
-                  ),
+                  const _PlaceholderScreen(title: 'Board', icon: Icons.groups),
                 ),
               ),
             ],
@@ -581,11 +573,8 @@ GoRouter createRouter() {
             routes: [
               GoRoute(
                 path: '/profile',
-                pageBuilder: (context, state) => _fadeCrossfade(
-                  context,
-                  state,
-                  const _ProfileScreen(),
-                ),
+                pageBuilder: (context, state) =>
+                    _fadeCrossfade(context, state, const _ProfileScreen()),
               ),
             ],
           ),
