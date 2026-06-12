@@ -143,12 +143,8 @@ void main() {
         ProviderScope(
           overrides: [
             // Override auth state to anonymous so the profile screen renders
-            authNotifierProvider.overrideWith(
-              () => _FakeAuthNotifier(),
-            ),
-            usageNotifierProvider.overrideWith(
-              () => _FakeUsageNotifier(),
-            ),
+            authNotifierProvider.overrideWith(() => _FakeAuthNotifier()),
+            usageNotifierProvider.overrideWith(() => _FakeUsageNotifier()),
           ],
           child: MaterialApp.router(
             routerConfig: router,
@@ -203,23 +199,26 @@ void main() {
       expect(find.textContaining('Error'), findsWidgets);
     });
 
-    testWidgets('navigation to details shows sub-route with slide transition', (tester) async {
-      final router = createRouter();
+    testWidgets(
+      'navigation to war room shows sub-route with slide transition',
+      (tester) async {
+        final router = createRouter();
 
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.darkTheme,
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp.router(
+              routerConfig: router,
+              theme: AppTheme.darkTheme,
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      router.go('/home/details');
-      await tester.pumpAndSettle();
+        router.go('/home/war-room/idea-123');
+        await tester.pumpAndSettle();
 
-      expect(find.text('Home Details'), findsWidgets);
-    });
+        expect(find.text('War Room idea-123'), findsWidgets);
+      },
+    );
   });
 }
