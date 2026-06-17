@@ -25,6 +25,7 @@ void main() {
           onStatus: any(named: 'onStatus'),
         )).thenAnswer((_) async => true);
     when(() => mockSpeechToText.stop()).thenAnswer((_) async {});
+    when(() => mockSpeechToText.cancel()).thenAnswer((_) async {});
     when(() => mockSpeechToText.listen(
           onResult: any(named: 'onResult'),
         )).thenAnswer((_) async {});
@@ -59,15 +60,18 @@ void main() {
     await tester.tap(find.byIcon(Icons.mic));
     await tester.pump();
 
-    verify(() => mockSpeechToText.initialize(
+    final invocation = verify(() => mockSpeechToText.initialize(
           onError: any(named: 'onError'),
-          onStatus: any(named: 'onStatus'),
-        )).called(1);
+          onStatus: captureAny(named: 'onStatus'),
+        )).captured.first;
     verify(() => mockSpeechToText.listen(onResult: any(named: 'onResult'))).called(1);
 
+    final onStatusCallback = invocation as void Function(String);
     when(() => mockSpeechToText.isListening).thenReturn(true);
+    onStatusCallback('listening');
+    
     // Force a rebuild to reflect listening state
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     final semantics = find.bySemanticsLabel('Recording. Tap to stop.');
     expect(semantics, findsOneWidget);
@@ -113,8 +117,8 @@ void main() {
 
     // Provide a mocked result
     onResultCallback(SpeechRecognitionResult(
-      [SpeechRecognitionWords('test idea', 1.0)],
-      false,
+      [const SpeechRecognitionWords('test idea', null, 1.0)],
+      0,
     ));
 
     expect(transcribed, 'test idea');
@@ -162,7 +166,7 @@ void main() {
 
     // Simulate an error
     onErrorCallback(SpeechRecognitionError('error_network', true));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(find.text('Network error. Please check your connection and try again.'), findsOneWidget);
   });

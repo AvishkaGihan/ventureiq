@@ -74,8 +74,8 @@ class _IdeaTextFieldState extends State<IdeaTextField> {
   void _handleTranscription(String text) {
     if (text.isEmpty) return;
     
-    String beforeCursor = _baseText.substring(0, _baseSelectionOffset);
-    String afterCursor = _baseText.substring(_baseSelectionOffset);
+    final String beforeCursor = _baseText.substring(0, _baseSelectionOffset);
+    final String afterCursor = _baseText.substring(_baseSelectionOffset);
     
     final separator = beforeCursor.isNotEmpty && !beforeCursor.endsWith(' ') && !beforeCursor.endsWith('\n') ? ' ' : '';
     final insertedText = separator + text;
