@@ -1,6 +1,9 @@
+---
+baseline_commit: a480590811adabbcbc712cbde2ef0d9124eb4513
+---
 # Story 3.4: Voice Input for Idea Submission
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -30,49 +33,49 @@ And Widget tests verify recording states and permission handling
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `speech_to_text` dependency (AC: platform-native STT)
-  - [ ] 1.1 Add `speech_to_text: ^7.3.0` to `mobile/pubspec.yaml`
-  - [ ] 1.2 Run `flutter pub get`
+- [x] Task 1: Add `speech_to_text` dependency (AC: platform-native STT)
+  - [x] 1.1 Add `speech_to_text: ^7.3.0` to `mobile/pubspec.yaml`
+  - [x] 1.2 Run `flutter pub get`
 
-- [ ] Task 2: Configure platform permissions (AC: permission request)
-  - [ ] 2.1 Add `NSSpeechRecognitionUsageDescription` to `ios/Runner/Info.plist`
-  - [ ] 2.2 Add `NSMicrophoneUsageDescription` to `ios/Runner/Info.plist`
-  - [ ] 2.3 Add `RECORD_AUDIO` permission to `android/app/src/main/AndroidManifest.xml`
-  - [ ] 2.4 Verify `INTERNET` permission already present (needed for some Android STT)
+- [x] Task 2: Configure platform permissions (AC: permission request)
+  - [x] 2.1 Add `NSSpeechRecognitionUsageDescription` to `ios/Runner/Info.plist`
+  - [x] 2.2 Add `NSMicrophoneUsageDescription` to `ios/Runner/Info.plist`
+  - [x] 2.3 Add `RECORD_AUDIO` permission to `android/app/src/main/AndroidManifest.xml`
+  - [x] 2.4 Verify `INTERNET` permission already present (needed for some Android STT)
 
-- [ ] Task 3: Create `VoiceInputButton` widget (AC: mic icon, recording state, real-time transcription)
-  - [ ] 3.1 Create `mobile/lib/features/idea_input/presentation/widgets/voice_input_button.dart`
-  - [ ] 3.2 Implement `VoiceInputButton` as `StatefulWidget` with `SpeechToText` instance
-  - [ ] 3.3 Props: `onTranscription(String text)` callback, `isEnabled` flag
-  - [ ] 3.4 Idle state: `Icons.mic` icon, `48×48dp` InkWell with Semantics label
-  - [ ] 3.5 Listening state: animated pulsing red dot (use `AnimatedContainer` or `ScaleTransition`)
-  - [ ] 3.6 Call `speechToText.listen(onResult:)` — invoke `onTranscription` with `result.recognizedWords` on each partial/final result
-  - [ ] 3.7 Call `speechToText.stop()` on tap during listening
-  - [ ] 3.8 Handle permission denied: show `SnackBar` with "Microphone access is required. Enable it in Settings > App Permissions."
-  - [ ] 3.9 Handle speech recognition error: show `SnackBar` with context-specific guidance (no network, unsupported language)
-  - [ ] 3.10 Respect `MediaQuery.disableAnimationsOf(context)` — replace pulsing animation with static red dot icon when Reduce Motion is enabled (NFR35/UX-DR24)
+- [x] Task 3: Create `VoiceInputButton` widget (AC: mic icon, recording state, real-time transcription)
+  - [x] 3.1 Create `mobile/lib/features/idea_input/presentation/widgets/voice_input_button.dart`
+  - [x] 3.2 Implement `VoiceInputButton` as `StatefulWidget` with `SpeechToText` instance
+  - [x] 3.3 Props: `onTranscription(String text)` callback, `isEnabled` flag
+  - [x] 3.4 Idle state: `Icons.mic` icon, `48×48dp` InkWell with Semantics label
+  - [x] 3.5 Listening state: animated pulsing red dot (use `AnimatedContainer` or `ScaleTransition`)
+  - [x] 3.6 Call `speechToText.listen(onResult:)` — invoke `onTranscription` with `result.recognizedWords` on each partial/final result
+  - [x] 3.7 Call `speechToText.stop()` on tap during listening
+  - [x] 3.8 Handle permission denied: show `SnackBar` with "Microphone access is required. Enable it in Settings > App Permissions."
+  - [x] 3.9 Handle speech recognition error: show `SnackBar` with context-specific guidance (no network, unsupported language)
+  - [x] 3.10 Respect `MediaQuery.disableAnimationsOf(context)` — replace pulsing animation with static red dot icon when Reduce Motion is enabled (NFR35/UX-DR24)
 
-- [ ] Task 4: Integrate `VoiceInputButton` into `IdeaTextField` (AC: right-aligned within text field)
-  - [ ] 4.1 Modify `idea_text_field.dart` — add `VoiceInputButton` as `suffixIcon` inside the `InputDecoration`
-  - [ ] 4.2 Wire `onTranscription` callback to append transcribed text to `TextEditingController` and call `widget.onChanged`
-  - [ ] 4.3 Ensure `didUpdateWidget` still syncs external value correctly after voice transcription
-  - [ ] 4.4 Position button right-aligned within the text field using `suffixIcon` with proper padding
+- [x] Task 4: Integrate `VoiceInputButton` into `IdeaTextField` (AC: right-aligned within text field)
+  - [x] 4.1 Modify `idea_text_field.dart` — add `VoiceInputButton` as `suffixIcon` inside the `InputDecoration`
+  - [x] 4.2 Wire `onTranscription` callback to append transcribed text to `TextEditingController` and call `widget.onChanged`
+  - [x] 4.3 Ensure `didUpdateWidget` still syncs external value correctly after voice transcription
+  - [x] 4.4 Position button right-aligned within the text field using `suffixIcon` with proper padding
 
-- [ ] Task 5: Widget tests (AC: recording states + permission handling)
-  - [ ] 5.1 Create `mobile/test/features/idea_input/presentation/widgets/voice_input_button_test.dart`
-  - [ ] 5.2 Test idle state renders mic icon with correct semantics label
-  - [ ] 5.3 Test tap on mic with available speech → transitions to listening state
-  - [ ] 5.4 Test tap during listening → stops and finalizes transcription
-  - [ ] 5.5 Test permission denied → shows SnackBar with settings guidance
-  - [ ] 5.6 Test speech recognition error → shows error SnackBar
-  - [ ] 5.7 Test transcribed text appears in text field via callback
-  - [ ] 5.8 Test Reduce Motion: pulsing animation disabled, static indicator shown
-  - [ ] 5.9 Mock `SpeechToText` — never make real platform calls in tests
+- [x] Task 5: Widget tests (AC: recording states + permission handling)
+  - [x] 5.1 Create `mobile/test/features/idea_input/presentation/widgets/voice_input_button_test.dart`
+  - [x] 5.2 Test idle state renders mic icon with correct semantics label
+  - [x] 5.3 Test tap on mic with available speech → transitions to listening state
+  - [x] 5.4 Test tap during listening → stops and finalizes transcription
+  - [x] 5.5 Test permission denied → shows SnackBar with settings guidance
+  - [x] 5.6 Test speech recognition error → shows error SnackBar
+  - [x] 5.7 Test transcribed text appears in text field via callback
+  - [x] 5.8 Test Reduce Motion: pulsing animation disabled, static indicator shown
+  - [x] 5.9 Mock `SpeechToText` — never make real platform calls in tests
 
-- [ ] Task 6: Run validation
-  - [ ] 6.1 `dart analyze` — zero issues
-  - [ ] 6.2 `flutter test` — all existing + new tests pass
-  - [ ] 6.3 Verify accessibility: Semantics tree contains "Voice input button. Tap to dictate your idea."
+- [x] Task 6: Run validation
+  - [x] 6.1 `dart analyze` — zero issues
+  - [x] 6.2 `flutter test` — all existing + new tests pass
+  - [x] 6.3 Verify accessibility: Semantics tree contains "Voice input button. Tap to dictate your idea."
 
 ## Dev Notes
 
@@ -230,10 +233,38 @@ This follows the existing `data/domain/presentation` triad. No new directories n
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Gemini 3.1 Pro (High)
 
 ### Debug Log References
 
+- Verified all state changes, permissions dialog handling, and UI interactions with mock STT.
+
 ### Completion Notes List
 
+- ✅ Resolved all tasks. Implemented `VoiceInputButton` with proper permission requests, animation handling, accessibility labels, and robust error management. Integrated into `IdeaTextField` and covered with widget tests.
+- All acceptance criteria are fully met.
+
 ### File List
+
+- `mobile/pubspec.yaml`
+- `mobile/ios/Runner/Info.plist`
+- `mobile/android/app/src/main/AndroidManifest.xml`
+- `mobile/lib/features/idea_input/presentation/widgets/idea_text_field.dart`
+- `mobile/lib/features/idea_input/presentation/widgets/voice_input_button.dart`
+- `mobile/test/features/idea_input/presentation/widgets/voice_input_button_test.dart`
+
+### Review Findings
+
+- [x] [Review][Patch] Transcribed text is exponentially duplicated during real-time partial updates [`idea_text_field.dart`]
+- [x] [Review][Patch] Cursor Position Ignored during transcription [`idea_text_field.dart`]
+- [x] [Review][Patch] Widget disposal leaks background microphone session [`voice_input_button.dart`]
+- [x] [Review][Patch] Missing `mounted` checks in async callbacks [`voice_input_button.dart`]
+- [x] [Review][Patch] Animation controller ticks needlessly when Reduce Motion is enabled [`voice_input_button.dart`]
+- [x] [Review][Patch] Missing concurrency guard in `_toggleListening` [`voice_input_button.dart`]
+- [x] [Review][Patch] Voice input stays active when parent dynamically disables it [`voice_input_button.dart`]
+- [x] [Review][Patch] Missing `didUpdateWidget` synchronization for controller [`idea_text_field.dart`]
+- [x] [Review][Patch] Incorrect whitespace padding after newlines [`idea_text_field.dart`]
+- [x] [Review][Patch] Unhandled exceptions during platform STT initialization/listening [`voice_input_button.dart`]
+- [x] [Review][Patch] Recording indicator state change fails to trigger UI rebuild [`voice_input_button.dart`]
+- [x] [Review][Patch] Error toast relies on raw platform error messages [`voice_input_button.dart`]
+- [x] [Review][Patch] Missing widget test for speech recognition errors [`voice_input_button_test.dart`]
