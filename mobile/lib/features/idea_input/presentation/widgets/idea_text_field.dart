@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ventureiq_app/core/theme/app_colors.dart';
 import 'package:ventureiq_app/core/theme/app_spacing.dart';
 import 'package:ventureiq_app/core/theme/app_typography.dart';
+import 'package:ventureiq_app/features/idea_input/presentation/widgets/voice_input_button.dart';
 
 /// Generous multiline business idea field with blur validation.
 class IdeaTextField extends StatefulWidget {
@@ -23,6 +24,8 @@ class _IdeaTextFieldState extends State<IdeaTextField> {
   late final TextEditingController _controller;
   bool _hasBlurred = false;
   bool _isFocused = false;
+  String _baseText = '';
+  int _baseSelectionOffset = 0;
 
   @override
   void initState() {
@@ -58,6 +61,33 @@ class _IdeaTextFieldState extends State<IdeaTextField> {
         _hasBlurred = true;
       }
     });
+  }
+
+  void _handleDictationStart() {
+    _baseText = _controller.text;
+    _baseSelectionOffset = _controller.selection.baseOffset;
+    if (_baseSelectionOffset < 0) {
+      _baseSelectionOffset = _baseText.length;
+    }
+  }
+
+  void _handleTranscription(String text) {
+    if (text.isEmpty) return;
+    
+    final String beforeCursor = _baseText.substring(0, _baseSelectionOffset);
+    final String afterCursor = _baseText.substring(_baseSelectionOffset);
+    
+    final separator = beforeCursor.isNotEmpty && !beforeCursor.endsWith(' ') && !beforeCursor.endsWith('\n') ? ' ' : '';
+    final insertedText = separator + text;
+    
+    final newText = beforeCursor + insertedText + afterCursor;
+    final newCursorPos = _baseSelectionOffset + insertedText.length;
+    
+    _controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newCursorPos),
+    );
+    widget.onChanged(newText);
   }
 
   @override
@@ -114,6 +144,10 @@ class _IdeaTextFieldState extends State<IdeaTextField> {
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 contentPadding: const EdgeInsets.all(AppSpacing.space4),
+                suffixIcon: VoiceInputButton(
+                  onDictationStart: _handleDictationStart,
+                  onTranscription: _handleTranscription,
+                ),
               ),
               onChanged: widget.onChanged,
             ),

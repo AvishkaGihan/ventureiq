@@ -1,5 +1,5 @@
 # generated: 2026-04-15T18:19:11Z
-# last_updated: 2026-06-12T08:02:44Z
+# last_updated: 2026-06-14T14:00:00Z
 # project: ventureiq
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-15T18:19:11Z
-last_updated: 2026-06-12T08:02:44Z
+last_updated: 2026-06-14T14:00:00Z
 project: ventureiq
 project_key: NOKEY
 tracking_system: file-system
@@ -63,7 +63,7 @@ development_status:
   3-1-idea-submission-endpoint-input-sanitization-backend: done
   3-2-plausibility-check-via-llm: done
   3-3-idea-input-screen-flutter: done
-  3-4-voice-input-for-idea-submission: backlog
+  3-4-voice-input-for-idea-submission: done
   epic-3-retrospective: optional
 
   epic-4: backlog

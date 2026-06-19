@@ -26,6 +26,9 @@ dependencies:
   # Data modeling
   freezed_annotation: ^3.0.0  # Immutable data class annotations
   json_annotation: ^4.9.0     # JSON serialization annotations
+  
+  # Speech to Text (Story 3.4)
+  speech_to_text: ^7.3.0
 
 dev_dependencies:
   flutter_test:
